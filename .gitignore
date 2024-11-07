@@ -1,0 +1,7 @@
+Logs
+*.o
+json.hpp
+swim*
+instructions.txt
+plot*
+build
