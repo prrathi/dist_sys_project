@@ -7,10 +7,12 @@
 
 class Hydfs {
 public:
+    class FileTransferServiceImpl;
     Hydfs();
     ~Hydfs();
     void swim();
     void pipeListener();
+    void runServer();
 private:
     void handleCommand(const std::string& command);
     void handleClientRequests(const std::string& command);

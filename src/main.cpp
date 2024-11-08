@@ -27,7 +27,7 @@ int main() {
     
     std::thread listener_thread([&hydfs](){ hydfs.pipeListener(); });
     std::thread swim_thread([&hydfs](){ hydfs.swim(); });
-    std::thread server_thread(RunServer);
+    std::thread server_thread([&hydfs](){ hydfs.runServer(); });
 
     listener_thread.join();
     swim_thread.join();

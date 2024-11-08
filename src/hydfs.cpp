@@ -1,5 +1,6 @@
 #include "hydfs.h"
 #include "file_transfer_client.cpp"
+#include "file_transfer_server.cpp"
 #include "utils.h"
 // protoc file gen the file in src/ i dont wanna change dir so no header file
 #include <iostream>
@@ -20,6 +21,7 @@
 #include <future>
 #include <ctime>
 
+
 #define PERIOD 650
 #define SUSPERIOD 7
 #define PINGPERIOD 400
@@ -28,6 +30,9 @@
 
 #define GRPC_PORT 8081
 #define LOGFILE "Logs/log.txt"
+
+using grpc::Server;
+using grpc::ServerBuilder;
 
 Hydfs::Hydfs() {}
 Hydfs::~Hydfs() {}
@@ -53,9 +58,9 @@ void Hydfs::handleGet(const std::string& filename, const std::string& hydfs_file
     FileTransferClient client(grpc::CreateChannel(target, grpc::InsecureChannelCredentials()));
     bool res = client.GetFile(hydfs_filename, filename);
     if (res) {
-        std::cout << "Create Successful" << std::endl;
+        std::cout << "Get Successful" << std::endl;
     } else {
-        std::cout << "Create Failed" << std::endl;
+        std::cout << "Get Failed" << std::endl;
     }
 }
 
@@ -96,7 +101,7 @@ void Hydfs::handleClientRequests(const std::string& command) {
 
         std::string targetHost = getTarget(hydfs_filename) + ":" + std::to_string(GRPC_PORT); // use the hydfs filename right?
 
-        cout << "create" << filename << " hydfs: " << hydfs_filename << " targetHost: " << targetHost << "\n";
+        cout << "Get" << filename << " hydfs: " << hydfs_filename << " targetHost: " << targetHost << "\n";
         handleGet(filename, hydfs_filename, targetHost);
 
     } else if (command.substr(0, 7) == "append") {
@@ -195,7 +200,28 @@ void Hydfs::pipeListener() {
     }
 }
 
+void Hydfs::runServer() {
+    char hostname[256]; 
+    if (gethostname(hostname, sizeof(hostname)) != 0) {
+        perror("gethostname"); // Print error message if gethostname fails
+        exit(1);
+    } 
+    
+    std::string hostname_str = hostname;
 
+  // Using port 8081 for grpc servers
+  std::string server_address(hostname_str + ":" + std::to_string(GRPC_PORT));
+  FileTransferServiceImpl service;
+
+  ServerBuilder builder;
+  builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
+  builder.RegisterService(&service);
+
+  std::unique_ptr<Server> server(builder.BuildAndStart());
+  std::cout << "gRPC Server listening on " << server_address << std::endl;
+
+  server->Wait();
+}
 
 void Hydfs::swim() {
     // Check if the user is prathi3 and change the hostname if so

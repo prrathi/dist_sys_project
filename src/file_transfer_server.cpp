@@ -4,6 +4,7 @@
 #include <grpcpp/grpcpp.h>
 #include <filesystem>
 
+#include "hydfs.h"
 #include "hydfs.grpc.pb.h"
 
 using grpc::Server;
@@ -21,8 +22,7 @@ using filetransfer::DownloadRequest;
 
 // Server stores file in directory called hydfs/
 
-
-class FileTransferServiceImpl final : public FileTransferService::Service {
+class Hydfs::FileTransferServiceImpl final : public FileTransferService::Service {
 public:
   Status CreateFile(ServerContext* context, ServerReader<FileChunk>* reader, UploadStatus* response) override {
     FileChunk chunk;
@@ -30,7 +30,7 @@ public:
     bool firstChunk = true;
 
     // also check if the file already exists, if it does then ignore 
-
+    
     // read in file and write to disk
     while (reader->Read(&chunk)) {
       if (firstChunk) {
@@ -86,29 +86,4 @@ public:
     infile.close();
     return Status::OK;
   }
-
 };
-
-void RunServer() {
-
-    char hostname[256]; 
-    if (gethostname(hostname, sizeof(hostname)) != 0) {
-        perror("gethostname"); // Print error message if gethostname fails
-        exit(1);
-    } 
-    
-    std::string hostname_str = hostname;
-
-  // Using port 8081 for grpc servers
-  std::string server_address(hostname_str + ":" + std::to_string(GRPC_PORT));
-  FileTransferServiceImpl service;
-
-  ServerBuilder builder;
-  builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
-  builder.RegisterService(&service);
-
-  std::unique_ptr<Server> server(builder.BuildAndStart());
-  std::cout << "gRPC Server listening on " << server_address << std::endl;
-
-  server->Wait();
-}
