@@ -63,6 +63,17 @@ void Hydfs::handleGet(const std::string& filename, const std::string& hydfs_file
     }
 }
 
+void Hydfs::handleAppend(const std::string& filename, const std::string& hydfs_filename, const std::string& target) {
+    std::cout << "Append called" << " target: " << target << "\n";
+    FileTransferClient client(grpc::CreateChannel(target, grpc::InsecureChannelCredentials()));
+    bool res = client.AppendFile(filename, hydfs_filename);
+    if (res) {
+        std::cout << "Append Successful" << std::endl;
+    } else {
+        std::cout << "Append Failed" << std::endl;
+    }
+}
+
 // deterministic for node x filename
 std::string Hydfs::getTarget(const std::string& filename) {
     size_t modulus = 8192;
@@ -102,6 +113,16 @@ void Hydfs::handleClientRequests(const std::string& command) {
         handleGet(filename, hydfs_filename, targetHost);
 
     } else if (command.substr(0, 6) == "append") {
+
+        size_t loc_delim = command.find(" ");
+        std::string filename = command.substr(loc_delim + 1, command.find(" ", loc_delim + 1) - loc_delim - 1);
+        loc_delim = command.find(" ", loc_delim + 1);
+        std::string hydfs_filename = command.substr(loc_delim + 1, command.find("\n") - loc_delim - 1);
+
+        std::string targetHost = getTarget(hydfs_filename) + ":" + std::to_string(GRPC_PORT); // use the hydfs filename right?
+
+        cout << "Append" << filename << " hydfs: " << hydfs_filename << " targetHost: " << targetHost << "\n";
+        handleAppend(filename, hydfs_filename, targetHost);
 
     } else if (command.substr(0, 5) == "merge") {
 

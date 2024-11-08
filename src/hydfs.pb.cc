@@ -147,17 +147,19 @@ const char descriptor_table_protodef_hydfs_2eproto[] ABSL_ATTRIBUTE_SECTION_VARI
     "\022\020\n\010filename\030\001 \001(\t\022\017\n\007content\030\002 \001(\014\"0\n\014U"
     "ploadStatus\022\017\n\007success\030\001 \001(\010\022\017\n\007message\030"
     "\002 \001(\t\"#\n\017DownloadRequest\022\020\n\010filename\030\001 \001"
-    "(\t2\237\001\n\023FileTransferService\022C\n\nCreateFile"
+    "(\t2\344\001\n\023FileTransferService\022C\n\nCreateFile"
     "\022\027.filetransfer.FileChunk\032\032.filetransfer"
     ".UploadStatus(\001\022C\n\007GetFile\022\035.filetransfe"
     "r.DownloadRequest\032\027.filetransfer.FileChu"
-    "nk0\001b\006proto3"
+    "nk0\001\022C\n\nAppendFile\022\027.filetransfer.FileCh"
+    "unk\032\032.filetransfer.UploadStatus(\001b\006proto"
+    "3"
 };
 static ::absl::once_flag descriptor_table_hydfs_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_hydfs_2eproto = {
     false,
     false,
-    332,
+    401,
     descriptor_table_protodef_hydfs_2eproto,
     "hydfs.proto",
     &descriptor_table_hydfs_2eproto_once,

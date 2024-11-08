@@ -20,6 +20,7 @@ private:
     void handleClientRequests(const std::string& command);
     void handleCreate(const std::string& filename, const std::string& hydfs_filename, const std::string& target);
     void handleGet(const std::string& filename, const std::string& hydfs_filename, const std::string& target);
+    void handleAppend(const std::string& filename, const std::string& hydfs_filename, const std::string& target);
     std::string getTarget(const std::string& filename);
     FullNode initNode();
 private:

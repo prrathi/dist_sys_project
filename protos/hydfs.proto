@@ -6,6 +6,7 @@ package filetransfer;
 service FileTransferService {
   rpc CreateFile(stream FileChunk) returns (UploadStatus);
   rpc GetFile(DownloadRequest) returns (stream FileChunk);
+  rpc AppendFile(stream FileChunk) returns (UploadStatus);
 }
 
 //will need server streaming one too for get    

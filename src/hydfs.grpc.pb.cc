@@ -24,6 +24,7 @@ namespace filetransfer {
 static const char* FileTransferService_method_names[] = {
   "/filetransfer.FileTransferService/CreateFile",
   "/filetransfer.FileTransferService/GetFile",
+  "/filetransfer.FileTransferService/AppendFile",
 };
 
 std::unique_ptr< FileTransferService::Stub> FileTransferService::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
@@ -35,6 +36,7 @@ std::unique_ptr< FileTransferService::Stub> FileTransferService::NewStub(const s
 FileTransferService::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options)
   : channel_(channel), rpcmethod_CreateFile_(FileTransferService_method_names[0], options.suffix_for_stats(),::grpc::internal::RpcMethod::CLIENT_STREAMING, channel)
   , rpcmethod_GetFile_(FileTransferService_method_names[1], options.suffix_for_stats(),::grpc::internal::RpcMethod::SERVER_STREAMING, channel)
+  , rpcmethod_AppendFile_(FileTransferService_method_names[2], options.suffix_for_stats(),::grpc::internal::RpcMethod::CLIENT_STREAMING, channel)
   {}
 
 ::grpc::ClientWriter< ::filetransfer::FileChunk>* FileTransferService::Stub::CreateFileRaw(::grpc::ClientContext* context, ::filetransfer::UploadStatus* response) {
@@ -69,6 +71,22 @@ void FileTransferService::Stub::async::GetFile(::grpc::ClientContext* context, c
   return ::grpc::internal::ClientAsyncReaderFactory< ::filetransfer::FileChunk>::Create(channel_.get(), cq, rpcmethod_GetFile_, context, request, false, nullptr);
 }
 
+::grpc::ClientWriter< ::filetransfer::FileChunk>* FileTransferService::Stub::AppendFileRaw(::grpc::ClientContext* context, ::filetransfer::UploadStatus* response) {
+  return ::grpc::internal::ClientWriterFactory< ::filetransfer::FileChunk>::Create(channel_.get(), rpcmethod_AppendFile_, context, response);
+}
+
+void FileTransferService::Stub::async::AppendFile(::grpc::ClientContext* context, ::filetransfer::UploadStatus* response, ::grpc::ClientWriteReactor< ::filetransfer::FileChunk>* reactor) {
+  ::grpc::internal::ClientCallbackWriterFactory< ::filetransfer::FileChunk>::Create(stub_->channel_.get(), stub_->rpcmethod_AppendFile_, context, response, reactor);
+}
+
+::grpc::ClientAsyncWriter< ::filetransfer::FileChunk>* FileTransferService::Stub::AsyncAppendFileRaw(::grpc::ClientContext* context, ::filetransfer::UploadStatus* response, ::grpc::CompletionQueue* cq, void* tag) {
+  return ::grpc::internal::ClientAsyncWriterFactory< ::filetransfer::FileChunk>::Create(channel_.get(), cq, rpcmethod_AppendFile_, context, response, true, tag);
+}
+
+::grpc::ClientAsyncWriter< ::filetransfer::FileChunk>* FileTransferService::Stub::PrepareAsyncAppendFileRaw(::grpc::ClientContext* context, ::filetransfer::UploadStatus* response, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncWriterFactory< ::filetransfer::FileChunk>::Create(channel_.get(), cq, rpcmethod_AppendFile_, context, response, false, nullptr);
+}
+
 FileTransferService::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       FileTransferService_method_names[0],
@@ -90,6 +108,16 @@ FileTransferService::Service::Service() {
              ::grpc::ServerWriter<::filetransfer::FileChunk>* writer) {
                return service->GetFile(ctx, req, writer);
              }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      FileTransferService_method_names[2],
+      ::grpc::internal::RpcMethod::CLIENT_STREAMING,
+      new ::grpc::internal::ClientStreamingHandler< FileTransferService::Service, ::filetransfer::FileChunk, ::filetransfer::UploadStatus>(
+          [](FileTransferService::Service* service,
+             ::grpc::ServerContext* ctx,
+             ::grpc::ServerReader<::filetransfer::FileChunk>* reader,
+             ::filetransfer::UploadStatus* resp) {
+               return service->AppendFile(ctx, reader, resp);
+             }, this)));
 }
 
 FileTransferService::Service::~Service() {
@@ -106,6 +134,13 @@ FileTransferService::Service::~Service() {
   (void) context;
   (void) request;
   (void) writer;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status FileTransferService::Service::AppendFile(::grpc::ServerContext* context, ::grpc::ServerReader< ::filetransfer::FileChunk>* reader, ::filetransfer::UploadStatus* response) {
+  (void) context;
+  (void) reader;
+  (void) response;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 

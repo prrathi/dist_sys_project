@@ -53,11 +53,21 @@ class FileTransferService final {
     std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::filetransfer::FileChunk>> PrepareAsyncGetFile(::grpc::ClientContext* context, const ::filetransfer::DownloadRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::filetransfer::FileChunk>>(PrepareAsyncGetFileRaw(context, request, cq));
     }
+    std::unique_ptr< ::grpc::ClientWriterInterface< ::filetransfer::FileChunk>> AppendFile(::grpc::ClientContext* context, ::filetransfer::UploadStatus* response) {
+      return std::unique_ptr< ::grpc::ClientWriterInterface< ::filetransfer::FileChunk>>(AppendFileRaw(context, response));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncWriterInterface< ::filetransfer::FileChunk>> AsyncAppendFile(::grpc::ClientContext* context, ::filetransfer::UploadStatus* response, ::grpc::CompletionQueue* cq, void* tag) {
+      return std::unique_ptr< ::grpc::ClientAsyncWriterInterface< ::filetransfer::FileChunk>>(AsyncAppendFileRaw(context, response, cq, tag));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncWriterInterface< ::filetransfer::FileChunk>> PrepareAsyncAppendFile(::grpc::ClientContext* context, ::filetransfer::UploadStatus* response, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncWriterInterface< ::filetransfer::FileChunk>>(PrepareAsyncAppendFileRaw(context, response, cq));
+    }
     class async_interface {
      public:
       virtual ~async_interface() {}
       virtual void CreateFile(::grpc::ClientContext* context, ::filetransfer::UploadStatus* response, ::grpc::ClientWriteReactor< ::filetransfer::FileChunk>* reactor) = 0;
       virtual void GetFile(::grpc::ClientContext* context, const ::filetransfer::DownloadRequest* request, ::grpc::ClientReadReactor< ::filetransfer::FileChunk>* reactor) = 0;
+      virtual void AppendFile(::grpc::ClientContext* context, ::filetransfer::UploadStatus* response, ::grpc::ClientWriteReactor< ::filetransfer::FileChunk>* reactor) = 0;
     };
     typedef class async_interface experimental_async_interface;
     virtual class async_interface* async() { return nullptr; }
@@ -69,6 +79,9 @@ class FileTransferService final {
     virtual ::grpc::ClientReaderInterface< ::filetransfer::FileChunk>* GetFileRaw(::grpc::ClientContext* context, const ::filetransfer::DownloadRequest& request) = 0;
     virtual ::grpc::ClientAsyncReaderInterface< ::filetransfer::FileChunk>* AsyncGetFileRaw(::grpc::ClientContext* context, const ::filetransfer::DownloadRequest& request, ::grpc::CompletionQueue* cq, void* tag) = 0;
     virtual ::grpc::ClientAsyncReaderInterface< ::filetransfer::FileChunk>* PrepareAsyncGetFileRaw(::grpc::ClientContext* context, const ::filetransfer::DownloadRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientWriterInterface< ::filetransfer::FileChunk>* AppendFileRaw(::grpc::ClientContext* context, ::filetransfer::UploadStatus* response) = 0;
+    virtual ::grpc::ClientAsyncWriterInterface< ::filetransfer::FileChunk>* AsyncAppendFileRaw(::grpc::ClientContext* context, ::filetransfer::UploadStatus* response, ::grpc::CompletionQueue* cq, void* tag) = 0;
+    virtual ::grpc::ClientAsyncWriterInterface< ::filetransfer::FileChunk>* PrepareAsyncAppendFileRaw(::grpc::ClientContext* context, ::filetransfer::UploadStatus* response, ::grpc::CompletionQueue* cq) = 0;
   };
   class Stub final : public StubInterface {
    public:
@@ -91,11 +104,21 @@ class FileTransferService final {
     std::unique_ptr< ::grpc::ClientAsyncReader< ::filetransfer::FileChunk>> PrepareAsyncGetFile(::grpc::ClientContext* context, const ::filetransfer::DownloadRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncReader< ::filetransfer::FileChunk>>(PrepareAsyncGetFileRaw(context, request, cq));
     }
+    std::unique_ptr< ::grpc::ClientWriter< ::filetransfer::FileChunk>> AppendFile(::grpc::ClientContext* context, ::filetransfer::UploadStatus* response) {
+      return std::unique_ptr< ::grpc::ClientWriter< ::filetransfer::FileChunk>>(AppendFileRaw(context, response));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncWriter< ::filetransfer::FileChunk>> AsyncAppendFile(::grpc::ClientContext* context, ::filetransfer::UploadStatus* response, ::grpc::CompletionQueue* cq, void* tag) {
+      return std::unique_ptr< ::grpc::ClientAsyncWriter< ::filetransfer::FileChunk>>(AsyncAppendFileRaw(context, response, cq, tag));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncWriter< ::filetransfer::FileChunk>> PrepareAsyncAppendFile(::grpc::ClientContext* context, ::filetransfer::UploadStatus* response, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncWriter< ::filetransfer::FileChunk>>(PrepareAsyncAppendFileRaw(context, response, cq));
+    }
     class async final :
       public StubInterface::async_interface {
      public:
       void CreateFile(::grpc::ClientContext* context, ::filetransfer::UploadStatus* response, ::grpc::ClientWriteReactor< ::filetransfer::FileChunk>* reactor) override;
       void GetFile(::grpc::ClientContext* context, const ::filetransfer::DownloadRequest* request, ::grpc::ClientReadReactor< ::filetransfer::FileChunk>* reactor) override;
+      void AppendFile(::grpc::ClientContext* context, ::filetransfer::UploadStatus* response, ::grpc::ClientWriteReactor< ::filetransfer::FileChunk>* reactor) override;
      private:
       friend class Stub;
       explicit async(Stub* stub): stub_(stub) { }
@@ -113,8 +136,12 @@ class FileTransferService final {
     ::grpc::ClientReader< ::filetransfer::FileChunk>* GetFileRaw(::grpc::ClientContext* context, const ::filetransfer::DownloadRequest& request) override;
     ::grpc::ClientAsyncReader< ::filetransfer::FileChunk>* AsyncGetFileRaw(::grpc::ClientContext* context, const ::filetransfer::DownloadRequest& request, ::grpc::CompletionQueue* cq, void* tag) override;
     ::grpc::ClientAsyncReader< ::filetransfer::FileChunk>* PrepareAsyncGetFileRaw(::grpc::ClientContext* context, const ::filetransfer::DownloadRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientWriter< ::filetransfer::FileChunk>* AppendFileRaw(::grpc::ClientContext* context, ::filetransfer::UploadStatus* response) override;
+    ::grpc::ClientAsyncWriter< ::filetransfer::FileChunk>* AsyncAppendFileRaw(::grpc::ClientContext* context, ::filetransfer::UploadStatus* response, ::grpc::CompletionQueue* cq, void* tag) override;
+    ::grpc::ClientAsyncWriter< ::filetransfer::FileChunk>* PrepareAsyncAppendFileRaw(::grpc::ClientContext* context, ::filetransfer::UploadStatus* response, ::grpc::CompletionQueue* cq) override;
     const ::grpc::internal::RpcMethod rpcmethod_CreateFile_;
     const ::grpc::internal::RpcMethod rpcmethod_GetFile_;
+    const ::grpc::internal::RpcMethod rpcmethod_AppendFile_;
   };
   static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
 
@@ -124,6 +151,7 @@ class FileTransferService final {
     virtual ~Service();
     virtual ::grpc::Status CreateFile(::grpc::ServerContext* context, ::grpc::ServerReader< ::filetransfer::FileChunk>* reader, ::filetransfer::UploadStatus* response);
     virtual ::grpc::Status GetFile(::grpc::ServerContext* context, const ::filetransfer::DownloadRequest* request, ::grpc::ServerWriter< ::filetransfer::FileChunk>* writer);
+    virtual ::grpc::Status AppendFile(::grpc::ServerContext* context, ::grpc::ServerReader< ::filetransfer::FileChunk>* reader, ::filetransfer::UploadStatus* response);
   };
   template <class BaseClass>
   class WithAsyncMethod_CreateFile : public BaseClass {
@@ -165,7 +193,27 @@ class FileTransferService final {
       ::grpc::Service::RequestAsyncServerStreaming(1, context, request, writer, new_call_cq, notification_cq, tag);
     }
   };
-  typedef WithAsyncMethod_CreateFile<WithAsyncMethod_GetFile<Service > > AsyncService;
+  template <class BaseClass>
+  class WithAsyncMethod_AppendFile : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_AppendFile() {
+      ::grpc::Service::MarkMethodAsync(2);
+    }
+    ~WithAsyncMethod_AppendFile() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status AppendFile(::grpc::ServerContext* /*context*/, ::grpc::ServerReader< ::filetransfer::FileChunk>* /*reader*/, ::filetransfer::UploadStatus* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestAppendFile(::grpc::ServerContext* context, ::grpc::ServerAsyncReader< ::filetransfer::UploadStatus, ::filetransfer::FileChunk>* reader, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncClientStreaming(2, context, reader, new_call_cq, notification_cq, tag);
+    }
+  };
+  typedef WithAsyncMethod_CreateFile<WithAsyncMethod_GetFile<WithAsyncMethod_AppendFile<Service > > > AsyncService;
   template <class BaseClass>
   class WithCallbackMethod_CreateFile : public BaseClass {
    private:
@@ -210,7 +258,29 @@ class FileTransferService final {
     virtual ::grpc::ServerWriteReactor< ::filetransfer::FileChunk>* GetFile(
       ::grpc::CallbackServerContext* /*context*/, const ::filetransfer::DownloadRequest* /*request*/)  { return nullptr; }
   };
-  typedef WithCallbackMethod_CreateFile<WithCallbackMethod_GetFile<Service > > CallbackService;
+  template <class BaseClass>
+  class WithCallbackMethod_AppendFile : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_AppendFile() {
+      ::grpc::Service::MarkMethodCallback(2,
+          new ::grpc::internal::CallbackClientStreamingHandler< ::filetransfer::FileChunk, ::filetransfer::UploadStatus>(
+            [this](
+                   ::grpc::CallbackServerContext* context, ::filetransfer::UploadStatus* response) { return this->AppendFile(context, response); }));
+    }
+    ~WithCallbackMethod_AppendFile() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status AppendFile(::grpc::ServerContext* /*context*/, ::grpc::ServerReader< ::filetransfer::FileChunk>* /*reader*/, ::filetransfer::UploadStatus* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerReadReactor< ::filetransfer::FileChunk>* AppendFile(
+      ::grpc::CallbackServerContext* /*context*/, ::filetransfer::UploadStatus* /*response*/)  { return nullptr; }
+  };
+  typedef WithCallbackMethod_CreateFile<WithCallbackMethod_GetFile<WithCallbackMethod_AppendFile<Service > > > CallbackService;
   typedef CallbackService ExperimentalCallbackService;
   template <class BaseClass>
   class WithGenericMethod_CreateFile : public BaseClass {
@@ -242,6 +312,23 @@ class FileTransferService final {
     }
     // disable synchronous version of this method
     ::grpc::Status GetFile(::grpc::ServerContext* /*context*/, const ::filetransfer::DownloadRequest* /*request*/, ::grpc::ServerWriter< ::filetransfer::FileChunk>* /*writer*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_AppendFile : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_AppendFile() {
+      ::grpc::Service::MarkMethodGeneric(2);
+    }
+    ~WithGenericMethod_AppendFile() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status AppendFile(::grpc::ServerContext* /*context*/, ::grpc::ServerReader< ::filetransfer::FileChunk>* /*reader*/, ::filetransfer::UploadStatus* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -287,6 +374,26 @@ class FileTransferService final {
     }
   };
   template <class BaseClass>
+  class WithRawMethod_AppendFile : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_AppendFile() {
+      ::grpc::Service::MarkMethodRaw(2);
+    }
+    ~WithRawMethod_AppendFile() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status AppendFile(::grpc::ServerContext* /*context*/, ::grpc::ServerReader< ::filetransfer::FileChunk>* /*reader*/, ::filetransfer::UploadStatus* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestAppendFile(::grpc::ServerContext* context, ::grpc::ServerAsyncReader< ::grpc::ByteBuffer, ::grpc::ByteBuffer>* reader, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncClientStreaming(2, context, reader, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
   class WithRawCallbackMethod_CreateFile : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
@@ -329,6 +436,28 @@ class FileTransferService final {
     }
     virtual ::grpc::ServerWriteReactor< ::grpc::ByteBuffer>* GetFile(
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_AppendFile : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_AppendFile() {
+      ::grpc::Service::MarkMethodRawCallback(2,
+          new ::grpc::internal::CallbackClientStreamingHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, ::grpc::ByteBuffer* response) { return this->AppendFile(context, response); }));
+    }
+    ~WithRawCallbackMethod_AppendFile() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status AppendFile(::grpc::ServerContext* /*context*/, ::grpc::ServerReader< ::filetransfer::FileChunk>* /*reader*/, ::filetransfer::UploadStatus* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerReadReactor< ::grpc::ByteBuffer>* AppendFile(
+      ::grpc::CallbackServerContext* /*context*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   typedef Service StreamedUnaryService;
   template <class BaseClass>
