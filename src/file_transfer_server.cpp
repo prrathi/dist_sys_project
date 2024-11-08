@@ -91,13 +91,13 @@ public:
 
 void RunServer() {
 
-    char hostname[256]; 
-    if (gethostname(hostname, sizeof(hostname)) != 0) {
-        perror("gethostname"); // Print error message if gethostname fails
-        exit(1);
-    } 
-    
-    std::string hostname_str = hostname;
+  char hostname[256]; 
+  if (gethostname(hostname, sizeof(hostname)) != 0) {
+      perror("gethostname"); // Print error message if gethostname fails
+      exit(1);
+  } 
+  
+  std::string hostname_str = hostname;
 
   // Using port 8081 for grpc servers
   std::string server_address(hostname_str + ":" + std::to_string(GRPC_PORT));

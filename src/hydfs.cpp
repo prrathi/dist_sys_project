@@ -46,8 +46,7 @@ void Hydfs::handleCreate(const std::string& filename, const std::string& hydfs_f
 
 void Hydfs::handleGet(const std::string& filename, const std::string& hydfs_filename, const std::string& target) {
 
-    // check here whether in cache / check if consistnt ...
-    // need to figure out what to use for comparison prob always need to check server for consistency?
+    // check here whether in cache, only need local consistency which is guaranteed
 
     std::cout << "get called" << " target: " << target << "\n";
     FileTransferClient client(grpc::CreateChannel(target, grpc::InsecureChannelCredentials()));
@@ -59,19 +58,17 @@ void Hydfs::handleGet(const std::string& filename, const std::string& hydfs_file
     }
 }
 
-// dynamically do it... just N=10 so whatever
+// deterministic for node x filename
 std::string Hydfs::getTarget(const std::string& filename) {
-    std::vector<string> successors = find3Successors(filename, currNode.getAllIds());
-
-    std::random_device rd;
-    std::mt19937 gen(rd());
+    size_t modulus = 8192;
+    std::vector<string> successors = find3Successors(filename, currNode.getAllIds(), modulus);
+    size_t currHash = hashString(currNode.getId() + filename, modulus);
+    std::mt19937 gen(currHash); 
     std::uniform_int_distribution<> distrib(0, successors.size() - 1);
-
     int randomIndex = distrib(gen);  
     return successors[randomIndex];
 }
 
-//coco one\n
 void Hydfs::handleClientRequests(const std::string& command) {
 
     // parsing a lil scuffed 
@@ -99,19 +96,19 @@ void Hydfs::handleClientRequests(const std::string& command) {
         cout << "create" << filename << " hydfs: " << hydfs_filename << " targetHost: " << targetHost << "\n";
         handleGet(filename, hydfs_filename, targetHost);
 
-    } else if (command.substr(0, 7) == "append") {
+    } else if (command.substr(0, 6) == "append") {
 
     } else if (command.substr(0, 5) == "merge") {
 
     } else if (command.substr(0, 2) == "ls") {
 
-    } else if (command == "store\n") {
+    } else if (command.substr(0, 5) == "store") {
 
-    } else if (command.substr(0, 12) == "getfromreplica") {
+    } else if (command.substr(0, 14) == "getfromreplica") {
 
-    } else if (command == "list_mem_ids\n") {
+    } else if (command.substr(0, 12) == "list_mem_ids") {
 
-    } else if (command.substr(0, 12) == "multiappend(") { 
+    } else if (command.substr(0, 11) == "multiappend") { 
         // i dont think need to implent this here, maybe just do at python calling append multiple times i think better
     } else {
         cout << "Bad Command" << "\n";
@@ -153,6 +150,12 @@ void Hydfs::handleCommand(const std::string& command) {
         currNode.setSusStatus(false);
         currNode.setPingTime(NORMALPINGPERIOD);
         currNode.setPeriodTime(NORMALPERIOD);
+    } else if (command == "status_sus\n") {
+        if (currNode.getSusStatus()) {
+            std::cout << "Sus status: enabled" << std::endl;
+        } else {
+            std::cout << "Sus status: disabled" << std::endl;
+        }
     } else if (command == "list_suspected\n") {
         for (const auto& id : currNode.getAllIds()) {
             const auto& state = currNode.getState(id);

@@ -5,31 +5,36 @@
 #include <sstream>
 #include <algorithm> 
 #include <unordered_set>
+#include <functional>
+
+using namespace std;
 
 size_t circularDistance(size_t hash1, size_t hash2, size_t modulus) {
     if (hash1 > hash2) {
-      std::swap(hash1,hash2);
+      swap(hash1,hash2);
     }
     size_t diff = hash2 - hash1; 
-    return std::min(diff, modulus - diff);
+    return min(diff, modulus - diff);
 }
 
-std::vector<std::string> find3Successors(const std::string& filename, const std::unordered_set<std::string>& nodeIds) {
-    int modulus = 8192;
-    std::hash<std::string> hasher;
-    size_t filenameHash = hasher(filename) % modulus;
-    //std::cout << "filenameHash: " << filenameHash << "\n";
-    std::vector<std::pair<size_t, std::string>> nodeHashes;
+size_t hashString(const string& str, size_t modulus) {
+    hash<string> hasher;
+    return hasher(str) % modulus;
+}
+
+vector<string> find3Successors(const string& filename, const unordered_set<string>& nodeIds, size_t modulus) {
+    size_t filenameHash = hashString(filename, modulus);
+    //cout << "filenameHash: " << filenameHash << "\n";
+    vector<pair<size_t, string>> nodeHashes;
 
     for (const auto& nodeId : nodeIds) {
-        std::string hostname = nodeId.substr(0, nodeId.find("-"));
-        size_t nodeHash = hasher(hostname) % modulus;
-        //std::cout << "nodeId: " << nodeId << " nodeHash: " << nodeHash << "\n";
+        string hostname = nodeId.substr(0, nodeId.find("-"));
+        size_t nodeHash = hashString(hostname, modulus);
         nodeHashes.push_back({circularDistance(nodeHash, filenameHash, modulus), hostname});
     }
 
-    std::sort(nodeHashes.begin(), nodeHashes.end());
-    std::vector<std::string> successors;
+    sort(nodeHashes.begin(), nodeHashes.end());
+    vector<string> successors;
     size_t i = 0;
 
     for (const auto& node : nodeHashes) {
