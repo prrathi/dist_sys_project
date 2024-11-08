@@ -17,9 +17,6 @@
 #include <ctime>
 
 #include "hydfs.h"
-#include "file_transfer_server.cpp"
-
-
 
 
 int main() {

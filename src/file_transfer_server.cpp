@@ -1,75 +1,61 @@
-#pragma once
 #include <iostream>
 #include <fstream>
 #include <grpcpp/grpcpp.h>
 #include <filesystem>
 
-#include "hydfs.h"
 #include "hydfs.grpc.pb.h"
+#include "file_transfer_server.h"
 
-using grpc::Server;
-using grpc::ServerBuilder;
+using namespace std;
 using grpc::ServerContext;
 using grpc::Status;
 using grpc::ServerReader;
 using grpc::ServerWriter;
-using filetransfer::FileTransferService;
 using filetransfer::FileChunk;
 using filetransfer::UploadStatus;
 using filetransfer::DownloadRequest;
 
-#define GRPC_PORT 8081
+FileTransferServiceImpl::FileTransferServiceImpl() {}
 
-// Server stores file in directory called hydfs/
-
-class Hydfs::FileTransferServiceImpl final : public FileTransferService::Service {
-public:
-  Status CreateFile(ServerContext* context, ServerReader<FileChunk>* reader, UploadStatus* response) override {
+Status FileTransferServiceImpl::CreateFile(ServerContext* context, ServerReader<FileChunk>* reader, UploadStatus* response) {
     FileChunk chunk;
-    std::ofstream outfile;
+    ofstream outfile;
     bool firstChunk = true;
-
-    // also check if the file already exists, if it does then ignore 
     
-    // read in file and write to disk
     while (reader->Read(&chunk)) {
-      if (firstChunk) {
-        std::string filename = chunk.filename();
-        if (filename.empty()) {
-          response->set_success(false);
-          response->set_message("Filename is missing in the first chunk.");
-          return Status::OK;
+        if (firstChunk) {
+            string filename = chunk.filename();
+            if (filename.empty()) {
+                response->set_success(false);
+                response->set_message("Filename is missing in the first chunk.");
+                return Status::OK;
+            }
+            filesystem::create_directory("hydfs");
+            outfile.open("hydfs/" + filename, ios::binary);
+            if (!outfile) {
+                response->set_success(false);
+                response->set_message("Failed to open file for writing: " + filename);
+                return Status::OK;
+            }
+            firstChunk = false;
         }
-        // create dir if not exists called hydfs
-        std::filesystem::create_directory("hydfs");
-        outfile.open("hydfs/" + filename, std::ios::binary);
-        if (!outfile) {
-          response->set_success(false);
-          response->set_message("Failed to open file for writing: " + filename);
-          return Status::OK;
-        }
-        firstChunk = false;
-      }
-      outfile.write(chunk.content().data(), chunk.content().size());
+        outfile.write(chunk.content().data(), chunk.content().size());
     }
 
-    // handle logic here?
-
-
     if (outfile.is_open()) {
-      outfile.close();
+        outfile.close();
     }
     response->set_success(true);
     response->set_message("File received successfully.");
     return Status::OK;
-  }
+}
 
-  Status GetFile(ServerContext* context, const DownloadRequest* request, ServerWriter<FileChunk>* writer) override {
-    std::string filename = request->filename();
-    std::ifstream infile("hydfs/" + filename, std::ios::binary);
+Status FileTransferServiceImpl::GetFile(ServerContext* context, const DownloadRequest* request, ServerWriter<FileChunk>* writer) {
+    string filename = request->filename();
+    ifstream infile("hydfs/" + filename, ios::binary);
 
     if (!infile) {
-      return Status::CANCELLED;  // file not found
+        return Status::CANCELLED;  // file not found
     }
 
     FileChunk chunk;
@@ -77,13 +63,12 @@ public:
     char buffer[buffer_size];
 
     while (infile.read(buffer, buffer_size) || infile.gcount() > 0) {
-      chunk.set_content(buffer, infile.gcount());
-      if (!writer->Write(chunk)) {    
-        std::cout << "Failed writing" << std::endl;
-        return Status::CANCELLED;  // failed write 
-      }
+        chunk.set_content(buffer, infile.gcount());
+        if (!writer->Write(chunk)) {    
+            cout << "Failed writing" << endl;
+            return Status::CANCELLED;  // failed write 
+        }
     }
     infile.close();
     return Status::OK;
-  }
-};
+}

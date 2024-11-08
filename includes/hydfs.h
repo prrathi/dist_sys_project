@@ -5,11 +5,10 @@
 #include "listener.h"
 #include "worker.h"
 #include "talker.h"
-#include <condition_variable>
+#include "hydfs_server.h"
 
 class Hydfs {
 public:
-    class FileTransferServiceImpl;
     Hydfs();
     ~Hydfs();
     void swim();
@@ -24,13 +23,13 @@ private:
     FullNode initNode();
 private:
     const std::string introducerHostname = "fa24-cs425-5801.cs.illinois.edu";
-    string FIFO_PATH = "/tmp/mp3";
+    std::string FIFO_PATH = "/tmp/mp3";
     FullNode currNode;
     std::condition_variable condVar;
     std::mutex globalMtx;   
     bool join = false;
     bool leave = false;
-
+    HydfsServer server;
 };
 
 #endif // HYDFS_H

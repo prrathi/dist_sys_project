@@ -1,8 +1,3 @@
-#include "hydfs.h"
-#include "file_transfer_client.cpp"
-#include "file_transfer_server.cpp"
-#include "utils.h"
-// protoc file gen the file in src/ i dont wanna change dir so no header file
 #include <iostream>
 #include <cstdlib> 
 #include <string>
@@ -13,14 +8,15 @@
 #include <ifaddrs.h>
 #include <arpa/inet.h>
 #include <netdb.h>
-#include <condition_variable>
-#include <mutex>
 #include <algorithm>
 #include <random>
 #include <chrono>
 #include <future>
 #include <ctime>
 
+#include "hydfs.h"
+#include "file_transfer_client.cpp"
+#include "utils.h"
 
 #define PERIOD 650
 #define SUSPERIOD 7
@@ -34,9 +30,12 @@
 using grpc::Server;
 using grpc::ServerBuilder;
 
-Hydfs::Hydfs() {}
-Hydfs::~Hydfs() {}
+Hydfs::Hydfs() 
+    : server()
+{
+}
 
+Hydfs::~Hydfs() {}
 
 void Hydfs::handleCreate(const std::string& filename, const std::string& hydfs_filename, const std::string& target) {
     std::cout << "create called" << " target: " << target << "\n";
@@ -204,26 +203,7 @@ void Hydfs::pipeListener() {
 }
 
 void Hydfs::runServer() {
-    char hostname[256]; 
-    if (gethostname(hostname, sizeof(hostname)) != 0) {
-        perror("gethostname"); // Print error message if gethostname fails
-        exit(1);
-    } 
-    
-    std::string hostname_str = hostname;
-
-  // Using port 8081 for grpc servers
-  std::string server_address(hostname_str + ":" + std::to_string(GRPC_PORT));
-  FileTransferServiceImpl service;
-
-  ServerBuilder builder;
-  builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
-  builder.RegisterService(&service);
-
-  std::unique_ptr<Server> server(builder.BuildAndStart());
-  std::cout << "gRPC Server listening on " << server_address << std::endl;
-
-  server->Wait();
+    server.wait();  // Just wait on the already-created server
 }
 
 void Hydfs::swim() {
