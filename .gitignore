@@ -4,4 +4,4 @@ json.hpp
 swim*
 instructions.txt
 plot*
-build
+build/
