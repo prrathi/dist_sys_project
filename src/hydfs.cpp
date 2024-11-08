@@ -59,7 +59,7 @@ void Hydfs::handleClientRequests(const std::string& command) {
         loc_delim = command.find(" ", loc_delim + 1);
         std::string hydfs_filename = command.substr(loc_delim + 1, command.find("\n") - loc_delim - 1);
 
-        std::string target = getTarget(hydfs_filename); // use the hydfs filename right?
+        std::string target = getTarget(hydfs_filename) + ":8080"; // use the hydfs filename right?
 
         cout << "create" << filename << " hydfs: " << hydfs_filename << " target: " << target << "\n";
         handleCreate(filename, hydfs_filename, target);
