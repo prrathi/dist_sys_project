@@ -70,6 +70,27 @@ struct FileChunkDefaultTypeInternal {
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 FileChunkDefaultTypeInternal _FileChunk_default_instance_;
+
+inline constexpr DownloadRequest::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : filename_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        _cached_size_{0} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR DownloadRequest::DownloadRequest(::_pbi::ConstantInitialized)
+    : _impl_(::_pbi::ConstantInitialized()) {}
+struct DownloadRequestDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR DownloadRequestDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~DownloadRequestDefaultTypeInternal() {}
+  union {
+    DownloadRequest _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 DownloadRequestDefaultTypeInternal _DownloadRequest_default_instance_;
 }  // namespace filetransfer
 static constexpr const ::_pb::EnumDescriptor**
     file_level_enum_descriptors_hydfs_2eproto = nullptr;
@@ -98,37 +119,51 @@ const ::uint32_t
         ~0u,  // no sizeof(Split)
         PROTOBUF_FIELD_OFFSET(::filetransfer::UploadStatus, _impl_.success_),
         PROTOBUF_FIELD_OFFSET(::filetransfer::UploadStatus, _impl_.message_),
+        ~0u,  // no _has_bits_
+        PROTOBUF_FIELD_OFFSET(::filetransfer::DownloadRequest, _internal_metadata_),
+        ~0u,  // no _extensions_
+        ~0u,  // no _oneof_case_
+        ~0u,  // no _weak_field_map_
+        ~0u,  // no _inlined_string_donated_
+        ~0u,  // no _split_
+        ~0u,  // no sizeof(Split)
+        PROTOBUF_FIELD_OFFSET(::filetransfer::DownloadRequest, _impl_.filename_),
 };
 
 static const ::_pbi::MigrationSchema
     schemas[] ABSL_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
         {0, -1, -1, sizeof(::filetransfer::FileChunk)},
         {10, -1, -1, sizeof(::filetransfer::UploadStatus)},
+        {20, -1, -1, sizeof(::filetransfer::DownloadRequest)},
 };
 static const ::_pb::Message* const file_default_instances[] = {
     &::filetransfer::_FileChunk_default_instance_._instance,
     &::filetransfer::_UploadStatus_default_instance_._instance,
+    &::filetransfer::_DownloadRequest_default_instance_._instance,
 };
 const char descriptor_table_protodef_hydfs_2eproto[] ABSL_ATTRIBUTE_SECTION_VARIABLE(
     protodesc_cold) = {
     "\n\013hydfs.proto\022\014filetransfer\".\n\tFileChunk"
     "\022\020\n\010filename\030\001 \001(\t\022\017\n\007content\030\002 \001(\014\"0\n\014U"
     "ploadStatus\022\017\n\007success\030\001 \001(\010\022\017\n\007message\030"
-    "\002 \001(\t2Z\n\023FileTransferService\022C\n\nCreateFi"
-    "le\022\027.filetransfer.FileChunk\032\032.filetransf"
-    "er.UploadStatus(\001b\006proto3"
+    "\002 \001(\t\"#\n\017DownloadRequest\022\020\n\010filename\030\001 \001"
+    "(\t2\237\001\n\023FileTransferService\022C\n\nCreateFile"
+    "\022\027.filetransfer.FileChunk\032\032.filetransfer"
+    ".UploadStatus(\001\022C\n\007GetFile\022\035.filetransfe"
+    "r.DownloadRequest\032\027.filetransfer.FileChu"
+    "nk0\001b\006proto3"
 };
 static ::absl::once_flag descriptor_table_hydfs_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_hydfs_2eproto = {
     false,
     false,
-    225,
+    332,
     descriptor_table_protodef_hydfs_2eproto,
     "hydfs.proto",
     &descriptor_table_hydfs_2eproto_once,
     nullptr,
     0,
-    2,
+    3,
     schemas,
     file_default_instances,
     TableStruct_hydfs_2eproto::offsets,
@@ -571,6 +606,198 @@ void UploadStatus::InternalSwap(UploadStatus* PROTOBUF_RESTRICT other) {
 }
 
 ::google::protobuf::Metadata UploadStatus::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+class DownloadRequest::_Internal {
+ public:
+};
+
+DownloadRequest::DownloadRequest(::google::protobuf::Arena* arena)
+    : ::google::protobuf::Message(arena) {
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:filetransfer.DownloadRequest)
+}
+inline PROTOBUF_NDEBUG_INLINE DownloadRequest::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility, ::google::protobuf::Arena* arena,
+    const Impl_& from, const ::filetransfer::DownloadRequest& from_msg)
+      : filename_(arena, from.filename_),
+        _cached_size_{0} {}
+
+DownloadRequest::DownloadRequest(
+    ::google::protobuf::Arena* arena,
+    const DownloadRequest& from)
+    : ::google::protobuf::Message(arena) {
+  DownloadRequest* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+
+  // @@protoc_insertion_point(copy_constructor:filetransfer.DownloadRequest)
+}
+inline PROTOBUF_NDEBUG_INLINE DownloadRequest::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* arena)
+      : filename_(arena),
+        _cached_size_{0} {}
+
+inline void DownloadRequest::SharedCtor(::_pb::Arena* arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+}
+DownloadRequest::~DownloadRequest() {
+  // @@protoc_insertion_point(destructor:filetransfer.DownloadRequest)
+  _internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  SharedDtor();
+}
+inline void DownloadRequest::SharedDtor() {
+  ABSL_DCHECK(GetArena() == nullptr);
+  _impl_.filename_.Destroy();
+  _impl_.~Impl_();
+}
+
+const ::google::protobuf::MessageLite::ClassData*
+DownloadRequest::GetClassData() const {
+  PROTOBUF_CONSTINIT static const ::google::protobuf::MessageLite::
+      ClassDataFull _data_ = {
+          {
+              &_table_.header,
+              nullptr,  // OnDemandRegisterArenaDtor
+              nullptr,  // IsInitialized
+              PROTOBUF_FIELD_OFFSET(DownloadRequest, _impl_._cached_size_),
+              false,
+          },
+          &DownloadRequest::MergeImpl,
+          &DownloadRequest::kDescriptorMethods,
+          &descriptor_table_hydfs_2eproto,
+          nullptr,  // tracker
+      };
+  ::google::protobuf::internal::PrefetchToLocalCache(&_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(_data_.tc_table);
+  return _data_.base();
+}
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<0, 1, 0, 45, 2> DownloadRequest::_table_ = {
+  {
+    0,  // no _has_bits_
+    0, // no _extensions_
+    1, 0,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967294,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    1,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    &_DownloadRequest_default_instance_._instance,
+    nullptr,  // post_loop_handler
+    ::_pbi::TcParser::GenericFallback,  // fallback
+    #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+    ::_pbi::TcParser::GetTable<::filetransfer::DownloadRequest>(),  // to_prefetch
+    #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+  }, {{
+    // string filename = 1;
+    {::_pbi::TcParser::FastUS1,
+     {10, 63, 0, PROTOBUF_FIELD_OFFSET(DownloadRequest, _impl_.filename_)}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // string filename = 1;
+    {PROTOBUF_FIELD_OFFSET(DownloadRequest, _impl_.filename_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+  }},
+  // no aux_entries
+  {{
+    "\34\10\0\0\0\0\0\0"
+    "filetransfer.DownloadRequest"
+    "filename"
+  }},
+};
+
+PROTOBUF_NOINLINE void DownloadRequest::Clear() {
+// @@protoc_insertion_point(message_clear_start:filetransfer.DownloadRequest)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  _impl_.filename_.ClearToEmpty();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+::uint8_t* DownloadRequest::_InternalSerialize(
+    ::uint8_t* target,
+    ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:filetransfer.DownloadRequest)
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  // string filename = 1;
+  if (!this->_internal_filename().empty()) {
+    const std::string& _s = this->_internal_filename();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "filetransfer.DownloadRequest.filename");
+    target = stream->WriteStringMaybeAliased(1, _s, target);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:filetransfer.DownloadRequest)
+  return target;
+}
+
+::size_t DownloadRequest::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:filetransfer.DownloadRequest)
+  ::size_t total_size = 0;
+
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  // string filename = 1;
+  if (!this->_internal_filename().empty()) {
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_filename());
+  }
+
+  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
+}
+
+
+void DownloadRequest::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
+  auto* const _this = static_cast<DownloadRequest*>(&to_msg);
+  auto& from = static_cast<const DownloadRequest&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:filetransfer.DownloadRequest)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (!from._internal_filename().empty()) {
+    _this->_internal_set_filename(from._internal_filename());
+  }
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void DownloadRequest::CopyFrom(const DownloadRequest& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:filetransfer.DownloadRequest)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void DownloadRequest::InternalSwap(DownloadRequest* PROTOBUF_RESTRICT other) {
+  using std::swap;
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.filename_, &other->_impl_.filename_, arena);
+}
+
+::google::protobuf::Metadata DownloadRequest::GetMetadata() const {
   return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
 }
 // @@protoc_insertion_point(namespace_scope)

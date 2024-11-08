@@ -5,7 +5,7 @@ package filetransfer;
 
 service FileTransferService {
   rpc CreateFile(stream FileChunk) returns (UploadStatus);
-  rpc GetFile(stream FileChunk) returns (UploadStatus);
+  rpc GetFile(DownloadRequest) returns (stream FileChunk);
 }
 
 //will need server streaming one too for get    
@@ -20,4 +20,8 @@ message FileChunk {
 message UploadStatus {
   bool success = 1;
   string message = 2;
+}
+
+message DownloadRequest {
+  string filename = 1;
 }

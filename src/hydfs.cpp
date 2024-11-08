@@ -26,6 +26,7 @@
 #define NORMALPERIOD 2000
 #define NORMALPINGPERIOD 1500
 
+#define GRPC_PORT 8081
 #define LOGFILE "Logs/log.txt"
 
 Hydfs::Hydfs() {}
@@ -33,9 +34,29 @@ Hydfs::~Hydfs() {}
 
 
 void Hydfs::handleCreate(const std::string& filename, const std::string& hydfs_filename, const std::string& target) {
-    std::cout << "create called" << " target: " << "\n";
+    std::cout << "create called" << " target: " << target << "\n";
     FileTransferClient client(grpc::CreateChannel(target, grpc::InsecureChannelCredentials()));
-    client.CreateFile(filename, hydfs_filename);
+    bool res = client.CreateFile(filename, hydfs_filename);
+    if (res) {
+        std::cout << "Create Successful" << std::endl;
+    } else {
+        std::cout << "Create Failed" << std::endl;
+    }
+}
+
+void Hydfs::handleGet(const std::string& filename, const std::string& hydfs_filename, const std::string& target) {
+
+    // check here whether in cache / check if consistnt ...
+    // need to figure out what to use for comparison prob always need to check server for consistency?
+
+    std::cout << "get called" << " target: " << target << "\n";
+    FileTransferClient client(grpc::CreateChannel(target, grpc::InsecureChannelCredentials()));
+    bool res = client.GetFile(hydfs_filename, filename);
+    if (res) {
+        std::cout << "Create Successful" << std::endl;
+    } else {
+        std::cout << "Create Failed" << std::endl;
+    }
 }
 
 // dynamically do it... just N=10 so whatever
@@ -52,19 +73,31 @@ std::string Hydfs::getTarget(const std::string& filename) {
 
 //coco one\n
 void Hydfs::handleClientRequests(const std::string& command) {
+
+    // parsing a lil scuffed 
     if (command.substr(0, 6) == "create") {
 
         size_t loc_delim = command.find(" ");
-        std::string filename = command.substr(loc_delim + 1, command.find(" ") - loc_delim - 1);
+        std::string filename = command.substr(loc_delim + 1, command.find(" ", loc_delim + 1) - loc_delim - 1);
         loc_delim = command.find(" ", loc_delim + 1);
         std::string hydfs_filename = command.substr(loc_delim + 1, command.find("\n") - loc_delim - 1);
 
-        std::string target = getTarget(hydfs_filename) + ":8080"; // use the hydfs filename right?
+        std::string targetHost = getTarget(hydfs_filename) + ":" + std::to_string(GRPC_PORT); // use the hydfs filename right?
 
-        cout << "create" << filename << " hydfs: " << hydfs_filename << " target: " << target << "\n";
-        handleCreate(filename, hydfs_filename, target);
+        cout << "create" << filename << " hydfs: " << hydfs_filename << " targetHost: " << targetHost << "\n";
+        handleCreate(filename, hydfs_filename, targetHost);
 
     } else if (command.substr(0, 3) == "get") {
+        
+        size_t loc_delim = command.find(" ");
+        std::string hydfs_filename = command.substr(loc_delim + 1, command.find(" ", loc_delim + 1) - loc_delim - 1);
+        loc_delim = command.find(" ", loc_delim + 1);
+        std::string filename = command.substr(loc_delim + 1, command.find("\n") - loc_delim - 1);
+
+        std::string targetHost = getTarget(hydfs_filename) + ":" + std::to_string(GRPC_PORT); // use the hydfs filename right?
+
+        cout << "create" << filename << " hydfs: " << hydfs_filename << " targetHost: " << targetHost << "\n";
+        handleGet(filename, hydfs_filename, targetHost);
 
     } else if (command.substr(0, 7) == "append") {
 
@@ -135,6 +168,7 @@ void Hydfs::handleCommand(const std::string& command) {
 
 void Hydfs::pipeListener() {
     // make the named pipe if it doesn't exist
+    std::cout << "ASDASD\n";
     if (mkfifo(FIFO_PATH.c_str(), 0666) == -1 && errno != EEXIST) {
         perror("mkfifo");
         exit(EXIT_FAILURE);
@@ -168,7 +202,7 @@ void Hydfs::swim() {
     const char* user = getenv("USER");
     if (user != nullptr && strcmp(user, "prathi3") == 0) {
       // introducerHostname = "fa24-cs425-5806.cs.illinois.edu";
-      FIFO_PATH = "/tmp/mp2-prathi3";
+      FIFO_PATH = "/tmp/mp3-prathi3";
       // cout << "Introducer hostname changed to: " << introducerHostname << endl;
     }
 

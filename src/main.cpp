@@ -17,6 +17,7 @@
 #include <ctime>
 
 #include "hydfs.h"
+#include "file_transfer_server.cpp"
 
 
 
@@ -26,8 +27,12 @@ int main() {
     
     std::thread listener_thread([&hydfs](){ hydfs.pipeListener(); });
     std::thread swim_thread([&hydfs](){ hydfs.swim(); });
+    std::thread server_thread(RunServer);
 
     listener_thread.join();
+    swim_thread.join();
+    server_thread.join();
+    
     return 0;
 
 }
