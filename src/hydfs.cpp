@@ -39,6 +39,10 @@ Hydfs::~Hydfs() {}
 
 
 void Hydfs::handleCreate(const std::string& filename, const std::string& hydfs_filename, const std::string& target) {
+    if (cache.exist(hydfs_filename)) {
+        std::cout << "File already exists on hydfs: cache" << std::endl;
+        return;
+    }
     std::cout << "create called" << " target: " << target << "\n";
     FileTransferClient client(grpc::CreateChannel(target, grpc::InsecureChannelCredentials()));
     bool res = client.CreateFile(filename, hydfs_filename);
@@ -47,7 +51,7 @@ void Hydfs::handleCreate(const std::string& filename, const std::string& hydfs_f
         std::vector<char> contents = readFileIntoVector(filename);
         if (contents.size() > cache.capacity()) {
             return;
-        }
+        }   
         std::lock_guard<std::mutex> lock(cacheMtx);
         cache.put(hydfs_filename, make_pair(contents.size(), contents));
     } else {
@@ -68,7 +72,7 @@ void Hydfs::handleGet(const std::string& filename, const std::string& hydfs_file
             std::cout << "writing cached file: " << filename << "\n";
             file.write(contents.data(), contents.size());
         }
-        file.close();
+        return;
     }
     std::cout << "get called" << " target: " << target << "\n";
     FileTransferClient client(grpc::CreateChannel(target, grpc::InsecureChannelCredentials()));
