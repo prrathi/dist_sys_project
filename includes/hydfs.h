@@ -6,6 +6,7 @@
 #include "worker.h"
 #include "talker.h"
 #include <condition_variable>
+#include "LRUCache.h"
 
 class Hydfs {
 public:
@@ -24,14 +25,15 @@ private:
     std::string getTarget(const std::string& filename);
     FullNode initNode();
 private:
+    LRUCache cache;
     const std::string introducerHostname = "fa24-cs425-5801.cs.illinois.edu";
     string FIFO_PATH = "/tmp/mp3";
     FullNode currNode;
     std::condition_variable condVar;
     std::mutex globalMtx;   
+    std::mutex cacheMtx;
     bool join = false;
     bool leave = false;
-
 };
 
 #endif // HYDFS_H

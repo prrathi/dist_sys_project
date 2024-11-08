@@ -14,6 +14,7 @@ set(SOURCES
   src/talker.cpp
   src/hydfs.cpp
   src/utils.cpp
+  src/LRUCache.cpp
 )
 
 set(HEADERS
@@ -23,6 +24,7 @@ set(HEADERS
   includes/talker.h
   includes/hydfs.h
   includes/utils.h
+  includes/LRUCache.h
 )
 
 include_directories(includes)

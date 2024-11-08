@@ -21,7 +21,7 @@
 #include <future>
 #include <ctime>
 
-
+#define LRUCache_CAPACITY 1024 * 1024 * 50
 #define PERIOD 650
 #define SUSPERIOD 7
 #define PINGPERIOD 400
@@ -34,7 +34,7 @@
 using grpc::Server;
 using grpc::ServerBuilder;
 
-Hydfs::Hydfs() {}
+Hydfs::Hydfs(): cache(LRUCache_CAPACITY) {}
 Hydfs::~Hydfs() {}
 
 
@@ -44,6 +44,12 @@ void Hydfs::handleCreate(const std::string& filename, const std::string& hydfs_f
     bool res = client.CreateFile(filename, hydfs_filename);
     if (res) {
         std::cout << "Create Successful" << std::endl;
+        std::vector<char> contents = readFileIntoVector(filename);
+        if (contents.size() > cache.capacity()) {
+            return;
+        }
+        std::lock_guard<std::mutex> lock(cacheMtx);
+        cache.put(hydfs_filename, make_pair(contents.size(), contents));
     } else {
         std::cout << "Create Failed" << std::endl;
     }
@@ -52,7 +58,18 @@ void Hydfs::handleCreate(const std::string& filename, const std::string& hydfs_f
 void Hydfs::handleGet(const std::string& filename, const std::string& hydfs_filename, const std::string& target) {
 
     // check here whether in cache, only need local consistency which is guaranteed
-
+    if (cache.exist(hydfs_filename)) {
+        std::lock_guard<std::mutex> lock(cacheMtx);
+        std::vector<char> contents = cache.get(hydfs_filename).second;
+        std::ofstream file(filename, std::ios::binary);
+        if (!file) {
+            std::cout << "Failed to open file: " << filename << "\n";
+        } else {
+            std::cout << "writing cached file: " << filename << "\n";
+            file.write(contents.data(), contents.size());
+        }
+        file.close();
+    }
     std::cout << "get called" << " target: " << target << "\n";
     FileTransferClient client(grpc::CreateChannel(target, grpc::InsecureChannelCredentials()));
     bool res = client.GetFile(hydfs_filename, filename);
@@ -69,6 +86,8 @@ void Hydfs::handleAppend(const std::string& filename, const std::string& hydfs_f
     bool res = client.AppendFile(filename, hydfs_filename);
     if (res) {
         std::cout << "Append Successful" << std::endl;
+        std::lock_guard<std::mutex> lock(cacheMtx);
+        cache.remove(hydfs_filename);
     } else {
         std::cout << "Append Failed" << std::endl;
     }
