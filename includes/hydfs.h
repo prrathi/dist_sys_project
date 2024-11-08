@@ -1,4 +1,6 @@
-#pragma once
+#ifndef HYDFS_H
+#define HYDFS_H
+
 #include "common.h"
 #include "listener.h"
 #include "worker.h"
@@ -31,3 +33,4 @@ private:
 
 };
 
+#endif // HYDFS_H

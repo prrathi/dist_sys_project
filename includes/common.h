@@ -6,8 +6,8 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <mutex>
-#include "json.hpp"
 #include <iostream>
+#include "json.hpp"
 
 using namespace std;
 using json = nlohmann::json;
@@ -89,7 +89,6 @@ private:
   uint16_t susPeriod;
   bool haveSusStatus;
   string logFile;
-  
 
   mutable mutex mtx;
 };

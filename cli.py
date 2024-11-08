@@ -76,11 +76,15 @@ def list_suspected(machines):
         return
     execute_remote_command(machines, "list_suspected")
 
+
+# MP3
+
 def createfile(machines, args):
     if machines[0] == "localhost":
         execute_local_command("create " + args)
         return
     execute_remote_command(machines, "create " + args)
+
 def getfile(machines, args):
     if machines[0] == "localhost":
         execute_local_command("get " + args)
@@ -98,25 +102,25 @@ if __name__ == "__main__":
     args = parser.parse_args()
     extra_args = args.remaining_args
 
-    input = args.machines if args.machines and len(args.machines) > 0 else ["localhost"]
+    machine_input = args.machines if args.machines and len(args.machines) > 0 else ["localhost"]
     print(args.command)
     if args.command == "join":
-        join(input)
+        join(machine_input)
     elif args.command == "leave":
-        leave(input)
+        leave(machine_input)
     elif args.command == "list_mem":
-        list_mem(input)
+        list_mem(machine_input)
     elif args.command == "list_self":
-        list_self(input)
+        list_self(machine_input)
     elif args.command == "enable_sus":
-        enable_sus(input)
+        enable_sus(machine_input)
     elif args.command == "disable_sus":
-        disable_sus(input)
+        disable_sus(machine_input)
     elif args.command == "status_sus":
-        status_sus(input)
+        status_sus(machine_input)
     elif args.command == "list_suspected":
-        list_suspected(input)
+        list_suspected(machine_input)
     elif args.command == "create":
-        createfile(input, " ".join(extra_args))
+        createfile(machine_input, " ".join(extra_args))
     elif args.command == "get":
-        getfile(input, " ".join(extra_args))
+        getfile(machine_input, " ".join(extra_args))

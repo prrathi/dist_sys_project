@@ -10,4 +10,5 @@ vector<PassNodeState> constructSendStates(FullNode& node, string targetId);
 void handlePing(FullNode& node, string targetId);
 void handleRequest(FullNode& node, char buf[]);
 void printMessageType(SwimMessage& message);
+
 #endif // WORKER_H
