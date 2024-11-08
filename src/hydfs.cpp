@@ -18,6 +18,7 @@
 #include "file_transfer_client.cpp"
 #include "utils.h"
 
+#define LRUCache_CAPACITY 1024 * 1024 * 50
 #define PERIOD 650
 #define SUSPERIOD 7
 #define PINGPERIOD 400
@@ -31,18 +32,29 @@ using grpc::Server;
 using grpc::ServerBuilder;
 
 Hydfs::Hydfs() 
-    : server()
+    : cache(LRUCache_CAPACITY)
+    , server()
 {
 }
 
 Hydfs::~Hydfs() {}
 
 void Hydfs::handleCreate(const std::string& filename, const std::string& hydfs_filename, const std::string& target) {
+    if (cache.exist(hydfs_filename)) {
+        std::cout << "File already exists on hydfs: cache" << std::endl;
+        return;
+    }
     std::cout << "create called" << " target: " << target << "\n";
     FileTransferClient client(grpc::CreateChannel(target, grpc::InsecureChannelCredentials()));
     bool res = client.CreateFile(filename, hydfs_filename);
     if (res) {
         std::cout << "Create Successful" << std::endl;
+        std::vector<char> contents = readFileIntoVector(filename);
+        if (contents.size() > cache.capacity()) {
+            return;
+        }   
+        std::lock_guard<std::mutex> lock(cacheMtx);
+        cache.put(hydfs_filename, make_pair(contents.size(), contents));
     } else {
         std::cout << "Create Failed" << std::endl;
     }
@@ -51,7 +63,18 @@ void Hydfs::handleCreate(const std::string& filename, const std::string& hydfs_f
 void Hydfs::handleGet(const std::string& filename, const std::string& hydfs_filename, const std::string& target) {
 
     // check here whether in cache, only need local consistency which is guaranteed
-
+    if (cache.exist(hydfs_filename)) {
+        std::lock_guard<std::mutex> lock(cacheMtx);
+        std::vector<char> contents = cache.get(hydfs_filename).second;
+        std::ofstream file(filename, std::ios::binary);
+        if (!file) {
+            std::cout << "Failed to open file: " << filename << "\n";
+        } else {
+            std::cout << "writing cached file: " << filename << "\n";
+            file.write(contents.data(), contents.size());
+        }
+        return;
+    }
     std::cout << "get called" << " target: " << target << "\n";
     FileTransferClient client(grpc::CreateChannel(target, grpc::InsecureChannelCredentials()));
     bool res = client.GetFile(hydfs_filename, filename);
@@ -59,6 +82,19 @@ void Hydfs::handleGet(const std::string& filename, const std::string& hydfs_file
         std::cout << "Get Successful" << std::endl;
     } else {
         std::cout << "Get Failed" << std::endl;
+    }
+}
+
+void Hydfs::handleAppend(const std::string& filename, const std::string& hydfs_filename, const std::string& target) {
+    std::cout << "Append called" << " target: " << target << "\n";
+    FileTransferClient client(grpc::CreateChannel(target, grpc::InsecureChannelCredentials()));
+    bool res = client.AppendFile(filename, hydfs_filename);
+    if (res) {
+        std::cout << "Append Successful" << std::endl;
+        std::lock_guard<std::mutex> lock(cacheMtx);
+        cache.remove(hydfs_filename);
+    } else {
+        std::cout << "Append Failed" << std::endl;
     }
 }
 
@@ -101,6 +137,16 @@ void Hydfs::handleClientRequests(const std::string& command) {
         handleGet(filename, hydfs_filename, targetHost);
 
     } else if (command.substr(0, 6) == "append") {
+
+        size_t loc_delim = command.find(" ");
+        std::string filename = command.substr(loc_delim + 1, command.find(" ", loc_delim + 1) - loc_delim - 1);
+        loc_delim = command.find(" ", loc_delim + 1);
+        std::string hydfs_filename = command.substr(loc_delim + 1, command.find("\n") - loc_delim - 1);
+
+        std::string targetHost = getTarget(hydfs_filename) + ":" + std::to_string(GRPC_PORT); // use the hydfs filename right?
+
+        cout << "Append" << filename << " hydfs: " << hydfs_filename << " targetHost: " << targetHost << "\n";
+        handleAppend(filename, hydfs_filename, targetHost);
 
     } else if (command.substr(0, 5) == "merge") {
 

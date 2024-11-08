@@ -71,4 +71,43 @@ Status FileTransferServiceImpl::GetFile(ServerContext* context, const DownloadRe
     }
     infile.close();
     return Status::OK;
-}
+  }
+
+  Status AppendFile(ServerContext* context, ServerReader<FileChunk>* reader, UploadStatus* response) {
+    FileChunk chunk;
+    ofstream outfile;
+    bool firstChunk = true;
+
+    // append file logic
+
+    while (reader->Read(&chunk)) {
+      if (firstChunk) {
+        std::string filename = chunk.filename();
+        if (filename.empty()) {
+          response->set_success(false);
+          response->set_message("Append: filename is missing in the first chunk.");
+          return Status::OK;
+        }
+        // create dir if not exists called hydfs
+        std::filesystem::create_directory("hydfs");
+        outfile.open("hydfs/" + filename, std::ios::binary);
+        if (!outfile) {
+          response->set_success(false);
+          response->set_message("Append: Failed to open file for writing: " + filename);
+          return Status::OK;
+        }
+        firstChunk = false;
+      }
+      outfile.write(chunk.content().data(), chunk.content().size());
+    }
+
+    //maybe some other logic
+
+
+    if (outfile.is_open()) {
+      outfile.close();
+    }
+    response->set_success(true);
+    response->set_message("File received successfully.");
+    return Status::OK;
+  }
