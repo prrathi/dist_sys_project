@@ -13,6 +13,7 @@
 #include <chrono>
 #include <future>
 #include <ctime>
+#include <filesystem>
 
 #include "hydfs.h"
 #include "file_transfer_client.cpp"
@@ -25,6 +26,7 @@
 #define NORMALPERIOD 2000
 #define NORMALPINGPERIOD 1500
 
+#define MODULUS 8192
 #define GRPC_PORT 8081
 #define LOGFILE "Logs/log.txt"
 
@@ -100,13 +102,12 @@ void Hydfs::handleAppend(const std::string& filename, const std::string& hydfs_f
 
 // deterministic for node x filename
 std::string Hydfs::getTarget(const std::string& filename) {
-    size_t modulus = 8192;
-    std::vector<string> successors = find3Successors(filename, currNode.getAllIds(), modulus);
-    size_t currHash = hashString(currNode.getId() + filename, modulus);
+    std::vector<std::pair<std::string, std::pair<size_t, size_t>>> successors = find3Successors(filename, currNode.getAllIds(), MODULUS);
+    size_t currHash = hashString(currNode.getId() + filename, MODULUS);
     std::mt19937 gen(currHash); 
     std::uniform_int_distribution<> distrib(0, successors.size() - 1);
     int randomIndex = distrib(gen);  
-    return successors[randomIndex];
+    return successors[randomIndex].first;
 }
 
 void Hydfs::handleClientRequests(const std::string& command) {
@@ -121,7 +122,7 @@ void Hydfs::handleClientRequests(const std::string& command) {
 
         std::string targetHost = getTarget(hydfs_filename) + ":" + std::to_string(GRPC_PORT); // use the hydfs filename right?
 
-        cout << "create" << filename << " hydfs: " << hydfs_filename << " targetHost: " << targetHost << "\n";
+        cout << "Create" << filename << " hydfs: " << hydfs_filename << " targetHost: " << targetHost << "\n";
         handleCreate(filename, hydfs_filename, targetHost);
 
     } else if (command.substr(0, 3) == "get") {
@@ -150,15 +151,54 @@ void Hydfs::handleClientRequests(const std::string& command) {
 
     } else if (command.substr(0, 5) == "merge") {
 
+
     } else if (command.substr(0, 2) == "ls") {
-
+        size_t loc_delim = command.find(" ");
+        std::string hydfs_filename = command.substr(loc_delim + 1, command.find("\n", loc_delim + 1) - loc_delim - 1);
+        cout << "ls: " << hydfs_filename << "\n";
+        std::vector<std::pair<std::string, std::pair<size_t, size_t>>> successors = find3Successors(hydfs_filename, currNode.getAllIds(), MODULUS);
+        for (const auto& successor : successors) {
+            std::cout << HostToIp(successor.first) << " Node ID: " << successor.second.first <<   "\n";
+        }
+        std::cout << "File ID: " << successors[0].second.second << "\n";
     } else if (command.substr(0, 5) == "store") {
-
+        std::string path("hydfs/");
+        if (std::filesystem::is_directory(path)) {
+            std::cout << "Listing directory: " << path << "\n";
+            for (const auto &entry : std::filesystem::directory_iterator(path)) {
+                std::string path(entry.path());
+                std::string last_element(path.substr(path.rfind("/") + 1));
+                std::cout << last_element << " ID: " << hashString(last_element, MODULUS) << "\n";
+            }
+            string hostname = currNode.getId().substr(0, currNode.getId().find("-"));
+            std::cout << "VM: " << hostname << " VM ID: " << hashString(hostname, MODULUS) << "\n";
+        }
     } else if (command.substr(0, 14) == "getfromreplica") {
+        size_t loc_delim = command.find(" ");
+        std::string VMaddress = command.substr(loc_delim + 1, command.find(" ", loc_delim + 1) - loc_delim - 1);
+        loc_delim = command.find(" ", loc_delim + 1);
+        std::string hydfs_filename = command.substr(loc_delim + 1, command.find(" ", loc_delim + 1) - loc_delim - 1);
+        loc_delim = command.find(" ", loc_delim + 1);
+        std::string filename = command.substr(loc_delim + 1, command.find("\n") - loc_delim - 1);
+
+        std::string targetHost = VMaddress + ":" + std::to_string(GRPC_PORT); 
+        handleGet(filename, hydfs_filename, targetHost);  // should just be like get right
 
     } else if (command.substr(0, 12) == "list_mem_ids") {
+        cout << "list_mem_ids" << "\n";
+        vector<pair<size_t, string>> nodes_on_ring; 
+        for (const auto& id : currNode.getAllIds()) {
+            string hostname = id.substr(0, id.find("-"));
+            nodes_on_ring.push_back({hashString(hostname, MODULUS), hostname});
+        }
+        sort(nodes_on_ring.begin(), nodes_on_ring.end());
+        for (const auto& node : nodes_on_ring) {
+            cout << "VM: " << node.second << " ID: " << node.first << "\n";
+        }
+        cout << "finish list_mem_ids" << endl;
 
     } else if (command.substr(0, 11) == "multiappend") { 
+        cout << "Should not have reached here: multiappend" << "\n";
         // i dont think need to implent this here, maybe just do at python calling append multiple times i think better
     } else {
         cout << "Bad Command" << "\n";

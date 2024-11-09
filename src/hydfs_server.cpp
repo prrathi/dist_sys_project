@@ -1,8 +1,9 @@
-#include "hydfs_server.h"
 #include <grpcpp/grpcpp.h>
 #include <iostream>
 #include <fstream>
 #include <filesystem>
+#include "hydfs_server.h"
+#include "file_transfer_client.h"
 
 #define GRPC_PORT 8081
 
