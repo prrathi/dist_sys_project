@@ -15,6 +15,8 @@ set(SOURCES
   src/hydfs.cpp
   src/utils.cpp
   src/LRUCache.cpp
+  src/hydfs_server.cpp
+  src/file_transfer_server.cpp
 )
 
 set(HEADERS
@@ -27,6 +29,8 @@ set(HEADERS
   includes/LRUCache.h
   includes/hydfs.grpc.pb.h
   includes/hydfs.pb.h
+  includes/hydfs_server.h
+  includes/file_transfer_server.h
 )
 
 include_directories(includes)

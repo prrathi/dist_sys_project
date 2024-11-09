@@ -4,9 +4,6 @@
 #include <grpcpp/grpcpp.h>
 #include "hydfs.grpc.pb.h"
 
-using String = std::string;
-using StringView = std::string_view;
-
 class FileTransferServiceImpl final : public filetransfer::FileTransferService::Service {
 public:
     FileTransferServiceImpl();
