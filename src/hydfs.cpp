@@ -361,10 +361,11 @@ void Hydfs::swim() {
             currNode.updateStateIdsToSend();
 
             // no point threading here ****            
-            std::thread t(handlePing, std::ref(currNode), machineId);
-            t.detach();
+            // std::thread t(handlePing, std::ref(currNode), machineId);
+            // t.detach();
+            handlePing(currNode, machineId);
             // when deciding what message we should be piggybacking onto pings if the period an update was made is within 2N-1 periods then we choose to send it
-            std::this_thread::sleep_for(std::chrono::milliseconds(currNode.getPeriodTime()));
+            std::this_thread::sleep_for(std::chrono::milliseconds(currNode.getPeriodTime())); // do need this? hm
 
             currNode.setCurrentPeriod(currNode.getCurrentPeriod() + 1);
         }

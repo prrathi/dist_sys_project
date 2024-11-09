@@ -104,9 +104,9 @@ void runUdpServer(FullNode& node) {
 				continue;
 			}
 		}
-
-		std::thread requestThread(handleRequest, std::ref(node), buf);
-		requestThread.detach();
+		handleRequest(node, buf);
+		// std::thread requestThread(handleRequest, std::ref(node), buf);
+		// requestThread.detach();
 	}
 
 	close(sockfd);
