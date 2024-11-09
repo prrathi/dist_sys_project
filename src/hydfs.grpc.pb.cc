@@ -22,13 +22,13 @@
 namespace filetransfer {
 
 static const char* FileTransferService_method_names[] = {
-  "/filetransfer.FileTransferService/FileExists",
-  "/filetransfer.FileTransferService/CreateFileLeader",
+  "/filetransfer.FileTransferService/CreateFile",
   "/filetransfer.FileTransferService/AppendFile",
   "/filetransfer.FileTransferService/GetFile",
   "/filetransfer.FileTransferService/MergeFile",
   "/filetransfer.FileTransferService/OverwriteFile",
-  "/filetransfer.FileTransferService/ForwardLeaderFiles",
+  "/filetransfer.FileTransferService/UpdateFilesReplication",
+  "/filetransfer.FileTransferService/UpdateOrder",
 };
 
 std::unique_ptr< FileTransferService::Stub> FileTransferService::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
@@ -38,151 +38,151 @@ std::unique_ptr< FileTransferService::Stub> FileTransferService::NewStub(const s
 }
 
 FileTransferService::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options)
-  : channel_(channel), rpcmethod_FileExists_(FileTransferService_method_names[0], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_CreateFileLeader_(FileTransferService_method_names[1], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_AppendFile_(FileTransferService_method_names[2], options.suffix_for_stats(),::grpc::internal::RpcMethod::CLIENT_STREAMING, channel)
-  , rpcmethod_GetFile_(FileTransferService_method_names[3], options.suffix_for_stats(),::grpc::internal::RpcMethod::SERVER_STREAMING, channel)
-  , rpcmethod_MergeFile_(FileTransferService_method_names[4], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_OverwriteFile_(FileTransferService_method_names[5], options.suffix_for_stats(),::grpc::internal::RpcMethod::CLIENT_STREAMING, channel)
-  , rpcmethod_ForwardLeaderFiles_(FileTransferService_method_names[6], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  : channel_(channel), rpcmethod_CreateFile_(FileTransferService_method_names[0], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_AppendFile_(FileTransferService_method_names[1], options.suffix_for_stats(),::grpc::internal::RpcMethod::CLIENT_STREAMING, channel)
+  , rpcmethod_GetFile_(FileTransferService_method_names[2], options.suffix_for_stats(),::grpc::internal::RpcMethod::SERVER_STREAMING, channel)
+  , rpcmethod_MergeFile_(FileTransferService_method_names[3], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_OverwriteFile_(FileTransferService_method_names[4], options.suffix_for_stats(),::grpc::internal::RpcMethod::CLIENT_STREAMING, channel)
+  , rpcmethod_UpdateFilesReplication_(FileTransferService_method_names[5], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_UpdateOrder_(FileTransferService_method_names[6], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   {}
 
-::grpc::Status FileTransferService::Stub::FileExists(::grpc::ClientContext* context, const ::filetransfer::FileRequest& request, ::filetransfer::FileExistsStatus* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::filetransfer::FileRequest, ::filetransfer::FileExistsStatus, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_FileExists_, context, request, response);
+::grpc::Status FileTransferService::Stub::CreateFile(::grpc::ClientContext* context, const ::filetransfer::FileOrderRequest& request, ::filetransfer::OperationStatus* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::filetransfer::FileOrderRequest, ::filetransfer::OperationStatus, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_CreateFile_, context, request, response);
 }
 
-void FileTransferService::Stub::async::FileExists(::grpc::ClientContext* context, const ::filetransfer::FileRequest* request, ::filetransfer::FileExistsStatus* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::filetransfer::FileRequest, ::filetransfer::FileExistsStatus, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_FileExists_, context, request, response, std::move(f));
+void FileTransferService::Stub::async::CreateFile(::grpc::ClientContext* context, const ::filetransfer::FileOrderRequest* request, ::filetransfer::OperationStatus* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::filetransfer::FileOrderRequest, ::filetransfer::OperationStatus, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_CreateFile_, context, request, response, std::move(f));
 }
 
-void FileTransferService::Stub::async::FileExists(::grpc::ClientContext* context, const ::filetransfer::FileRequest* request, ::filetransfer::FileExistsStatus* response, ::grpc::ClientUnaryReactor* reactor) {
-  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_FileExists_, context, request, response, reactor);
+void FileTransferService::Stub::async::CreateFile(::grpc::ClientContext* context, const ::filetransfer::FileOrderRequest* request, ::filetransfer::OperationStatus* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_CreateFile_, context, request, response, reactor);
 }
 
-::grpc::ClientAsyncResponseReader< ::filetransfer::FileExistsStatus>* FileTransferService::Stub::PrepareAsyncFileExistsRaw(::grpc::ClientContext* context, const ::filetransfer::FileRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::filetransfer::FileExistsStatus, ::filetransfer::FileRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_FileExists_, context, request);
+::grpc::ClientAsyncResponseReader< ::filetransfer::OperationStatus>* FileTransferService::Stub::PrepareAsyncCreateFileRaw(::grpc::ClientContext* context, const ::filetransfer::FileOrderRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::filetransfer::OperationStatus, ::filetransfer::FileOrderRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_CreateFile_, context, request);
 }
 
-::grpc::ClientAsyncResponseReader< ::filetransfer::FileExistsStatus>* FileTransferService::Stub::AsyncFileExistsRaw(::grpc::ClientContext* context, const ::filetransfer::FileRequest& request, ::grpc::CompletionQueue* cq) {
+::grpc::ClientAsyncResponseReader< ::filetransfer::OperationStatus>* FileTransferService::Stub::AsyncCreateFileRaw(::grpc::ClientContext* context, const ::filetransfer::FileOrderRequest& request, ::grpc::CompletionQueue* cq) {
   auto* result =
-    this->PrepareAsyncFileExistsRaw(context, request, cq);
+    this->PrepareAsyncCreateFileRaw(context, request, cq);
   result->StartCall();
   return result;
 }
 
-::grpc::Status FileTransferService::Stub::CreateFileLeader(::grpc::ClientContext* context, const ::filetransfer::FileRequest& request, ::filetransfer::OperationStatus* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::filetransfer::FileRequest, ::filetransfer::OperationStatus, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_CreateFileLeader_, context, request, response);
+::grpc::ClientWriter< ::filetransfer::AppendRequest>* FileTransferService::Stub::AppendFileRaw(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response) {
+  return ::grpc::internal::ClientWriterFactory< ::filetransfer::AppendRequest>::Create(channel_.get(), rpcmethod_AppendFile_, context, response);
 }
 
-void FileTransferService::Stub::async::CreateFileLeader(::grpc::ClientContext* context, const ::filetransfer::FileRequest* request, ::filetransfer::OperationStatus* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::filetransfer::FileRequest, ::filetransfer::OperationStatus, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_CreateFileLeader_, context, request, response, std::move(f));
+void FileTransferService::Stub::async::AppendFile(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response, ::grpc::ClientWriteReactor< ::filetransfer::AppendRequest>* reactor) {
+  ::grpc::internal::ClientCallbackWriterFactory< ::filetransfer::AppendRequest>::Create(stub_->channel_.get(), stub_->rpcmethod_AppendFile_, context, response, reactor);
 }
 
-void FileTransferService::Stub::async::CreateFileLeader(::grpc::ClientContext* context, const ::filetransfer::FileRequest* request, ::filetransfer::OperationStatus* response, ::grpc::ClientUnaryReactor* reactor) {
-  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_CreateFileLeader_, context, request, response, reactor);
+::grpc::ClientAsyncWriter< ::filetransfer::AppendRequest>* FileTransferService::Stub::AsyncAppendFileRaw(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response, ::grpc::CompletionQueue* cq, void* tag) {
+  return ::grpc::internal::ClientAsyncWriterFactory< ::filetransfer::AppendRequest>::Create(channel_.get(), cq, rpcmethod_AppendFile_, context, response, true, tag);
 }
 
-::grpc::ClientAsyncResponseReader< ::filetransfer::OperationStatus>* FileTransferService::Stub::PrepareAsyncCreateFileLeaderRaw(::grpc::ClientContext* context, const ::filetransfer::FileRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::filetransfer::OperationStatus, ::filetransfer::FileRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_CreateFileLeader_, context, request);
+::grpc::ClientAsyncWriter< ::filetransfer::AppendRequest>* FileTransferService::Stub::PrepareAsyncAppendFileRaw(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncWriterFactory< ::filetransfer::AppendRequest>::Create(channel_.get(), cq, rpcmethod_AppendFile_, context, response, false, nullptr);
 }
 
-::grpc::ClientAsyncResponseReader< ::filetransfer::OperationStatus>* FileTransferService::Stub::AsyncCreateFileLeaderRaw(::grpc::ClientContext* context, const ::filetransfer::FileRequest& request, ::grpc::CompletionQueue* cq) {
-  auto* result =
-    this->PrepareAsyncCreateFileLeaderRaw(context, request, cq);
-  result->StartCall();
-  return result;
+::grpc::ClientReader< ::filetransfer::GetResponse>* FileTransferService::Stub::GetFileRaw(::grpc::ClientContext* context, const ::filetransfer::FileRequest& request) {
+  return ::grpc::internal::ClientReaderFactory< ::filetransfer::GetResponse>::Create(channel_.get(), rpcmethod_GetFile_, context, request);
 }
 
-::grpc::ClientWriter< ::filetransfer::FileChunk>* FileTransferService::Stub::AppendFileRaw(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response) {
-  return ::grpc::internal::ClientWriterFactory< ::filetransfer::FileChunk>::Create(channel_.get(), rpcmethod_AppendFile_, context, response);
+void FileTransferService::Stub::async::GetFile(::grpc::ClientContext* context, const ::filetransfer::FileRequest* request, ::grpc::ClientReadReactor< ::filetransfer::GetResponse>* reactor) {
+  ::grpc::internal::ClientCallbackReaderFactory< ::filetransfer::GetResponse>::Create(stub_->channel_.get(), stub_->rpcmethod_GetFile_, context, request, reactor);
 }
 
-void FileTransferService::Stub::async::AppendFile(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response, ::grpc::ClientWriteReactor< ::filetransfer::FileChunk>* reactor) {
-  ::grpc::internal::ClientCallbackWriterFactory< ::filetransfer::FileChunk>::Create(stub_->channel_.get(), stub_->rpcmethod_AppendFile_, context, response, reactor);
+::grpc::ClientAsyncReader< ::filetransfer::GetResponse>* FileTransferService::Stub::AsyncGetFileRaw(::grpc::ClientContext* context, const ::filetransfer::FileRequest& request, ::grpc::CompletionQueue* cq, void* tag) {
+  return ::grpc::internal::ClientAsyncReaderFactory< ::filetransfer::GetResponse>::Create(channel_.get(), cq, rpcmethod_GetFile_, context, request, true, tag);
 }
 
-::grpc::ClientAsyncWriter< ::filetransfer::FileChunk>* FileTransferService::Stub::AsyncAppendFileRaw(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response, ::grpc::CompletionQueue* cq, void* tag) {
-  return ::grpc::internal::ClientAsyncWriterFactory< ::filetransfer::FileChunk>::Create(channel_.get(), cq, rpcmethod_AppendFile_, context, response, true, tag);
+::grpc::ClientAsyncReader< ::filetransfer::GetResponse>* FileTransferService::Stub::PrepareAsyncGetFileRaw(::grpc::ClientContext* context, const ::filetransfer::FileRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncReaderFactory< ::filetransfer::GetResponse>::Create(channel_.get(), cq, rpcmethod_GetFile_, context, request, false, nullptr);
 }
 
-::grpc::ClientAsyncWriter< ::filetransfer::FileChunk>* FileTransferService::Stub::PrepareAsyncAppendFileRaw(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncWriterFactory< ::filetransfer::FileChunk>::Create(channel_.get(), cq, rpcmethod_AppendFile_, context, response, false, nullptr);
+::grpc::Status FileTransferService::Stub::MergeFile(::grpc::ClientContext* context, const ::filetransfer::MergeRequest& request, ::filetransfer::OperationStatus* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::filetransfer::MergeRequest, ::filetransfer::OperationStatus, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_MergeFile_, context, request, response);
 }
 
-::grpc::ClientReader< ::filetransfer::FileChunk>* FileTransferService::Stub::GetFileRaw(::grpc::ClientContext* context, const ::filetransfer::GetRequest& request) {
-  return ::grpc::internal::ClientReaderFactory< ::filetransfer::FileChunk>::Create(channel_.get(), rpcmethod_GetFile_, context, request);
+void FileTransferService::Stub::async::MergeFile(::grpc::ClientContext* context, const ::filetransfer::MergeRequest* request, ::filetransfer::OperationStatus* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::filetransfer::MergeRequest, ::filetransfer::OperationStatus, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_MergeFile_, context, request, response, std::move(f));
 }
 
-void FileTransferService::Stub::async::GetFile(::grpc::ClientContext* context, const ::filetransfer::GetRequest* request, ::grpc::ClientReadReactor< ::filetransfer::FileChunk>* reactor) {
-  ::grpc::internal::ClientCallbackReaderFactory< ::filetransfer::FileChunk>::Create(stub_->channel_.get(), stub_->rpcmethod_GetFile_, context, request, reactor);
-}
-
-::grpc::ClientAsyncReader< ::filetransfer::FileChunk>* FileTransferService::Stub::AsyncGetFileRaw(::grpc::ClientContext* context, const ::filetransfer::GetRequest& request, ::grpc::CompletionQueue* cq, void* tag) {
-  return ::grpc::internal::ClientAsyncReaderFactory< ::filetransfer::FileChunk>::Create(channel_.get(), cq, rpcmethod_GetFile_, context, request, true, tag);
-}
-
-::grpc::ClientAsyncReader< ::filetransfer::FileChunk>* FileTransferService::Stub::PrepareAsyncGetFileRaw(::grpc::ClientContext* context, const ::filetransfer::GetRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncReaderFactory< ::filetransfer::FileChunk>::Create(channel_.get(), cq, rpcmethod_GetFile_, context, request, false, nullptr);
-}
-
-::grpc::Status FileTransferService::Stub::MergeFile(::grpc::ClientContext* context, const ::filetransfer::FileRequest& request, ::filetransfer::OperationStatus* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::filetransfer::FileRequest, ::filetransfer::OperationStatus, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_MergeFile_, context, request, response);
-}
-
-void FileTransferService::Stub::async::MergeFile(::grpc::ClientContext* context, const ::filetransfer::FileRequest* request, ::filetransfer::OperationStatus* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::filetransfer::FileRequest, ::filetransfer::OperationStatus, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_MergeFile_, context, request, response, std::move(f));
-}
-
-void FileTransferService::Stub::async::MergeFile(::grpc::ClientContext* context, const ::filetransfer::FileRequest* request, ::filetransfer::OperationStatus* response, ::grpc::ClientUnaryReactor* reactor) {
+void FileTransferService::Stub::async::MergeFile(::grpc::ClientContext* context, const ::filetransfer::MergeRequest* request, ::filetransfer::OperationStatus* response, ::grpc::ClientUnaryReactor* reactor) {
   ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_MergeFile_, context, request, response, reactor);
 }
 
-::grpc::ClientAsyncResponseReader< ::filetransfer::OperationStatus>* FileTransferService::Stub::PrepareAsyncMergeFileRaw(::grpc::ClientContext* context, const ::filetransfer::FileRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::filetransfer::OperationStatus, ::filetransfer::FileRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_MergeFile_, context, request);
+::grpc::ClientAsyncResponseReader< ::filetransfer::OperationStatus>* FileTransferService::Stub::PrepareAsyncMergeFileRaw(::grpc::ClientContext* context, const ::filetransfer::MergeRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::filetransfer::OperationStatus, ::filetransfer::MergeRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_MergeFile_, context, request);
 }
 
-::grpc::ClientAsyncResponseReader< ::filetransfer::OperationStatus>* FileTransferService::Stub::AsyncMergeFileRaw(::grpc::ClientContext* context, const ::filetransfer::FileRequest& request, ::grpc::CompletionQueue* cq) {
+::grpc::ClientAsyncResponseReader< ::filetransfer::OperationStatus>* FileTransferService::Stub::AsyncMergeFileRaw(::grpc::ClientContext* context, const ::filetransfer::MergeRequest& request, ::grpc::CompletionQueue* cq) {
   auto* result =
     this->PrepareAsyncMergeFileRaw(context, request, cq);
   result->StartCall();
   return result;
 }
 
-::grpc::ClientWriter< ::filetransfer::FileChunk>* FileTransferService::Stub::OverwriteFileRaw(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response) {
-  return ::grpc::internal::ClientWriterFactory< ::filetransfer::FileChunk>::Create(channel_.get(), rpcmethod_OverwriteFile_, context, response);
+::grpc::ClientWriter< ::filetransfer::OverwriteRequest>* FileTransferService::Stub::OverwriteFileRaw(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response) {
+  return ::grpc::internal::ClientWriterFactory< ::filetransfer::OverwriteRequest>::Create(channel_.get(), rpcmethod_OverwriteFile_, context, response);
 }
 
-void FileTransferService::Stub::async::OverwriteFile(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response, ::grpc::ClientWriteReactor< ::filetransfer::FileChunk>* reactor) {
-  ::grpc::internal::ClientCallbackWriterFactory< ::filetransfer::FileChunk>::Create(stub_->channel_.get(), stub_->rpcmethod_OverwriteFile_, context, response, reactor);
+void FileTransferService::Stub::async::OverwriteFile(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response, ::grpc::ClientWriteReactor< ::filetransfer::OverwriteRequest>* reactor) {
+  ::grpc::internal::ClientCallbackWriterFactory< ::filetransfer::OverwriteRequest>::Create(stub_->channel_.get(), stub_->rpcmethod_OverwriteFile_, context, response, reactor);
 }
 
-::grpc::ClientAsyncWriter< ::filetransfer::FileChunk>* FileTransferService::Stub::AsyncOverwriteFileRaw(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response, ::grpc::CompletionQueue* cq, void* tag) {
-  return ::grpc::internal::ClientAsyncWriterFactory< ::filetransfer::FileChunk>::Create(channel_.get(), cq, rpcmethod_OverwriteFile_, context, response, true, tag);
+::grpc::ClientAsyncWriter< ::filetransfer::OverwriteRequest>* FileTransferService::Stub::AsyncOverwriteFileRaw(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response, ::grpc::CompletionQueue* cq, void* tag) {
+  return ::grpc::internal::ClientAsyncWriterFactory< ::filetransfer::OverwriteRequest>::Create(channel_.get(), cq, rpcmethod_OverwriteFile_, context, response, true, tag);
 }
 
-::grpc::ClientAsyncWriter< ::filetransfer::FileChunk>* FileTransferService::Stub::PrepareAsyncOverwriteFileRaw(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncWriterFactory< ::filetransfer::FileChunk>::Create(channel_.get(), cq, rpcmethod_OverwriteFile_, context, response, false, nullptr);
+::grpc::ClientAsyncWriter< ::filetransfer::OverwriteRequest>* FileTransferService::Stub::PrepareAsyncOverwriteFileRaw(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncWriterFactory< ::filetransfer::OverwriteRequest>::Create(channel_.get(), cq, rpcmethod_OverwriteFile_, context, response, false, nullptr);
 }
 
-::grpc::Status FileTransferService::Stub::ForwardLeaderFiles(::grpc::ClientContext* context, const ::filetransfer::ForwardRequest& request, ::filetransfer::OperationStatus* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::filetransfer::ForwardRequest, ::filetransfer::OperationStatus, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_ForwardLeaderFiles_, context, request, response);
+::grpc::Status FileTransferService::Stub::UpdateFilesReplication(::grpc::ClientContext* context, const ::filetransfer::ReplicationRequest& request, ::filetransfer::OperationStatus* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::filetransfer::ReplicationRequest, ::filetransfer::OperationStatus, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_UpdateFilesReplication_, context, request, response);
 }
 
-void FileTransferService::Stub::async::ForwardLeaderFiles(::grpc::ClientContext* context, const ::filetransfer::ForwardRequest* request, ::filetransfer::OperationStatus* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::filetransfer::ForwardRequest, ::filetransfer::OperationStatus, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_ForwardLeaderFiles_, context, request, response, std::move(f));
+void FileTransferService::Stub::async::UpdateFilesReplication(::grpc::ClientContext* context, const ::filetransfer::ReplicationRequest* request, ::filetransfer::OperationStatus* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::filetransfer::ReplicationRequest, ::filetransfer::OperationStatus, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_UpdateFilesReplication_, context, request, response, std::move(f));
 }
 
-void FileTransferService::Stub::async::ForwardLeaderFiles(::grpc::ClientContext* context, const ::filetransfer::ForwardRequest* request, ::filetransfer::OperationStatus* response, ::grpc::ClientUnaryReactor* reactor) {
-  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_ForwardLeaderFiles_, context, request, response, reactor);
+void FileTransferService::Stub::async::UpdateFilesReplication(::grpc::ClientContext* context, const ::filetransfer::ReplicationRequest* request, ::filetransfer::OperationStatus* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_UpdateFilesReplication_, context, request, response, reactor);
 }
 
-::grpc::ClientAsyncResponseReader< ::filetransfer::OperationStatus>* FileTransferService::Stub::PrepareAsyncForwardLeaderFilesRaw(::grpc::ClientContext* context, const ::filetransfer::ForwardRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::filetransfer::OperationStatus, ::filetransfer::ForwardRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_ForwardLeaderFiles_, context, request);
+::grpc::ClientAsyncResponseReader< ::filetransfer::OperationStatus>* FileTransferService::Stub::PrepareAsyncUpdateFilesReplicationRaw(::grpc::ClientContext* context, const ::filetransfer::ReplicationRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::filetransfer::OperationStatus, ::filetransfer::ReplicationRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_UpdateFilesReplication_, context, request);
 }
 
-::grpc::ClientAsyncResponseReader< ::filetransfer::OperationStatus>* FileTransferService::Stub::AsyncForwardLeaderFilesRaw(::grpc::ClientContext* context, const ::filetransfer::ForwardRequest& request, ::grpc::CompletionQueue* cq) {
+::grpc::ClientAsyncResponseReader< ::filetransfer::OperationStatus>* FileTransferService::Stub::AsyncUpdateFilesReplicationRaw(::grpc::ClientContext* context, const ::filetransfer::ReplicationRequest& request, ::grpc::CompletionQueue* cq) {
   auto* result =
-    this->PrepareAsyncForwardLeaderFilesRaw(context, request, cq);
+    this->PrepareAsyncUpdateFilesReplicationRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+::grpc::Status FileTransferService::Stub::UpdateOrder(::grpc::ClientContext* context, const ::filetransfer::UpdateOrderRequest& request, ::filetransfer::OperationStatus* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::filetransfer::UpdateOrderRequest, ::filetransfer::OperationStatus, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_UpdateOrder_, context, request, response);
+}
+
+void FileTransferService::Stub::async::UpdateOrder(::grpc::ClientContext* context, const ::filetransfer::UpdateOrderRequest* request, ::filetransfer::OperationStatus* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::filetransfer::UpdateOrderRequest, ::filetransfer::OperationStatus, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_UpdateOrder_, context, request, response, std::move(f));
+}
+
+void FileTransferService::Stub::async::UpdateOrder(::grpc::ClientContext* context, const ::filetransfer::UpdateOrderRequest* request, ::filetransfer::OperationStatus* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_UpdateOrder_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::filetransfer::OperationStatus>* FileTransferService::Stub::PrepareAsyncUpdateOrderRaw(::grpc::ClientContext* context, const ::filetransfer::UpdateOrderRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::filetransfer::OperationStatus, ::filetransfer::UpdateOrderRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_UpdateOrder_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::filetransfer::OperationStatus>* FileTransferService::Stub::AsyncUpdateOrderRaw(::grpc::ClientContext* context, const ::filetransfer::UpdateOrderRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncUpdateOrderRaw(context, request, cq);
   result->StartCall();
   return result;
 }
@@ -191,121 +191,121 @@ FileTransferService::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       FileTransferService_method_names[0],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< FileTransferService::Service, ::filetransfer::FileRequest, ::filetransfer::FileExistsStatus, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+      new ::grpc::internal::RpcMethodHandler< FileTransferService::Service, ::filetransfer::FileOrderRequest, ::filetransfer::OperationStatus, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](FileTransferService::Service* service,
              ::grpc::ServerContext* ctx,
-             const ::filetransfer::FileRequest* req,
-             ::filetransfer::FileExistsStatus* resp) {
-               return service->FileExists(ctx, req, resp);
+             const ::filetransfer::FileOrderRequest* req,
+             ::filetransfer::OperationStatus* resp) {
+               return service->CreateFile(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       FileTransferService_method_names[1],
-      ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< FileTransferService::Service, ::filetransfer::FileRequest, ::filetransfer::OperationStatus, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
-          [](FileTransferService::Service* service,
-             ::grpc::ServerContext* ctx,
-             const ::filetransfer::FileRequest* req,
-             ::filetransfer::OperationStatus* resp) {
-               return service->CreateFileLeader(ctx, req, resp);
-             }, this)));
-  AddMethod(new ::grpc::internal::RpcServiceMethod(
-      FileTransferService_method_names[2],
       ::grpc::internal::RpcMethod::CLIENT_STREAMING,
-      new ::grpc::internal::ClientStreamingHandler< FileTransferService::Service, ::filetransfer::FileChunk, ::filetransfer::OperationStatus>(
+      new ::grpc::internal::ClientStreamingHandler< FileTransferService::Service, ::filetransfer::AppendRequest, ::filetransfer::OperationStatus>(
           [](FileTransferService::Service* service,
              ::grpc::ServerContext* ctx,
-             ::grpc::ServerReader<::filetransfer::FileChunk>* reader,
+             ::grpc::ServerReader<::filetransfer::AppendRequest>* reader,
              ::filetransfer::OperationStatus* resp) {
                return service->AppendFile(ctx, reader, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
-      FileTransferService_method_names[3],
+      FileTransferService_method_names[2],
       ::grpc::internal::RpcMethod::SERVER_STREAMING,
-      new ::grpc::internal::ServerStreamingHandler< FileTransferService::Service, ::filetransfer::GetRequest, ::filetransfer::FileChunk>(
-          [](FileTransferService::Service* service,
-             ::grpc::ServerContext* ctx,
-             const ::filetransfer::GetRequest* req,
-             ::grpc::ServerWriter<::filetransfer::FileChunk>* writer) {
-               return service->GetFile(ctx, req, writer);
-             }, this)));
-  AddMethod(new ::grpc::internal::RpcServiceMethod(
-      FileTransferService_method_names[4],
-      ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< FileTransferService::Service, ::filetransfer::FileRequest, ::filetransfer::OperationStatus, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+      new ::grpc::internal::ServerStreamingHandler< FileTransferService::Service, ::filetransfer::FileRequest, ::filetransfer::GetResponse>(
           [](FileTransferService::Service* service,
              ::grpc::ServerContext* ctx,
              const ::filetransfer::FileRequest* req,
+             ::grpc::ServerWriter<::filetransfer::GetResponse>* writer) {
+               return service->GetFile(ctx, req, writer);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      FileTransferService_method_names[3],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< FileTransferService::Service, ::filetransfer::MergeRequest, ::filetransfer::OperationStatus, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](FileTransferService::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::filetransfer::MergeRequest* req,
              ::filetransfer::OperationStatus* resp) {
                return service->MergeFile(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
-      FileTransferService_method_names[5],
+      FileTransferService_method_names[4],
       ::grpc::internal::RpcMethod::CLIENT_STREAMING,
-      new ::grpc::internal::ClientStreamingHandler< FileTransferService::Service, ::filetransfer::FileChunk, ::filetransfer::OperationStatus>(
+      new ::grpc::internal::ClientStreamingHandler< FileTransferService::Service, ::filetransfer::OverwriteRequest, ::filetransfer::OperationStatus>(
           [](FileTransferService::Service* service,
              ::grpc::ServerContext* ctx,
-             ::grpc::ServerReader<::filetransfer::FileChunk>* reader,
+             ::grpc::ServerReader<::filetransfer::OverwriteRequest>* reader,
              ::filetransfer::OperationStatus* resp) {
                return service->OverwriteFile(ctx, reader, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
-      FileTransferService_method_names[6],
+      FileTransferService_method_names[5],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< FileTransferService::Service, ::filetransfer::ForwardRequest, ::filetransfer::OperationStatus, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+      new ::grpc::internal::RpcMethodHandler< FileTransferService::Service, ::filetransfer::ReplicationRequest, ::filetransfer::OperationStatus, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](FileTransferService::Service* service,
              ::grpc::ServerContext* ctx,
-             const ::filetransfer::ForwardRequest* req,
+             const ::filetransfer::ReplicationRequest* req,
              ::filetransfer::OperationStatus* resp) {
-               return service->ForwardLeaderFiles(ctx, req, resp);
+               return service->UpdateFilesReplication(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      FileTransferService_method_names[6],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< FileTransferService::Service, ::filetransfer::UpdateOrderRequest, ::filetransfer::OperationStatus, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](FileTransferService::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::filetransfer::UpdateOrderRequest* req,
+             ::filetransfer::OperationStatus* resp) {
+               return service->UpdateOrder(ctx, req, resp);
              }, this)));
 }
 
 FileTransferService::Service::~Service() {
 }
 
-::grpc::Status FileTransferService::Service::FileExists(::grpc::ServerContext* context, const ::filetransfer::FileRequest* request, ::filetransfer::FileExistsStatus* response) {
+::grpc::Status FileTransferService::Service::CreateFile(::grpc::ServerContext* context, const ::filetransfer::FileOrderRequest* request, ::filetransfer::OperationStatus* response) {
   (void) context;
   (void) request;
   (void) response;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
-::grpc::Status FileTransferService::Service::CreateFileLeader(::grpc::ServerContext* context, const ::filetransfer::FileRequest* request, ::filetransfer::OperationStatus* response) {
-  (void) context;
-  (void) request;
-  (void) response;
-  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-}
-
-::grpc::Status FileTransferService::Service::AppendFile(::grpc::ServerContext* context, ::grpc::ServerReader< ::filetransfer::FileChunk>* reader, ::filetransfer::OperationStatus* response) {
+::grpc::Status FileTransferService::Service::AppendFile(::grpc::ServerContext* context, ::grpc::ServerReader< ::filetransfer::AppendRequest>* reader, ::filetransfer::OperationStatus* response) {
   (void) context;
   (void) reader;
   (void) response;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
-::grpc::Status FileTransferService::Service::GetFile(::grpc::ServerContext* context, const ::filetransfer::GetRequest* request, ::grpc::ServerWriter< ::filetransfer::FileChunk>* writer) {
+::grpc::Status FileTransferService::Service::GetFile(::grpc::ServerContext* context, const ::filetransfer::FileRequest* request, ::grpc::ServerWriter< ::filetransfer::GetResponse>* writer) {
   (void) context;
   (void) request;
   (void) writer;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
-::grpc::Status FileTransferService::Service::MergeFile(::grpc::ServerContext* context, const ::filetransfer::FileRequest* request, ::filetransfer::OperationStatus* response) {
+::grpc::Status FileTransferService::Service::MergeFile(::grpc::ServerContext* context, const ::filetransfer::MergeRequest* request, ::filetransfer::OperationStatus* response) {
   (void) context;
   (void) request;
   (void) response;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
-::grpc::Status FileTransferService::Service::OverwriteFile(::grpc::ServerContext* context, ::grpc::ServerReader< ::filetransfer::FileChunk>* reader, ::filetransfer::OperationStatus* response) {
+::grpc::Status FileTransferService::Service::OverwriteFile(::grpc::ServerContext* context, ::grpc::ServerReader< ::filetransfer::OverwriteRequest>* reader, ::filetransfer::OperationStatus* response) {
   (void) context;
   (void) reader;
   (void) response;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
-::grpc::Status FileTransferService::Service::ForwardLeaderFiles(::grpc::ServerContext* context, const ::filetransfer::ForwardRequest* request, ::filetransfer::OperationStatus* response) {
+::grpc::Status FileTransferService::Service::UpdateFilesReplication(::grpc::ServerContext* context, const ::filetransfer::ReplicationRequest* request, ::filetransfer::OperationStatus* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status FileTransferService::Service::UpdateOrder(::grpc::ServerContext* context, const ::filetransfer::UpdateOrderRequest* request, ::filetransfer::OperationStatus* response) {
   (void) context;
   (void) request;
   (void) response;

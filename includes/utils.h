@@ -1,5 +1,4 @@
-#ifndef UTILS_H
-#define UTILS_H
+#pragma once
 
 #include <iostream>
 #include <string>
@@ -14,5 +13,3 @@ std::vector<std::pair<std::string, std::pair<size_t, size_t>>> find3Successors(c
                                         const std::unordered_set<std::string>& nodeIds, 
                                         size_t modulus);
 std::string HostToIp(const std::string& host);
-
-#endif // UTILS_H

@@ -35,170 +35,170 @@ class FileTransferService final {
   class StubInterface {
    public:
     virtual ~StubInterface() {}
-    virtual ::grpc::Status FileExists(::grpc::ClientContext* context, const ::filetransfer::FileRequest& request, ::filetransfer::FileExistsStatus* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::filetransfer::FileExistsStatus>> AsyncFileExists(::grpc::ClientContext* context, const ::filetransfer::FileRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::filetransfer::FileExistsStatus>>(AsyncFileExistsRaw(context, request, cq));
+    virtual ::grpc::Status CreateFile(::grpc::ClientContext* context, const ::filetransfer::FileOrderRequest& request, ::filetransfer::OperationStatus* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::filetransfer::OperationStatus>> AsyncCreateFile(::grpc::ClientContext* context, const ::filetransfer::FileOrderRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::filetransfer::OperationStatus>>(AsyncCreateFileRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::filetransfer::FileExistsStatus>> PrepareAsyncFileExists(::grpc::ClientContext* context, const ::filetransfer::FileRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::filetransfer::FileExistsStatus>>(PrepareAsyncFileExistsRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::filetransfer::OperationStatus>> PrepareAsyncCreateFile(::grpc::ClientContext* context, const ::filetransfer::FileOrderRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::filetransfer::OperationStatus>>(PrepareAsyncCreateFileRaw(context, request, cq));
     }
-    virtual ::grpc::Status CreateFileLeader(::grpc::ClientContext* context, const ::filetransfer::FileRequest& request, ::filetransfer::OperationStatus* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::filetransfer::OperationStatus>> AsyncCreateFileLeader(::grpc::ClientContext* context, const ::filetransfer::FileRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::filetransfer::OperationStatus>>(AsyncCreateFileLeaderRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientWriterInterface< ::filetransfer::AppendRequest>> AppendFile(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response) {
+      return std::unique_ptr< ::grpc::ClientWriterInterface< ::filetransfer::AppendRequest>>(AppendFileRaw(context, response));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::filetransfer::OperationStatus>> PrepareAsyncCreateFileLeader(::grpc::ClientContext* context, const ::filetransfer::FileRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::filetransfer::OperationStatus>>(PrepareAsyncCreateFileLeaderRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncWriterInterface< ::filetransfer::AppendRequest>> AsyncAppendFile(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response, ::grpc::CompletionQueue* cq, void* tag) {
+      return std::unique_ptr< ::grpc::ClientAsyncWriterInterface< ::filetransfer::AppendRequest>>(AsyncAppendFileRaw(context, response, cq, tag));
     }
-    std::unique_ptr< ::grpc::ClientWriterInterface< ::filetransfer::FileChunk>> AppendFile(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response) {
-      return std::unique_ptr< ::grpc::ClientWriterInterface< ::filetransfer::FileChunk>>(AppendFileRaw(context, response));
+    std::unique_ptr< ::grpc::ClientAsyncWriterInterface< ::filetransfer::AppendRequest>> PrepareAsyncAppendFile(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncWriterInterface< ::filetransfer::AppendRequest>>(PrepareAsyncAppendFileRaw(context, response, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncWriterInterface< ::filetransfer::FileChunk>> AsyncAppendFile(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response, ::grpc::CompletionQueue* cq, void* tag) {
-      return std::unique_ptr< ::grpc::ClientAsyncWriterInterface< ::filetransfer::FileChunk>>(AsyncAppendFileRaw(context, response, cq, tag));
+    std::unique_ptr< ::grpc::ClientReaderInterface< ::filetransfer::GetResponse>> GetFile(::grpc::ClientContext* context, const ::filetransfer::FileRequest& request) {
+      return std::unique_ptr< ::grpc::ClientReaderInterface< ::filetransfer::GetResponse>>(GetFileRaw(context, request));
     }
-    std::unique_ptr< ::grpc::ClientAsyncWriterInterface< ::filetransfer::FileChunk>> PrepareAsyncAppendFile(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncWriterInterface< ::filetransfer::FileChunk>>(PrepareAsyncAppendFileRaw(context, response, cq));
+    std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::filetransfer::GetResponse>> AsyncGetFile(::grpc::ClientContext* context, const ::filetransfer::FileRequest& request, ::grpc::CompletionQueue* cq, void* tag) {
+      return std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::filetransfer::GetResponse>>(AsyncGetFileRaw(context, request, cq, tag));
     }
-    std::unique_ptr< ::grpc::ClientReaderInterface< ::filetransfer::FileChunk>> GetFile(::grpc::ClientContext* context, const ::filetransfer::GetRequest& request) {
-      return std::unique_ptr< ::grpc::ClientReaderInterface< ::filetransfer::FileChunk>>(GetFileRaw(context, request));
+    std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::filetransfer::GetResponse>> PrepareAsyncGetFile(::grpc::ClientContext* context, const ::filetransfer::FileRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::filetransfer::GetResponse>>(PrepareAsyncGetFileRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::filetransfer::FileChunk>> AsyncGetFile(::grpc::ClientContext* context, const ::filetransfer::GetRequest& request, ::grpc::CompletionQueue* cq, void* tag) {
-      return std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::filetransfer::FileChunk>>(AsyncGetFileRaw(context, request, cq, tag));
-    }
-    std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::filetransfer::FileChunk>> PrepareAsyncGetFile(::grpc::ClientContext* context, const ::filetransfer::GetRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::filetransfer::FileChunk>>(PrepareAsyncGetFileRaw(context, request, cq));
-    }
-    virtual ::grpc::Status MergeFile(::grpc::ClientContext* context, const ::filetransfer::FileRequest& request, ::filetransfer::OperationStatus* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::filetransfer::OperationStatus>> AsyncMergeFile(::grpc::ClientContext* context, const ::filetransfer::FileRequest& request, ::grpc::CompletionQueue* cq) {
+    virtual ::grpc::Status MergeFile(::grpc::ClientContext* context, const ::filetransfer::MergeRequest& request, ::filetransfer::OperationStatus* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::filetransfer::OperationStatus>> AsyncMergeFile(::grpc::ClientContext* context, const ::filetransfer::MergeRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::filetransfer::OperationStatus>>(AsyncMergeFileRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::filetransfer::OperationStatus>> PrepareAsyncMergeFile(::grpc::ClientContext* context, const ::filetransfer::FileRequest& request, ::grpc::CompletionQueue* cq) {
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::filetransfer::OperationStatus>> PrepareAsyncMergeFile(::grpc::ClientContext* context, const ::filetransfer::MergeRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::filetransfer::OperationStatus>>(PrepareAsyncMergeFileRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientWriterInterface< ::filetransfer::FileChunk>> OverwriteFile(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response) {
-      return std::unique_ptr< ::grpc::ClientWriterInterface< ::filetransfer::FileChunk>>(OverwriteFileRaw(context, response));
+    std::unique_ptr< ::grpc::ClientWriterInterface< ::filetransfer::OverwriteRequest>> OverwriteFile(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response) {
+      return std::unique_ptr< ::grpc::ClientWriterInterface< ::filetransfer::OverwriteRequest>>(OverwriteFileRaw(context, response));
     }
-    std::unique_ptr< ::grpc::ClientAsyncWriterInterface< ::filetransfer::FileChunk>> AsyncOverwriteFile(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response, ::grpc::CompletionQueue* cq, void* tag) {
-      return std::unique_ptr< ::grpc::ClientAsyncWriterInterface< ::filetransfer::FileChunk>>(AsyncOverwriteFileRaw(context, response, cq, tag));
+    std::unique_ptr< ::grpc::ClientAsyncWriterInterface< ::filetransfer::OverwriteRequest>> AsyncOverwriteFile(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response, ::grpc::CompletionQueue* cq, void* tag) {
+      return std::unique_ptr< ::grpc::ClientAsyncWriterInterface< ::filetransfer::OverwriteRequest>>(AsyncOverwriteFileRaw(context, response, cq, tag));
     }
-    std::unique_ptr< ::grpc::ClientAsyncWriterInterface< ::filetransfer::FileChunk>> PrepareAsyncOverwriteFile(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncWriterInterface< ::filetransfer::FileChunk>>(PrepareAsyncOverwriteFileRaw(context, response, cq));
+    std::unique_ptr< ::grpc::ClientAsyncWriterInterface< ::filetransfer::OverwriteRequest>> PrepareAsyncOverwriteFile(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncWriterInterface< ::filetransfer::OverwriteRequest>>(PrepareAsyncOverwriteFileRaw(context, response, cq));
     }
-    virtual ::grpc::Status ForwardLeaderFiles(::grpc::ClientContext* context, const ::filetransfer::ForwardRequest& request, ::filetransfer::OperationStatus* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::filetransfer::OperationStatus>> AsyncForwardLeaderFiles(::grpc::ClientContext* context, const ::filetransfer::ForwardRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::filetransfer::OperationStatus>>(AsyncForwardLeaderFilesRaw(context, request, cq));
+    virtual ::grpc::Status UpdateFilesReplication(::grpc::ClientContext* context, const ::filetransfer::ReplicationRequest& request, ::filetransfer::OperationStatus* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::filetransfer::OperationStatus>> AsyncUpdateFilesReplication(::grpc::ClientContext* context, const ::filetransfer::ReplicationRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::filetransfer::OperationStatus>>(AsyncUpdateFilesReplicationRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::filetransfer::OperationStatus>> PrepareAsyncForwardLeaderFiles(::grpc::ClientContext* context, const ::filetransfer::ForwardRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::filetransfer::OperationStatus>>(PrepareAsyncForwardLeaderFilesRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::filetransfer::OperationStatus>> PrepareAsyncUpdateFilesReplication(::grpc::ClientContext* context, const ::filetransfer::ReplicationRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::filetransfer::OperationStatus>>(PrepareAsyncUpdateFilesReplicationRaw(context, request, cq));
+    }
+    virtual ::grpc::Status UpdateOrder(::grpc::ClientContext* context, const ::filetransfer::UpdateOrderRequest& request, ::filetransfer::OperationStatus* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::filetransfer::OperationStatus>> AsyncUpdateOrder(::grpc::ClientContext* context, const ::filetransfer::UpdateOrderRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::filetransfer::OperationStatus>>(AsyncUpdateOrderRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::filetransfer::OperationStatus>> PrepareAsyncUpdateOrder(::grpc::ClientContext* context, const ::filetransfer::UpdateOrderRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::filetransfer::OperationStatus>>(PrepareAsyncUpdateOrderRaw(context, request, cq));
     }
     class async_interface {
      public:
       virtual ~async_interface() {}
-      virtual void FileExists(::grpc::ClientContext* context, const ::filetransfer::FileRequest* request, ::filetransfer::FileExistsStatus* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void FileExists(::grpc::ClientContext* context, const ::filetransfer::FileRequest* request, ::filetransfer::FileExistsStatus* response, ::grpc::ClientUnaryReactor* reactor) = 0;
-      virtual void CreateFileLeader(::grpc::ClientContext* context, const ::filetransfer::FileRequest* request, ::filetransfer::OperationStatus* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void CreateFileLeader(::grpc::ClientContext* context, const ::filetransfer::FileRequest* request, ::filetransfer::OperationStatus* response, ::grpc::ClientUnaryReactor* reactor) = 0;
-      virtual void AppendFile(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response, ::grpc::ClientWriteReactor< ::filetransfer::FileChunk>* reactor) = 0;
-      virtual void GetFile(::grpc::ClientContext* context, const ::filetransfer::GetRequest* request, ::grpc::ClientReadReactor< ::filetransfer::FileChunk>* reactor) = 0;
-      virtual void MergeFile(::grpc::ClientContext* context, const ::filetransfer::FileRequest* request, ::filetransfer::OperationStatus* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void MergeFile(::grpc::ClientContext* context, const ::filetransfer::FileRequest* request, ::filetransfer::OperationStatus* response, ::grpc::ClientUnaryReactor* reactor) = 0;
-      virtual void OverwriteFile(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response, ::grpc::ClientWriteReactor< ::filetransfer::FileChunk>* reactor) = 0;
-      virtual void ForwardLeaderFiles(::grpc::ClientContext* context, const ::filetransfer::ForwardRequest* request, ::filetransfer::OperationStatus* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void ForwardLeaderFiles(::grpc::ClientContext* context, const ::filetransfer::ForwardRequest* request, ::filetransfer::OperationStatus* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void CreateFile(::grpc::ClientContext* context, const ::filetransfer::FileOrderRequest* request, ::filetransfer::OperationStatus* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void CreateFile(::grpc::ClientContext* context, const ::filetransfer::FileOrderRequest* request, ::filetransfer::OperationStatus* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void AppendFile(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response, ::grpc::ClientWriteReactor< ::filetransfer::AppendRequest>* reactor) = 0;
+      virtual void GetFile(::grpc::ClientContext* context, const ::filetransfer::FileRequest* request, ::grpc::ClientReadReactor< ::filetransfer::GetResponse>* reactor) = 0;
+      virtual void MergeFile(::grpc::ClientContext* context, const ::filetransfer::MergeRequest* request, ::filetransfer::OperationStatus* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void MergeFile(::grpc::ClientContext* context, const ::filetransfer::MergeRequest* request, ::filetransfer::OperationStatus* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void OverwriteFile(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response, ::grpc::ClientWriteReactor< ::filetransfer::OverwriteRequest>* reactor) = 0;
+      virtual void UpdateFilesReplication(::grpc::ClientContext* context, const ::filetransfer::ReplicationRequest* request, ::filetransfer::OperationStatus* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void UpdateFilesReplication(::grpc::ClientContext* context, const ::filetransfer::ReplicationRequest* request, ::filetransfer::OperationStatus* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void UpdateOrder(::grpc::ClientContext* context, const ::filetransfer::UpdateOrderRequest* request, ::filetransfer::OperationStatus* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void UpdateOrder(::grpc::ClientContext* context, const ::filetransfer::UpdateOrderRequest* request, ::filetransfer::OperationStatus* response, ::grpc::ClientUnaryReactor* reactor) = 0;
     };
     typedef class async_interface experimental_async_interface;
     virtual class async_interface* async() { return nullptr; }
     class async_interface* experimental_async() { return async(); }
    private:
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::filetransfer::FileExistsStatus>* AsyncFileExistsRaw(::grpc::ClientContext* context, const ::filetransfer::FileRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::filetransfer::FileExistsStatus>* PrepareAsyncFileExistsRaw(::grpc::ClientContext* context, const ::filetransfer::FileRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::filetransfer::OperationStatus>* AsyncCreateFileLeaderRaw(::grpc::ClientContext* context, const ::filetransfer::FileRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::filetransfer::OperationStatus>* PrepareAsyncCreateFileLeaderRaw(::grpc::ClientContext* context, const ::filetransfer::FileRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientWriterInterface< ::filetransfer::FileChunk>* AppendFileRaw(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response) = 0;
-    virtual ::grpc::ClientAsyncWriterInterface< ::filetransfer::FileChunk>* AsyncAppendFileRaw(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response, ::grpc::CompletionQueue* cq, void* tag) = 0;
-    virtual ::grpc::ClientAsyncWriterInterface< ::filetransfer::FileChunk>* PrepareAsyncAppendFileRaw(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientReaderInterface< ::filetransfer::FileChunk>* GetFileRaw(::grpc::ClientContext* context, const ::filetransfer::GetRequest& request) = 0;
-    virtual ::grpc::ClientAsyncReaderInterface< ::filetransfer::FileChunk>* AsyncGetFileRaw(::grpc::ClientContext* context, const ::filetransfer::GetRequest& request, ::grpc::CompletionQueue* cq, void* tag) = 0;
-    virtual ::grpc::ClientAsyncReaderInterface< ::filetransfer::FileChunk>* PrepareAsyncGetFileRaw(::grpc::ClientContext* context, const ::filetransfer::GetRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::filetransfer::OperationStatus>* AsyncMergeFileRaw(::grpc::ClientContext* context, const ::filetransfer::FileRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::filetransfer::OperationStatus>* PrepareAsyncMergeFileRaw(::grpc::ClientContext* context, const ::filetransfer::FileRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientWriterInterface< ::filetransfer::FileChunk>* OverwriteFileRaw(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response) = 0;
-    virtual ::grpc::ClientAsyncWriterInterface< ::filetransfer::FileChunk>* AsyncOverwriteFileRaw(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response, ::grpc::CompletionQueue* cq, void* tag) = 0;
-    virtual ::grpc::ClientAsyncWriterInterface< ::filetransfer::FileChunk>* PrepareAsyncOverwriteFileRaw(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::filetransfer::OperationStatus>* AsyncForwardLeaderFilesRaw(::grpc::ClientContext* context, const ::filetransfer::ForwardRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::filetransfer::OperationStatus>* PrepareAsyncForwardLeaderFilesRaw(::grpc::ClientContext* context, const ::filetransfer::ForwardRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::filetransfer::OperationStatus>* AsyncCreateFileRaw(::grpc::ClientContext* context, const ::filetransfer::FileOrderRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::filetransfer::OperationStatus>* PrepareAsyncCreateFileRaw(::grpc::ClientContext* context, const ::filetransfer::FileOrderRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientWriterInterface< ::filetransfer::AppendRequest>* AppendFileRaw(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response) = 0;
+    virtual ::grpc::ClientAsyncWriterInterface< ::filetransfer::AppendRequest>* AsyncAppendFileRaw(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response, ::grpc::CompletionQueue* cq, void* tag) = 0;
+    virtual ::grpc::ClientAsyncWriterInterface< ::filetransfer::AppendRequest>* PrepareAsyncAppendFileRaw(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientReaderInterface< ::filetransfer::GetResponse>* GetFileRaw(::grpc::ClientContext* context, const ::filetransfer::FileRequest& request) = 0;
+    virtual ::grpc::ClientAsyncReaderInterface< ::filetransfer::GetResponse>* AsyncGetFileRaw(::grpc::ClientContext* context, const ::filetransfer::FileRequest& request, ::grpc::CompletionQueue* cq, void* tag) = 0;
+    virtual ::grpc::ClientAsyncReaderInterface< ::filetransfer::GetResponse>* PrepareAsyncGetFileRaw(::grpc::ClientContext* context, const ::filetransfer::FileRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::filetransfer::OperationStatus>* AsyncMergeFileRaw(::grpc::ClientContext* context, const ::filetransfer::MergeRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::filetransfer::OperationStatus>* PrepareAsyncMergeFileRaw(::grpc::ClientContext* context, const ::filetransfer::MergeRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientWriterInterface< ::filetransfer::OverwriteRequest>* OverwriteFileRaw(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response) = 0;
+    virtual ::grpc::ClientAsyncWriterInterface< ::filetransfer::OverwriteRequest>* AsyncOverwriteFileRaw(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response, ::grpc::CompletionQueue* cq, void* tag) = 0;
+    virtual ::grpc::ClientAsyncWriterInterface< ::filetransfer::OverwriteRequest>* PrepareAsyncOverwriteFileRaw(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::filetransfer::OperationStatus>* AsyncUpdateFilesReplicationRaw(::grpc::ClientContext* context, const ::filetransfer::ReplicationRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::filetransfer::OperationStatus>* PrepareAsyncUpdateFilesReplicationRaw(::grpc::ClientContext* context, const ::filetransfer::ReplicationRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::filetransfer::OperationStatus>* AsyncUpdateOrderRaw(::grpc::ClientContext* context, const ::filetransfer::UpdateOrderRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::filetransfer::OperationStatus>* PrepareAsyncUpdateOrderRaw(::grpc::ClientContext* context, const ::filetransfer::UpdateOrderRequest& request, ::grpc::CompletionQueue* cq) = 0;
   };
   class Stub final : public StubInterface {
    public:
     Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
-    ::grpc::Status FileExists(::grpc::ClientContext* context, const ::filetransfer::FileRequest& request, ::filetransfer::FileExistsStatus* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::filetransfer::FileExistsStatus>> AsyncFileExists(::grpc::ClientContext* context, const ::filetransfer::FileRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::filetransfer::FileExistsStatus>>(AsyncFileExistsRaw(context, request, cq));
+    ::grpc::Status CreateFile(::grpc::ClientContext* context, const ::filetransfer::FileOrderRequest& request, ::filetransfer::OperationStatus* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::filetransfer::OperationStatus>> AsyncCreateFile(::grpc::ClientContext* context, const ::filetransfer::FileOrderRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::filetransfer::OperationStatus>>(AsyncCreateFileRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::filetransfer::FileExistsStatus>> PrepareAsyncFileExists(::grpc::ClientContext* context, const ::filetransfer::FileRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::filetransfer::FileExistsStatus>>(PrepareAsyncFileExistsRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::filetransfer::OperationStatus>> PrepareAsyncCreateFile(::grpc::ClientContext* context, const ::filetransfer::FileOrderRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::filetransfer::OperationStatus>>(PrepareAsyncCreateFileRaw(context, request, cq));
     }
-    ::grpc::Status CreateFileLeader(::grpc::ClientContext* context, const ::filetransfer::FileRequest& request, ::filetransfer::OperationStatus* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::filetransfer::OperationStatus>> AsyncCreateFileLeader(::grpc::ClientContext* context, const ::filetransfer::FileRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::filetransfer::OperationStatus>>(AsyncCreateFileLeaderRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientWriter< ::filetransfer::AppendRequest>> AppendFile(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response) {
+      return std::unique_ptr< ::grpc::ClientWriter< ::filetransfer::AppendRequest>>(AppendFileRaw(context, response));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::filetransfer::OperationStatus>> PrepareAsyncCreateFileLeader(::grpc::ClientContext* context, const ::filetransfer::FileRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::filetransfer::OperationStatus>>(PrepareAsyncCreateFileLeaderRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncWriter< ::filetransfer::AppendRequest>> AsyncAppendFile(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response, ::grpc::CompletionQueue* cq, void* tag) {
+      return std::unique_ptr< ::grpc::ClientAsyncWriter< ::filetransfer::AppendRequest>>(AsyncAppendFileRaw(context, response, cq, tag));
     }
-    std::unique_ptr< ::grpc::ClientWriter< ::filetransfer::FileChunk>> AppendFile(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response) {
-      return std::unique_ptr< ::grpc::ClientWriter< ::filetransfer::FileChunk>>(AppendFileRaw(context, response));
+    std::unique_ptr< ::grpc::ClientAsyncWriter< ::filetransfer::AppendRequest>> PrepareAsyncAppendFile(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncWriter< ::filetransfer::AppendRequest>>(PrepareAsyncAppendFileRaw(context, response, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncWriter< ::filetransfer::FileChunk>> AsyncAppendFile(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response, ::grpc::CompletionQueue* cq, void* tag) {
-      return std::unique_ptr< ::grpc::ClientAsyncWriter< ::filetransfer::FileChunk>>(AsyncAppendFileRaw(context, response, cq, tag));
+    std::unique_ptr< ::grpc::ClientReader< ::filetransfer::GetResponse>> GetFile(::grpc::ClientContext* context, const ::filetransfer::FileRequest& request) {
+      return std::unique_ptr< ::grpc::ClientReader< ::filetransfer::GetResponse>>(GetFileRaw(context, request));
     }
-    std::unique_ptr< ::grpc::ClientAsyncWriter< ::filetransfer::FileChunk>> PrepareAsyncAppendFile(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncWriter< ::filetransfer::FileChunk>>(PrepareAsyncAppendFileRaw(context, response, cq));
+    std::unique_ptr< ::grpc::ClientAsyncReader< ::filetransfer::GetResponse>> AsyncGetFile(::grpc::ClientContext* context, const ::filetransfer::FileRequest& request, ::grpc::CompletionQueue* cq, void* tag) {
+      return std::unique_ptr< ::grpc::ClientAsyncReader< ::filetransfer::GetResponse>>(AsyncGetFileRaw(context, request, cq, tag));
     }
-    std::unique_ptr< ::grpc::ClientReader< ::filetransfer::FileChunk>> GetFile(::grpc::ClientContext* context, const ::filetransfer::GetRequest& request) {
-      return std::unique_ptr< ::grpc::ClientReader< ::filetransfer::FileChunk>>(GetFileRaw(context, request));
+    std::unique_ptr< ::grpc::ClientAsyncReader< ::filetransfer::GetResponse>> PrepareAsyncGetFile(::grpc::ClientContext* context, const ::filetransfer::FileRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncReader< ::filetransfer::GetResponse>>(PrepareAsyncGetFileRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncReader< ::filetransfer::FileChunk>> AsyncGetFile(::grpc::ClientContext* context, const ::filetransfer::GetRequest& request, ::grpc::CompletionQueue* cq, void* tag) {
-      return std::unique_ptr< ::grpc::ClientAsyncReader< ::filetransfer::FileChunk>>(AsyncGetFileRaw(context, request, cq, tag));
-    }
-    std::unique_ptr< ::grpc::ClientAsyncReader< ::filetransfer::FileChunk>> PrepareAsyncGetFile(::grpc::ClientContext* context, const ::filetransfer::GetRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncReader< ::filetransfer::FileChunk>>(PrepareAsyncGetFileRaw(context, request, cq));
-    }
-    ::grpc::Status MergeFile(::grpc::ClientContext* context, const ::filetransfer::FileRequest& request, ::filetransfer::OperationStatus* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::filetransfer::OperationStatus>> AsyncMergeFile(::grpc::ClientContext* context, const ::filetransfer::FileRequest& request, ::grpc::CompletionQueue* cq) {
+    ::grpc::Status MergeFile(::grpc::ClientContext* context, const ::filetransfer::MergeRequest& request, ::filetransfer::OperationStatus* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::filetransfer::OperationStatus>> AsyncMergeFile(::grpc::ClientContext* context, const ::filetransfer::MergeRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::filetransfer::OperationStatus>>(AsyncMergeFileRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::filetransfer::OperationStatus>> PrepareAsyncMergeFile(::grpc::ClientContext* context, const ::filetransfer::FileRequest& request, ::grpc::CompletionQueue* cq) {
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::filetransfer::OperationStatus>> PrepareAsyncMergeFile(::grpc::ClientContext* context, const ::filetransfer::MergeRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::filetransfer::OperationStatus>>(PrepareAsyncMergeFileRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientWriter< ::filetransfer::FileChunk>> OverwriteFile(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response) {
-      return std::unique_ptr< ::grpc::ClientWriter< ::filetransfer::FileChunk>>(OverwriteFileRaw(context, response));
+    std::unique_ptr< ::grpc::ClientWriter< ::filetransfer::OverwriteRequest>> OverwriteFile(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response) {
+      return std::unique_ptr< ::grpc::ClientWriter< ::filetransfer::OverwriteRequest>>(OverwriteFileRaw(context, response));
     }
-    std::unique_ptr< ::grpc::ClientAsyncWriter< ::filetransfer::FileChunk>> AsyncOverwriteFile(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response, ::grpc::CompletionQueue* cq, void* tag) {
-      return std::unique_ptr< ::grpc::ClientAsyncWriter< ::filetransfer::FileChunk>>(AsyncOverwriteFileRaw(context, response, cq, tag));
+    std::unique_ptr< ::grpc::ClientAsyncWriter< ::filetransfer::OverwriteRequest>> AsyncOverwriteFile(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response, ::grpc::CompletionQueue* cq, void* tag) {
+      return std::unique_ptr< ::grpc::ClientAsyncWriter< ::filetransfer::OverwriteRequest>>(AsyncOverwriteFileRaw(context, response, cq, tag));
     }
-    std::unique_ptr< ::grpc::ClientAsyncWriter< ::filetransfer::FileChunk>> PrepareAsyncOverwriteFile(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncWriter< ::filetransfer::FileChunk>>(PrepareAsyncOverwriteFileRaw(context, response, cq));
+    std::unique_ptr< ::grpc::ClientAsyncWriter< ::filetransfer::OverwriteRequest>> PrepareAsyncOverwriteFile(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncWriter< ::filetransfer::OverwriteRequest>>(PrepareAsyncOverwriteFileRaw(context, response, cq));
     }
-    ::grpc::Status ForwardLeaderFiles(::grpc::ClientContext* context, const ::filetransfer::ForwardRequest& request, ::filetransfer::OperationStatus* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::filetransfer::OperationStatus>> AsyncForwardLeaderFiles(::grpc::ClientContext* context, const ::filetransfer::ForwardRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::filetransfer::OperationStatus>>(AsyncForwardLeaderFilesRaw(context, request, cq));
+    ::grpc::Status UpdateFilesReplication(::grpc::ClientContext* context, const ::filetransfer::ReplicationRequest& request, ::filetransfer::OperationStatus* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::filetransfer::OperationStatus>> AsyncUpdateFilesReplication(::grpc::ClientContext* context, const ::filetransfer::ReplicationRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::filetransfer::OperationStatus>>(AsyncUpdateFilesReplicationRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::filetransfer::OperationStatus>> PrepareAsyncForwardLeaderFiles(::grpc::ClientContext* context, const ::filetransfer::ForwardRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::filetransfer::OperationStatus>>(PrepareAsyncForwardLeaderFilesRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::filetransfer::OperationStatus>> PrepareAsyncUpdateFilesReplication(::grpc::ClientContext* context, const ::filetransfer::ReplicationRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::filetransfer::OperationStatus>>(PrepareAsyncUpdateFilesReplicationRaw(context, request, cq));
+    }
+    ::grpc::Status UpdateOrder(::grpc::ClientContext* context, const ::filetransfer::UpdateOrderRequest& request, ::filetransfer::OperationStatus* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::filetransfer::OperationStatus>> AsyncUpdateOrder(::grpc::ClientContext* context, const ::filetransfer::UpdateOrderRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::filetransfer::OperationStatus>>(AsyncUpdateOrderRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::filetransfer::OperationStatus>> PrepareAsyncUpdateOrder(::grpc::ClientContext* context, const ::filetransfer::UpdateOrderRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::filetransfer::OperationStatus>>(PrepareAsyncUpdateOrderRaw(context, request, cq));
     }
     class async final :
       public StubInterface::async_interface {
      public:
-      void FileExists(::grpc::ClientContext* context, const ::filetransfer::FileRequest* request, ::filetransfer::FileExistsStatus* response, std::function<void(::grpc::Status)>) override;
-      void FileExists(::grpc::ClientContext* context, const ::filetransfer::FileRequest* request, ::filetransfer::FileExistsStatus* response, ::grpc::ClientUnaryReactor* reactor) override;
-      void CreateFileLeader(::grpc::ClientContext* context, const ::filetransfer::FileRequest* request, ::filetransfer::OperationStatus* response, std::function<void(::grpc::Status)>) override;
-      void CreateFileLeader(::grpc::ClientContext* context, const ::filetransfer::FileRequest* request, ::filetransfer::OperationStatus* response, ::grpc::ClientUnaryReactor* reactor) override;
-      void AppendFile(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response, ::grpc::ClientWriteReactor< ::filetransfer::FileChunk>* reactor) override;
-      void GetFile(::grpc::ClientContext* context, const ::filetransfer::GetRequest* request, ::grpc::ClientReadReactor< ::filetransfer::FileChunk>* reactor) override;
-      void MergeFile(::grpc::ClientContext* context, const ::filetransfer::FileRequest* request, ::filetransfer::OperationStatus* response, std::function<void(::grpc::Status)>) override;
-      void MergeFile(::grpc::ClientContext* context, const ::filetransfer::FileRequest* request, ::filetransfer::OperationStatus* response, ::grpc::ClientUnaryReactor* reactor) override;
-      void OverwriteFile(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response, ::grpc::ClientWriteReactor< ::filetransfer::FileChunk>* reactor) override;
-      void ForwardLeaderFiles(::grpc::ClientContext* context, const ::filetransfer::ForwardRequest* request, ::filetransfer::OperationStatus* response, std::function<void(::grpc::Status)>) override;
-      void ForwardLeaderFiles(::grpc::ClientContext* context, const ::filetransfer::ForwardRequest* request, ::filetransfer::OperationStatus* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void CreateFile(::grpc::ClientContext* context, const ::filetransfer::FileOrderRequest* request, ::filetransfer::OperationStatus* response, std::function<void(::grpc::Status)>) override;
+      void CreateFile(::grpc::ClientContext* context, const ::filetransfer::FileOrderRequest* request, ::filetransfer::OperationStatus* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void AppendFile(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response, ::grpc::ClientWriteReactor< ::filetransfer::AppendRequest>* reactor) override;
+      void GetFile(::grpc::ClientContext* context, const ::filetransfer::FileRequest* request, ::grpc::ClientReadReactor< ::filetransfer::GetResponse>* reactor) override;
+      void MergeFile(::grpc::ClientContext* context, const ::filetransfer::MergeRequest* request, ::filetransfer::OperationStatus* response, std::function<void(::grpc::Status)>) override;
+      void MergeFile(::grpc::ClientContext* context, const ::filetransfer::MergeRequest* request, ::filetransfer::OperationStatus* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void OverwriteFile(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response, ::grpc::ClientWriteReactor< ::filetransfer::OverwriteRequest>* reactor) override;
+      void UpdateFilesReplication(::grpc::ClientContext* context, const ::filetransfer::ReplicationRequest* request, ::filetransfer::OperationStatus* response, std::function<void(::grpc::Status)>) override;
+      void UpdateFilesReplication(::grpc::ClientContext* context, const ::filetransfer::ReplicationRequest* request, ::filetransfer::OperationStatus* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void UpdateOrder(::grpc::ClientContext* context, const ::filetransfer::UpdateOrderRequest* request, ::filetransfer::OperationStatus* response, std::function<void(::grpc::Status)>) override;
+      void UpdateOrder(::grpc::ClientContext* context, const ::filetransfer::UpdateOrderRequest* request, ::filetransfer::OperationStatus* response, ::grpc::ClientUnaryReactor* reactor) override;
      private:
       friend class Stub;
       explicit async(Stub* stub): stub_(stub) { }
@@ -210,30 +210,30 @@ class FileTransferService final {
    private:
     std::shared_ptr< ::grpc::ChannelInterface> channel_;
     class async async_stub_{this};
-    ::grpc::ClientAsyncResponseReader< ::filetransfer::FileExistsStatus>* AsyncFileExistsRaw(::grpc::ClientContext* context, const ::filetransfer::FileRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::filetransfer::FileExistsStatus>* PrepareAsyncFileExistsRaw(::grpc::ClientContext* context, const ::filetransfer::FileRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::filetransfer::OperationStatus>* AsyncCreateFileLeaderRaw(::grpc::ClientContext* context, const ::filetransfer::FileRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::filetransfer::OperationStatus>* PrepareAsyncCreateFileLeaderRaw(::grpc::ClientContext* context, const ::filetransfer::FileRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientWriter< ::filetransfer::FileChunk>* AppendFileRaw(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response) override;
-    ::grpc::ClientAsyncWriter< ::filetransfer::FileChunk>* AsyncAppendFileRaw(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response, ::grpc::CompletionQueue* cq, void* tag) override;
-    ::grpc::ClientAsyncWriter< ::filetransfer::FileChunk>* PrepareAsyncAppendFileRaw(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientReader< ::filetransfer::FileChunk>* GetFileRaw(::grpc::ClientContext* context, const ::filetransfer::GetRequest& request) override;
-    ::grpc::ClientAsyncReader< ::filetransfer::FileChunk>* AsyncGetFileRaw(::grpc::ClientContext* context, const ::filetransfer::GetRequest& request, ::grpc::CompletionQueue* cq, void* tag) override;
-    ::grpc::ClientAsyncReader< ::filetransfer::FileChunk>* PrepareAsyncGetFileRaw(::grpc::ClientContext* context, const ::filetransfer::GetRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::filetransfer::OperationStatus>* AsyncMergeFileRaw(::grpc::ClientContext* context, const ::filetransfer::FileRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::filetransfer::OperationStatus>* PrepareAsyncMergeFileRaw(::grpc::ClientContext* context, const ::filetransfer::FileRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientWriter< ::filetransfer::FileChunk>* OverwriteFileRaw(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response) override;
-    ::grpc::ClientAsyncWriter< ::filetransfer::FileChunk>* AsyncOverwriteFileRaw(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response, ::grpc::CompletionQueue* cq, void* tag) override;
-    ::grpc::ClientAsyncWriter< ::filetransfer::FileChunk>* PrepareAsyncOverwriteFileRaw(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::filetransfer::OperationStatus>* AsyncForwardLeaderFilesRaw(::grpc::ClientContext* context, const ::filetransfer::ForwardRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::filetransfer::OperationStatus>* PrepareAsyncForwardLeaderFilesRaw(::grpc::ClientContext* context, const ::filetransfer::ForwardRequest& request, ::grpc::CompletionQueue* cq) override;
-    const ::grpc::internal::RpcMethod rpcmethod_FileExists_;
-    const ::grpc::internal::RpcMethod rpcmethod_CreateFileLeader_;
+    ::grpc::ClientAsyncResponseReader< ::filetransfer::OperationStatus>* AsyncCreateFileRaw(::grpc::ClientContext* context, const ::filetransfer::FileOrderRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::filetransfer::OperationStatus>* PrepareAsyncCreateFileRaw(::grpc::ClientContext* context, const ::filetransfer::FileOrderRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientWriter< ::filetransfer::AppendRequest>* AppendFileRaw(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response) override;
+    ::grpc::ClientAsyncWriter< ::filetransfer::AppendRequest>* AsyncAppendFileRaw(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response, ::grpc::CompletionQueue* cq, void* tag) override;
+    ::grpc::ClientAsyncWriter< ::filetransfer::AppendRequest>* PrepareAsyncAppendFileRaw(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientReader< ::filetransfer::GetResponse>* GetFileRaw(::grpc::ClientContext* context, const ::filetransfer::FileRequest& request) override;
+    ::grpc::ClientAsyncReader< ::filetransfer::GetResponse>* AsyncGetFileRaw(::grpc::ClientContext* context, const ::filetransfer::FileRequest& request, ::grpc::CompletionQueue* cq, void* tag) override;
+    ::grpc::ClientAsyncReader< ::filetransfer::GetResponse>* PrepareAsyncGetFileRaw(::grpc::ClientContext* context, const ::filetransfer::FileRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::filetransfer::OperationStatus>* AsyncMergeFileRaw(::grpc::ClientContext* context, const ::filetransfer::MergeRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::filetransfer::OperationStatus>* PrepareAsyncMergeFileRaw(::grpc::ClientContext* context, const ::filetransfer::MergeRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientWriter< ::filetransfer::OverwriteRequest>* OverwriteFileRaw(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response) override;
+    ::grpc::ClientAsyncWriter< ::filetransfer::OverwriteRequest>* AsyncOverwriteFileRaw(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response, ::grpc::CompletionQueue* cq, void* tag) override;
+    ::grpc::ClientAsyncWriter< ::filetransfer::OverwriteRequest>* PrepareAsyncOverwriteFileRaw(::grpc::ClientContext* context, ::filetransfer::OperationStatus* response, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::filetransfer::OperationStatus>* AsyncUpdateFilesReplicationRaw(::grpc::ClientContext* context, const ::filetransfer::ReplicationRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::filetransfer::OperationStatus>* PrepareAsyncUpdateFilesReplicationRaw(::grpc::ClientContext* context, const ::filetransfer::ReplicationRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::filetransfer::OperationStatus>* AsyncUpdateOrderRaw(::grpc::ClientContext* context, const ::filetransfer::UpdateOrderRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::filetransfer::OperationStatus>* PrepareAsyncUpdateOrderRaw(::grpc::ClientContext* context, const ::filetransfer::UpdateOrderRequest& request, ::grpc::CompletionQueue* cq) override;
+    const ::grpc::internal::RpcMethod rpcmethod_CreateFile_;
     const ::grpc::internal::RpcMethod rpcmethod_AppendFile_;
     const ::grpc::internal::RpcMethod rpcmethod_GetFile_;
     const ::grpc::internal::RpcMethod rpcmethod_MergeFile_;
     const ::grpc::internal::RpcMethod rpcmethod_OverwriteFile_;
-    const ::grpc::internal::RpcMethod rpcmethod_ForwardLeaderFiles_;
+    const ::grpc::internal::RpcMethod rpcmethod_UpdateFilesReplication_;
+    const ::grpc::internal::RpcMethod rpcmethod_UpdateOrder_;
   };
   static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
 
@@ -241,52 +241,32 @@ class FileTransferService final {
    public:
     Service();
     virtual ~Service();
-    virtual ::grpc::Status FileExists(::grpc::ServerContext* context, const ::filetransfer::FileRequest* request, ::filetransfer::FileExistsStatus* response);
-    virtual ::grpc::Status CreateFileLeader(::grpc::ServerContext* context, const ::filetransfer::FileRequest* request, ::filetransfer::OperationStatus* response);
-    virtual ::grpc::Status AppendFile(::grpc::ServerContext* context, ::grpc::ServerReader< ::filetransfer::FileChunk>* reader, ::filetransfer::OperationStatus* response);
-    virtual ::grpc::Status GetFile(::grpc::ServerContext* context, const ::filetransfer::GetRequest* request, ::grpc::ServerWriter< ::filetransfer::FileChunk>* writer);
-    virtual ::grpc::Status MergeFile(::grpc::ServerContext* context, const ::filetransfer::FileRequest* request, ::filetransfer::OperationStatus* response);
-    virtual ::grpc::Status OverwriteFile(::grpc::ServerContext* context, ::grpc::ServerReader< ::filetransfer::FileChunk>* reader, ::filetransfer::OperationStatus* response);
-    virtual ::grpc::Status ForwardLeaderFiles(::grpc::ServerContext* context, const ::filetransfer::ForwardRequest* request, ::filetransfer::OperationStatus* response);
+    virtual ::grpc::Status CreateFile(::grpc::ServerContext* context, const ::filetransfer::FileOrderRequest* request, ::filetransfer::OperationStatus* response);
+    virtual ::grpc::Status AppendFile(::grpc::ServerContext* context, ::grpc::ServerReader< ::filetransfer::AppendRequest>* reader, ::filetransfer::OperationStatus* response);
+    virtual ::grpc::Status GetFile(::grpc::ServerContext* context, const ::filetransfer::FileRequest* request, ::grpc::ServerWriter< ::filetransfer::GetResponse>* writer);
+    virtual ::grpc::Status MergeFile(::grpc::ServerContext* context, const ::filetransfer::MergeRequest* request, ::filetransfer::OperationStatus* response);
+    virtual ::grpc::Status OverwriteFile(::grpc::ServerContext* context, ::grpc::ServerReader< ::filetransfer::OverwriteRequest>* reader, ::filetransfer::OperationStatus* response);
+    virtual ::grpc::Status UpdateFilesReplication(::grpc::ServerContext* context, const ::filetransfer::ReplicationRequest* request, ::filetransfer::OperationStatus* response);
+    virtual ::grpc::Status UpdateOrder(::grpc::ServerContext* context, const ::filetransfer::UpdateOrderRequest* request, ::filetransfer::OperationStatus* response);
   };
   template <class BaseClass>
-  class WithAsyncMethod_FileExists : public BaseClass {
+  class WithAsyncMethod_CreateFile : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithAsyncMethod_FileExists() {
+    WithAsyncMethod_CreateFile() {
       ::grpc::Service::MarkMethodAsync(0);
     }
-    ~WithAsyncMethod_FileExists() override {
+    ~WithAsyncMethod_CreateFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status FileExists(::grpc::ServerContext* /*context*/, const ::filetransfer::FileRequest* /*request*/, ::filetransfer::FileExistsStatus* /*response*/) override {
+    ::grpc::Status CreateFile(::grpc::ServerContext* /*context*/, const ::filetransfer::FileOrderRequest* /*request*/, ::filetransfer::OperationStatus* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestFileExists(::grpc::ServerContext* context, ::filetransfer::FileRequest* request, ::grpc::ServerAsyncResponseWriter< ::filetransfer::FileExistsStatus>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void RequestCreateFile(::grpc::ServerContext* context, ::filetransfer::FileOrderRequest* request, ::grpc::ServerAsyncResponseWriter< ::filetransfer::OperationStatus>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(0, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithAsyncMethod_CreateFileLeader : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithAsyncMethod_CreateFileLeader() {
-      ::grpc::Service::MarkMethodAsync(1);
-    }
-    ~WithAsyncMethod_CreateFileLeader() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status CreateFileLeader(::grpc::ServerContext* /*context*/, const ::filetransfer::FileRequest* /*request*/, ::filetransfer::OperationStatus* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestCreateFileLeader(::grpc::ServerContext* context, ::filetransfer::FileRequest* request, ::grpc::ServerAsyncResponseWriter< ::filetransfer::OperationStatus>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(1, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -295,18 +275,18 @@ class FileTransferService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_AppendFile() {
-      ::grpc::Service::MarkMethodAsync(2);
+      ::grpc::Service::MarkMethodAsync(1);
     }
     ~WithAsyncMethod_AppendFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status AppendFile(::grpc::ServerContext* /*context*/, ::grpc::ServerReader< ::filetransfer::FileChunk>* /*reader*/, ::filetransfer::OperationStatus* /*response*/) override {
+    ::grpc::Status AppendFile(::grpc::ServerContext* /*context*/, ::grpc::ServerReader< ::filetransfer::AppendRequest>* /*reader*/, ::filetransfer::OperationStatus* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestAppendFile(::grpc::ServerContext* context, ::grpc::ServerAsyncReader< ::filetransfer::OperationStatus, ::filetransfer::FileChunk>* reader, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncClientStreaming(2, context, reader, new_call_cq, notification_cq, tag);
+    void RequestAppendFile(::grpc::ServerContext* context, ::grpc::ServerAsyncReader< ::filetransfer::OperationStatus, ::filetransfer::AppendRequest>* reader, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncClientStreaming(1, context, reader, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -315,18 +295,18 @@ class FileTransferService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_GetFile() {
-      ::grpc::Service::MarkMethodAsync(3);
+      ::grpc::Service::MarkMethodAsync(2);
     }
     ~WithAsyncMethod_GetFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetFile(::grpc::ServerContext* /*context*/, const ::filetransfer::GetRequest* /*request*/, ::grpc::ServerWriter< ::filetransfer::FileChunk>* /*writer*/) override {
+    ::grpc::Status GetFile(::grpc::ServerContext* /*context*/, const ::filetransfer::FileRequest* /*request*/, ::grpc::ServerWriter< ::filetransfer::GetResponse>* /*writer*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestGetFile(::grpc::ServerContext* context, ::filetransfer::GetRequest* request, ::grpc::ServerAsyncWriter< ::filetransfer::FileChunk>* writer, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncServerStreaming(3, context, request, writer, new_call_cq, notification_cq, tag);
+    void RequestGetFile(::grpc::ServerContext* context, ::filetransfer::FileRequest* request, ::grpc::ServerAsyncWriter< ::filetransfer::GetResponse>* writer, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncServerStreaming(2, context, request, writer, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -335,18 +315,18 @@ class FileTransferService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_MergeFile() {
-      ::grpc::Service::MarkMethodAsync(4);
+      ::grpc::Service::MarkMethodAsync(3);
     }
     ~WithAsyncMethod_MergeFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status MergeFile(::grpc::ServerContext* /*context*/, const ::filetransfer::FileRequest* /*request*/, ::filetransfer::OperationStatus* /*response*/) override {
+    ::grpc::Status MergeFile(::grpc::ServerContext* /*context*/, const ::filetransfer::MergeRequest* /*request*/, ::filetransfer::OperationStatus* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestMergeFile(::grpc::ServerContext* context, ::filetransfer::FileRequest* request, ::grpc::ServerAsyncResponseWriter< ::filetransfer::OperationStatus>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
+    void RequestMergeFile(::grpc::ServerContext* context, ::filetransfer::MergeRequest* request, ::grpc::ServerAsyncResponseWriter< ::filetransfer::OperationStatus>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(3, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -355,94 +335,87 @@ class FileTransferService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_OverwriteFile() {
-      ::grpc::Service::MarkMethodAsync(5);
+      ::grpc::Service::MarkMethodAsync(4);
     }
     ~WithAsyncMethod_OverwriteFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status OverwriteFile(::grpc::ServerContext* /*context*/, ::grpc::ServerReader< ::filetransfer::FileChunk>* /*reader*/, ::filetransfer::OperationStatus* /*response*/) override {
+    ::grpc::Status OverwriteFile(::grpc::ServerContext* /*context*/, ::grpc::ServerReader< ::filetransfer::OverwriteRequest>* /*reader*/, ::filetransfer::OperationStatus* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestOverwriteFile(::grpc::ServerContext* context, ::grpc::ServerAsyncReader< ::filetransfer::OperationStatus, ::filetransfer::FileChunk>* reader, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncClientStreaming(5, context, reader, new_call_cq, notification_cq, tag);
+    void RequestOverwriteFile(::grpc::ServerContext* context, ::grpc::ServerAsyncReader< ::filetransfer::OperationStatus, ::filetransfer::OverwriteRequest>* reader, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncClientStreaming(4, context, reader, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
-  class WithAsyncMethod_ForwardLeaderFiles : public BaseClass {
+  class WithAsyncMethod_UpdateFilesReplication : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithAsyncMethod_ForwardLeaderFiles() {
-      ::grpc::Service::MarkMethodAsync(6);
+    WithAsyncMethod_UpdateFilesReplication() {
+      ::grpc::Service::MarkMethodAsync(5);
     }
-    ~WithAsyncMethod_ForwardLeaderFiles() override {
+    ~WithAsyncMethod_UpdateFilesReplication() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status ForwardLeaderFiles(::grpc::ServerContext* /*context*/, const ::filetransfer::ForwardRequest* /*request*/, ::filetransfer::OperationStatus* /*response*/) override {
+    ::grpc::Status UpdateFilesReplication(::grpc::ServerContext* /*context*/, const ::filetransfer::ReplicationRequest* /*request*/, ::filetransfer::OperationStatus* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestForwardLeaderFiles(::grpc::ServerContext* context, ::filetransfer::ForwardRequest* request, ::grpc::ServerAsyncResponseWriter< ::filetransfer::OperationStatus>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void RequestUpdateFilesReplication(::grpc::ServerContext* context, ::filetransfer::ReplicationRequest* request, ::grpc::ServerAsyncResponseWriter< ::filetransfer::OperationStatus>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(5, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_UpdateOrder : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_UpdateOrder() {
+      ::grpc::Service::MarkMethodAsync(6);
+    }
+    ~WithAsyncMethod_UpdateOrder() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status UpdateOrder(::grpc::ServerContext* /*context*/, const ::filetransfer::UpdateOrderRequest* /*request*/, ::filetransfer::OperationStatus* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestUpdateOrder(::grpc::ServerContext* context, ::filetransfer::UpdateOrderRequest* request, ::grpc::ServerAsyncResponseWriter< ::filetransfer::OperationStatus>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(6, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
-  typedef WithAsyncMethod_FileExists<WithAsyncMethod_CreateFileLeader<WithAsyncMethod_AppendFile<WithAsyncMethod_GetFile<WithAsyncMethod_MergeFile<WithAsyncMethod_OverwriteFile<WithAsyncMethod_ForwardLeaderFiles<Service > > > > > > > AsyncService;
+  typedef WithAsyncMethod_CreateFile<WithAsyncMethod_AppendFile<WithAsyncMethod_GetFile<WithAsyncMethod_MergeFile<WithAsyncMethod_OverwriteFile<WithAsyncMethod_UpdateFilesReplication<WithAsyncMethod_UpdateOrder<Service > > > > > > > AsyncService;
   template <class BaseClass>
-  class WithCallbackMethod_FileExists : public BaseClass {
+  class WithCallbackMethod_CreateFile : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithCallbackMethod_FileExists() {
+    WithCallbackMethod_CreateFile() {
       ::grpc::Service::MarkMethodCallback(0,
-          new ::grpc::internal::CallbackUnaryHandler< ::filetransfer::FileRequest, ::filetransfer::FileExistsStatus>(
+          new ::grpc::internal::CallbackUnaryHandler< ::filetransfer::FileOrderRequest, ::filetransfer::OperationStatus>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::filetransfer::FileRequest* request, ::filetransfer::FileExistsStatus* response) { return this->FileExists(context, request, response); }));}
-    void SetMessageAllocatorFor_FileExists(
-        ::grpc::MessageAllocator< ::filetransfer::FileRequest, ::filetransfer::FileExistsStatus>* allocator) {
+                   ::grpc::CallbackServerContext* context, const ::filetransfer::FileOrderRequest* request, ::filetransfer::OperationStatus* response) { return this->CreateFile(context, request, response); }));}
+    void SetMessageAllocatorFor_CreateFile(
+        ::grpc::MessageAllocator< ::filetransfer::FileOrderRequest, ::filetransfer::OperationStatus>* allocator) {
       ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(0);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::filetransfer::FileRequest, ::filetransfer::FileExistsStatus>*>(handler)
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::filetransfer::FileOrderRequest, ::filetransfer::OperationStatus>*>(handler)
               ->SetMessageAllocator(allocator);
     }
-    ~WithCallbackMethod_FileExists() override {
+    ~WithCallbackMethod_CreateFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status FileExists(::grpc::ServerContext* /*context*/, const ::filetransfer::FileRequest* /*request*/, ::filetransfer::FileExistsStatus* /*response*/) override {
+    ::grpc::Status CreateFile(::grpc::ServerContext* /*context*/, const ::filetransfer::FileOrderRequest* /*request*/, ::filetransfer::OperationStatus* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    virtual ::grpc::ServerUnaryReactor* FileExists(
-      ::grpc::CallbackServerContext* /*context*/, const ::filetransfer::FileRequest* /*request*/, ::filetransfer::FileExistsStatus* /*response*/)  { return nullptr; }
-  };
-  template <class BaseClass>
-  class WithCallbackMethod_CreateFileLeader : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithCallbackMethod_CreateFileLeader() {
-      ::grpc::Service::MarkMethodCallback(1,
-          new ::grpc::internal::CallbackUnaryHandler< ::filetransfer::FileRequest, ::filetransfer::OperationStatus>(
-            [this](
-                   ::grpc::CallbackServerContext* context, const ::filetransfer::FileRequest* request, ::filetransfer::OperationStatus* response) { return this->CreateFileLeader(context, request, response); }));}
-    void SetMessageAllocatorFor_CreateFileLeader(
-        ::grpc::MessageAllocator< ::filetransfer::FileRequest, ::filetransfer::OperationStatus>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(1);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::filetransfer::FileRequest, ::filetransfer::OperationStatus>*>(handler)
-              ->SetMessageAllocator(allocator);
-    }
-    ~WithCallbackMethod_CreateFileLeader() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status CreateFileLeader(::grpc::ServerContext* /*context*/, const ::filetransfer::FileRequest* /*request*/, ::filetransfer::OperationStatus* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    virtual ::grpc::ServerUnaryReactor* CreateFileLeader(
-      ::grpc::CallbackServerContext* /*context*/, const ::filetransfer::FileRequest* /*request*/, ::filetransfer::OperationStatus* /*response*/)  { return nullptr; }
+    virtual ::grpc::ServerUnaryReactor* CreateFile(
+      ::grpc::CallbackServerContext* /*context*/, const ::filetransfer::FileOrderRequest* /*request*/, ::filetransfer::OperationStatus* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
   class WithCallbackMethod_AppendFile : public BaseClass {
@@ -450,8 +423,8 @@ class FileTransferService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithCallbackMethod_AppendFile() {
-      ::grpc::Service::MarkMethodCallback(2,
-          new ::grpc::internal::CallbackClientStreamingHandler< ::filetransfer::FileChunk, ::filetransfer::OperationStatus>(
+      ::grpc::Service::MarkMethodCallback(1,
+          new ::grpc::internal::CallbackClientStreamingHandler< ::filetransfer::AppendRequest, ::filetransfer::OperationStatus>(
             [this](
                    ::grpc::CallbackServerContext* context, ::filetransfer::OperationStatus* response) { return this->AppendFile(context, response); }));
     }
@@ -459,11 +432,11 @@ class FileTransferService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status AppendFile(::grpc::ServerContext* /*context*/, ::grpc::ServerReader< ::filetransfer::FileChunk>* /*reader*/, ::filetransfer::OperationStatus* /*response*/) override {
+    ::grpc::Status AppendFile(::grpc::ServerContext* /*context*/, ::grpc::ServerReader< ::filetransfer::AppendRequest>* /*reader*/, ::filetransfer::OperationStatus* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    virtual ::grpc::ServerReadReactor< ::filetransfer::FileChunk>* AppendFile(
+    virtual ::grpc::ServerReadReactor< ::filetransfer::AppendRequest>* AppendFile(
       ::grpc::CallbackServerContext* /*context*/, ::filetransfer::OperationStatus* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
@@ -472,21 +445,21 @@ class FileTransferService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithCallbackMethod_GetFile() {
-      ::grpc::Service::MarkMethodCallback(3,
-          new ::grpc::internal::CallbackServerStreamingHandler< ::filetransfer::GetRequest, ::filetransfer::FileChunk>(
+      ::grpc::Service::MarkMethodCallback(2,
+          new ::grpc::internal::CallbackServerStreamingHandler< ::filetransfer::FileRequest, ::filetransfer::GetResponse>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::filetransfer::GetRequest* request) { return this->GetFile(context, request); }));
+                   ::grpc::CallbackServerContext* context, const ::filetransfer::FileRequest* request) { return this->GetFile(context, request); }));
     }
     ~WithCallbackMethod_GetFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetFile(::grpc::ServerContext* /*context*/, const ::filetransfer::GetRequest* /*request*/, ::grpc::ServerWriter< ::filetransfer::FileChunk>* /*writer*/) override {
+    ::grpc::Status GetFile(::grpc::ServerContext* /*context*/, const ::filetransfer::FileRequest* /*request*/, ::grpc::ServerWriter< ::filetransfer::GetResponse>* /*writer*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    virtual ::grpc::ServerWriteReactor< ::filetransfer::FileChunk>* GetFile(
-      ::grpc::CallbackServerContext* /*context*/, const ::filetransfer::GetRequest* /*request*/)  { return nullptr; }
+    virtual ::grpc::ServerWriteReactor< ::filetransfer::GetResponse>* GetFile(
+      ::grpc::CallbackServerContext* /*context*/, const ::filetransfer::FileRequest* /*request*/)  { return nullptr; }
   };
   template <class BaseClass>
   class WithCallbackMethod_MergeFile : public BaseClass {
@@ -494,26 +467,26 @@ class FileTransferService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithCallbackMethod_MergeFile() {
-      ::grpc::Service::MarkMethodCallback(4,
-          new ::grpc::internal::CallbackUnaryHandler< ::filetransfer::FileRequest, ::filetransfer::OperationStatus>(
+      ::grpc::Service::MarkMethodCallback(3,
+          new ::grpc::internal::CallbackUnaryHandler< ::filetransfer::MergeRequest, ::filetransfer::OperationStatus>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::filetransfer::FileRequest* request, ::filetransfer::OperationStatus* response) { return this->MergeFile(context, request, response); }));}
+                   ::grpc::CallbackServerContext* context, const ::filetransfer::MergeRequest* request, ::filetransfer::OperationStatus* response) { return this->MergeFile(context, request, response); }));}
     void SetMessageAllocatorFor_MergeFile(
-        ::grpc::MessageAllocator< ::filetransfer::FileRequest, ::filetransfer::OperationStatus>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(4);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::filetransfer::FileRequest, ::filetransfer::OperationStatus>*>(handler)
+        ::grpc::MessageAllocator< ::filetransfer::MergeRequest, ::filetransfer::OperationStatus>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(3);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::filetransfer::MergeRequest, ::filetransfer::OperationStatus>*>(handler)
               ->SetMessageAllocator(allocator);
     }
     ~WithCallbackMethod_MergeFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status MergeFile(::grpc::ServerContext* /*context*/, const ::filetransfer::FileRequest* /*request*/, ::filetransfer::OperationStatus* /*response*/) override {
+    ::grpc::Status MergeFile(::grpc::ServerContext* /*context*/, const ::filetransfer::MergeRequest* /*request*/, ::filetransfer::OperationStatus* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     virtual ::grpc::ServerUnaryReactor* MergeFile(
-      ::grpc::CallbackServerContext* /*context*/, const ::filetransfer::FileRequest* /*request*/, ::filetransfer::OperationStatus* /*response*/)  { return nullptr; }
+      ::grpc::CallbackServerContext* /*context*/, const ::filetransfer::MergeRequest* /*request*/, ::filetransfer::OperationStatus* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
   class WithCallbackMethod_OverwriteFile : public BaseClass {
@@ -521,8 +494,8 @@ class FileTransferService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithCallbackMethod_OverwriteFile() {
-      ::grpc::Service::MarkMethodCallback(5,
-          new ::grpc::internal::CallbackClientStreamingHandler< ::filetransfer::FileChunk, ::filetransfer::OperationStatus>(
+      ::grpc::Service::MarkMethodCallback(4,
+          new ::grpc::internal::CallbackClientStreamingHandler< ::filetransfer::OverwriteRequest, ::filetransfer::OperationStatus>(
             [this](
                    ::grpc::CallbackServerContext* context, ::filetransfer::OperationStatus* response) { return this->OverwriteFile(context, response); }));
     }
@@ -530,72 +503,82 @@ class FileTransferService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status OverwriteFile(::grpc::ServerContext* /*context*/, ::grpc::ServerReader< ::filetransfer::FileChunk>* /*reader*/, ::filetransfer::OperationStatus* /*response*/) override {
+    ::grpc::Status OverwriteFile(::grpc::ServerContext* /*context*/, ::grpc::ServerReader< ::filetransfer::OverwriteRequest>* /*reader*/, ::filetransfer::OperationStatus* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    virtual ::grpc::ServerReadReactor< ::filetransfer::FileChunk>* OverwriteFile(
+    virtual ::grpc::ServerReadReactor< ::filetransfer::OverwriteRequest>* OverwriteFile(
       ::grpc::CallbackServerContext* /*context*/, ::filetransfer::OperationStatus* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
-  class WithCallbackMethod_ForwardLeaderFiles : public BaseClass {
+  class WithCallbackMethod_UpdateFilesReplication : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithCallbackMethod_ForwardLeaderFiles() {
-      ::grpc::Service::MarkMethodCallback(6,
-          new ::grpc::internal::CallbackUnaryHandler< ::filetransfer::ForwardRequest, ::filetransfer::OperationStatus>(
+    WithCallbackMethod_UpdateFilesReplication() {
+      ::grpc::Service::MarkMethodCallback(5,
+          new ::grpc::internal::CallbackUnaryHandler< ::filetransfer::ReplicationRequest, ::filetransfer::OperationStatus>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::filetransfer::ForwardRequest* request, ::filetransfer::OperationStatus* response) { return this->ForwardLeaderFiles(context, request, response); }));}
-    void SetMessageAllocatorFor_ForwardLeaderFiles(
-        ::grpc::MessageAllocator< ::filetransfer::ForwardRequest, ::filetransfer::OperationStatus>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(6);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::filetransfer::ForwardRequest, ::filetransfer::OperationStatus>*>(handler)
+                   ::grpc::CallbackServerContext* context, const ::filetransfer::ReplicationRequest* request, ::filetransfer::OperationStatus* response) { return this->UpdateFilesReplication(context, request, response); }));}
+    void SetMessageAllocatorFor_UpdateFilesReplication(
+        ::grpc::MessageAllocator< ::filetransfer::ReplicationRequest, ::filetransfer::OperationStatus>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(5);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::filetransfer::ReplicationRequest, ::filetransfer::OperationStatus>*>(handler)
               ->SetMessageAllocator(allocator);
     }
-    ~WithCallbackMethod_ForwardLeaderFiles() override {
+    ~WithCallbackMethod_UpdateFilesReplication() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status ForwardLeaderFiles(::grpc::ServerContext* /*context*/, const ::filetransfer::ForwardRequest* /*request*/, ::filetransfer::OperationStatus* /*response*/) override {
+    ::grpc::Status UpdateFilesReplication(::grpc::ServerContext* /*context*/, const ::filetransfer::ReplicationRequest* /*request*/, ::filetransfer::OperationStatus* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    virtual ::grpc::ServerUnaryReactor* ForwardLeaderFiles(
-      ::grpc::CallbackServerContext* /*context*/, const ::filetransfer::ForwardRequest* /*request*/, ::filetransfer::OperationStatus* /*response*/)  { return nullptr; }
+    virtual ::grpc::ServerUnaryReactor* UpdateFilesReplication(
+      ::grpc::CallbackServerContext* /*context*/, const ::filetransfer::ReplicationRequest* /*request*/, ::filetransfer::OperationStatus* /*response*/)  { return nullptr; }
   };
-  typedef WithCallbackMethod_FileExists<WithCallbackMethod_CreateFileLeader<WithCallbackMethod_AppendFile<WithCallbackMethod_GetFile<WithCallbackMethod_MergeFile<WithCallbackMethod_OverwriteFile<WithCallbackMethod_ForwardLeaderFiles<Service > > > > > > > CallbackService;
+  template <class BaseClass>
+  class WithCallbackMethod_UpdateOrder : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_UpdateOrder() {
+      ::grpc::Service::MarkMethodCallback(6,
+          new ::grpc::internal::CallbackUnaryHandler< ::filetransfer::UpdateOrderRequest, ::filetransfer::OperationStatus>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::filetransfer::UpdateOrderRequest* request, ::filetransfer::OperationStatus* response) { return this->UpdateOrder(context, request, response); }));}
+    void SetMessageAllocatorFor_UpdateOrder(
+        ::grpc::MessageAllocator< ::filetransfer::UpdateOrderRequest, ::filetransfer::OperationStatus>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(6);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::filetransfer::UpdateOrderRequest, ::filetransfer::OperationStatus>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_UpdateOrder() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status UpdateOrder(::grpc::ServerContext* /*context*/, const ::filetransfer::UpdateOrderRequest* /*request*/, ::filetransfer::OperationStatus* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* UpdateOrder(
+      ::grpc::CallbackServerContext* /*context*/, const ::filetransfer::UpdateOrderRequest* /*request*/, ::filetransfer::OperationStatus* /*response*/)  { return nullptr; }
+  };
+  typedef WithCallbackMethod_CreateFile<WithCallbackMethod_AppendFile<WithCallbackMethod_GetFile<WithCallbackMethod_MergeFile<WithCallbackMethod_OverwriteFile<WithCallbackMethod_UpdateFilesReplication<WithCallbackMethod_UpdateOrder<Service > > > > > > > CallbackService;
   typedef CallbackService ExperimentalCallbackService;
   template <class BaseClass>
-  class WithGenericMethod_FileExists : public BaseClass {
+  class WithGenericMethod_CreateFile : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithGenericMethod_FileExists() {
+    WithGenericMethod_CreateFile() {
       ::grpc::Service::MarkMethodGeneric(0);
     }
-    ~WithGenericMethod_FileExists() override {
+    ~WithGenericMethod_CreateFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status FileExists(::grpc::ServerContext* /*context*/, const ::filetransfer::FileRequest* /*request*/, ::filetransfer::FileExistsStatus* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-  };
-  template <class BaseClass>
-  class WithGenericMethod_CreateFileLeader : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithGenericMethod_CreateFileLeader() {
-      ::grpc::Service::MarkMethodGeneric(1);
-    }
-    ~WithGenericMethod_CreateFileLeader() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status CreateFileLeader(::grpc::ServerContext* /*context*/, const ::filetransfer::FileRequest* /*request*/, ::filetransfer::OperationStatus* /*response*/) override {
+    ::grpc::Status CreateFile(::grpc::ServerContext* /*context*/, const ::filetransfer::FileOrderRequest* /*request*/, ::filetransfer::OperationStatus* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -606,13 +589,13 @@ class FileTransferService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_AppendFile() {
-      ::grpc::Service::MarkMethodGeneric(2);
+      ::grpc::Service::MarkMethodGeneric(1);
     }
     ~WithGenericMethod_AppendFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status AppendFile(::grpc::ServerContext* /*context*/, ::grpc::ServerReader< ::filetransfer::FileChunk>* /*reader*/, ::filetransfer::OperationStatus* /*response*/) override {
+    ::grpc::Status AppendFile(::grpc::ServerContext* /*context*/, ::grpc::ServerReader< ::filetransfer::AppendRequest>* /*reader*/, ::filetransfer::OperationStatus* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -623,13 +606,13 @@ class FileTransferService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_GetFile() {
-      ::grpc::Service::MarkMethodGeneric(3);
+      ::grpc::Service::MarkMethodGeneric(2);
     }
     ~WithGenericMethod_GetFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetFile(::grpc::ServerContext* /*context*/, const ::filetransfer::GetRequest* /*request*/, ::grpc::ServerWriter< ::filetransfer::FileChunk>* /*writer*/) override {
+    ::grpc::Status GetFile(::grpc::ServerContext* /*context*/, const ::filetransfer::FileRequest* /*request*/, ::grpc::ServerWriter< ::filetransfer::GetResponse>* /*writer*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -640,13 +623,13 @@ class FileTransferService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_MergeFile() {
-      ::grpc::Service::MarkMethodGeneric(4);
+      ::grpc::Service::MarkMethodGeneric(3);
     }
     ~WithGenericMethod_MergeFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status MergeFile(::grpc::ServerContext* /*context*/, const ::filetransfer::FileRequest* /*request*/, ::filetransfer::OperationStatus* /*response*/) override {
+    ::grpc::Status MergeFile(::grpc::ServerContext* /*context*/, const ::filetransfer::MergeRequest* /*request*/, ::filetransfer::OperationStatus* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -657,72 +640,69 @@ class FileTransferService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_OverwriteFile() {
-      ::grpc::Service::MarkMethodGeneric(5);
+      ::grpc::Service::MarkMethodGeneric(4);
     }
     ~WithGenericMethod_OverwriteFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status OverwriteFile(::grpc::ServerContext* /*context*/, ::grpc::ServerReader< ::filetransfer::FileChunk>* /*reader*/, ::filetransfer::OperationStatus* /*response*/) override {
+    ::grpc::Status OverwriteFile(::grpc::ServerContext* /*context*/, ::grpc::ServerReader< ::filetransfer::OverwriteRequest>* /*reader*/, ::filetransfer::OperationStatus* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
   };
   template <class BaseClass>
-  class WithGenericMethod_ForwardLeaderFiles : public BaseClass {
+  class WithGenericMethod_UpdateFilesReplication : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithGenericMethod_ForwardLeaderFiles() {
+    WithGenericMethod_UpdateFilesReplication() {
+      ::grpc::Service::MarkMethodGeneric(5);
+    }
+    ~WithGenericMethod_UpdateFilesReplication() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status UpdateFilesReplication(::grpc::ServerContext* /*context*/, const ::filetransfer::ReplicationRequest* /*request*/, ::filetransfer::OperationStatus* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_UpdateOrder : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_UpdateOrder() {
       ::grpc::Service::MarkMethodGeneric(6);
     }
-    ~WithGenericMethod_ForwardLeaderFiles() override {
+    ~WithGenericMethod_UpdateOrder() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status ForwardLeaderFiles(::grpc::ServerContext* /*context*/, const ::filetransfer::ForwardRequest* /*request*/, ::filetransfer::OperationStatus* /*response*/) override {
+    ::grpc::Status UpdateOrder(::grpc::ServerContext* /*context*/, const ::filetransfer::UpdateOrderRequest* /*request*/, ::filetransfer::OperationStatus* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
   };
   template <class BaseClass>
-  class WithRawMethod_FileExists : public BaseClass {
+  class WithRawMethod_CreateFile : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithRawMethod_FileExists() {
+    WithRawMethod_CreateFile() {
       ::grpc::Service::MarkMethodRaw(0);
     }
-    ~WithRawMethod_FileExists() override {
+    ~WithRawMethod_CreateFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status FileExists(::grpc::ServerContext* /*context*/, const ::filetransfer::FileRequest* /*request*/, ::filetransfer::FileExistsStatus* /*response*/) override {
+    ::grpc::Status CreateFile(::grpc::ServerContext* /*context*/, const ::filetransfer::FileOrderRequest* /*request*/, ::filetransfer::OperationStatus* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestFileExists(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void RequestCreateFile(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(0, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithRawMethod_CreateFileLeader : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithRawMethod_CreateFileLeader() {
-      ::grpc::Service::MarkMethodRaw(1);
-    }
-    ~WithRawMethod_CreateFileLeader() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status CreateFileLeader(::grpc::ServerContext* /*context*/, const ::filetransfer::FileRequest* /*request*/, ::filetransfer::OperationStatus* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestCreateFileLeader(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(1, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -731,18 +711,18 @@ class FileTransferService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_AppendFile() {
-      ::grpc::Service::MarkMethodRaw(2);
+      ::grpc::Service::MarkMethodRaw(1);
     }
     ~WithRawMethod_AppendFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status AppendFile(::grpc::ServerContext* /*context*/, ::grpc::ServerReader< ::filetransfer::FileChunk>* /*reader*/, ::filetransfer::OperationStatus* /*response*/) override {
+    ::grpc::Status AppendFile(::grpc::ServerContext* /*context*/, ::grpc::ServerReader< ::filetransfer::AppendRequest>* /*reader*/, ::filetransfer::OperationStatus* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestAppendFile(::grpc::ServerContext* context, ::grpc::ServerAsyncReader< ::grpc::ByteBuffer, ::grpc::ByteBuffer>* reader, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncClientStreaming(2, context, reader, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncClientStreaming(1, context, reader, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -751,18 +731,18 @@ class FileTransferService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_GetFile() {
-      ::grpc::Service::MarkMethodRaw(3);
+      ::grpc::Service::MarkMethodRaw(2);
     }
     ~WithRawMethod_GetFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetFile(::grpc::ServerContext* /*context*/, const ::filetransfer::GetRequest* /*request*/, ::grpc::ServerWriter< ::filetransfer::FileChunk>* /*writer*/) override {
+    ::grpc::Status GetFile(::grpc::ServerContext* /*context*/, const ::filetransfer::FileRequest* /*request*/, ::grpc::ServerWriter< ::filetransfer::GetResponse>* /*writer*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestGetFile(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncWriter< ::grpc::ByteBuffer>* writer, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncServerStreaming(3, context, request, writer, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncServerStreaming(2, context, request, writer, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -771,18 +751,18 @@ class FileTransferService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_MergeFile() {
-      ::grpc::Service::MarkMethodRaw(4);
+      ::grpc::Service::MarkMethodRaw(3);
     }
     ~WithRawMethod_MergeFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status MergeFile(::grpc::ServerContext* /*context*/, const ::filetransfer::FileRequest* /*request*/, ::filetransfer::OperationStatus* /*response*/) override {
+    ::grpc::Status MergeFile(::grpc::ServerContext* /*context*/, const ::filetransfer::MergeRequest* /*request*/, ::filetransfer::OperationStatus* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestMergeFile(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(3, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -791,82 +771,80 @@ class FileTransferService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_OverwriteFile() {
-      ::grpc::Service::MarkMethodRaw(5);
+      ::grpc::Service::MarkMethodRaw(4);
     }
     ~WithRawMethod_OverwriteFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status OverwriteFile(::grpc::ServerContext* /*context*/, ::grpc::ServerReader< ::filetransfer::FileChunk>* /*reader*/, ::filetransfer::OperationStatus* /*response*/) override {
+    ::grpc::Status OverwriteFile(::grpc::ServerContext* /*context*/, ::grpc::ServerReader< ::filetransfer::OverwriteRequest>* /*reader*/, ::filetransfer::OperationStatus* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestOverwriteFile(::grpc::ServerContext* context, ::grpc::ServerAsyncReader< ::grpc::ByteBuffer, ::grpc::ByteBuffer>* reader, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncClientStreaming(5, context, reader, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncClientStreaming(4, context, reader, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
-  class WithRawMethod_ForwardLeaderFiles : public BaseClass {
+  class WithRawMethod_UpdateFilesReplication : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithRawMethod_ForwardLeaderFiles() {
-      ::grpc::Service::MarkMethodRaw(6);
+    WithRawMethod_UpdateFilesReplication() {
+      ::grpc::Service::MarkMethodRaw(5);
     }
-    ~WithRawMethod_ForwardLeaderFiles() override {
+    ~WithRawMethod_UpdateFilesReplication() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status ForwardLeaderFiles(::grpc::ServerContext* /*context*/, const ::filetransfer::ForwardRequest* /*request*/, ::filetransfer::OperationStatus* /*response*/) override {
+    ::grpc::Status UpdateFilesReplication(::grpc::ServerContext* /*context*/, const ::filetransfer::ReplicationRequest* /*request*/, ::filetransfer::OperationStatus* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestForwardLeaderFiles(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void RequestUpdateFilesReplication(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(5, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_UpdateOrder : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_UpdateOrder() {
+      ::grpc::Service::MarkMethodRaw(6);
+    }
+    ~WithRawMethod_UpdateOrder() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status UpdateOrder(::grpc::ServerContext* /*context*/, const ::filetransfer::UpdateOrderRequest* /*request*/, ::filetransfer::OperationStatus* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestUpdateOrder(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(6, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
-  class WithRawCallbackMethod_FileExists : public BaseClass {
+  class WithRawCallbackMethod_CreateFile : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithRawCallbackMethod_FileExists() {
+    WithRawCallbackMethod_CreateFile() {
       ::grpc::Service::MarkMethodRawCallback(0,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->FileExists(context, request, response); }));
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->CreateFile(context, request, response); }));
     }
-    ~WithRawCallbackMethod_FileExists() override {
+    ~WithRawCallbackMethod_CreateFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status FileExists(::grpc::ServerContext* /*context*/, const ::filetransfer::FileRequest* /*request*/, ::filetransfer::FileExistsStatus* /*response*/) override {
+    ::grpc::Status CreateFile(::grpc::ServerContext* /*context*/, const ::filetransfer::FileOrderRequest* /*request*/, ::filetransfer::OperationStatus* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    virtual ::grpc::ServerUnaryReactor* FileExists(
-      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
-  };
-  template <class BaseClass>
-  class WithRawCallbackMethod_CreateFileLeader : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithRawCallbackMethod_CreateFileLeader() {
-      ::grpc::Service::MarkMethodRawCallback(1,
-          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
-            [this](
-                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->CreateFileLeader(context, request, response); }));
-    }
-    ~WithRawCallbackMethod_CreateFileLeader() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status CreateFileLeader(::grpc::ServerContext* /*context*/, const ::filetransfer::FileRequest* /*request*/, ::filetransfer::OperationStatus* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    virtual ::grpc::ServerUnaryReactor* CreateFileLeader(
+    virtual ::grpc::ServerUnaryReactor* CreateFile(
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
@@ -875,7 +853,7 @@ class FileTransferService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawCallbackMethod_AppendFile() {
-      ::grpc::Service::MarkMethodRawCallback(2,
+      ::grpc::Service::MarkMethodRawCallback(1,
           new ::grpc::internal::CallbackClientStreamingHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
                    ::grpc::CallbackServerContext* context, ::grpc::ByteBuffer* response) { return this->AppendFile(context, response); }));
@@ -884,7 +862,7 @@ class FileTransferService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status AppendFile(::grpc::ServerContext* /*context*/, ::grpc::ServerReader< ::filetransfer::FileChunk>* /*reader*/, ::filetransfer::OperationStatus* /*response*/) override {
+    ::grpc::Status AppendFile(::grpc::ServerContext* /*context*/, ::grpc::ServerReader< ::filetransfer::AppendRequest>* /*reader*/, ::filetransfer::OperationStatus* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -897,7 +875,7 @@ class FileTransferService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawCallbackMethod_GetFile() {
-      ::grpc::Service::MarkMethodRawCallback(3,
+      ::grpc::Service::MarkMethodRawCallback(2,
           new ::grpc::internal::CallbackServerStreamingHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
                    ::grpc::CallbackServerContext* context, const::grpc::ByteBuffer* request) { return this->GetFile(context, request); }));
@@ -906,7 +884,7 @@ class FileTransferService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetFile(::grpc::ServerContext* /*context*/, const ::filetransfer::GetRequest* /*request*/, ::grpc::ServerWriter< ::filetransfer::FileChunk>* /*writer*/) override {
+    ::grpc::Status GetFile(::grpc::ServerContext* /*context*/, const ::filetransfer::FileRequest* /*request*/, ::grpc::ServerWriter< ::filetransfer::GetResponse>* /*writer*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -919,7 +897,7 @@ class FileTransferService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawCallbackMethod_MergeFile() {
-      ::grpc::Service::MarkMethodRawCallback(4,
+      ::grpc::Service::MarkMethodRawCallback(3,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->MergeFile(context, request, response); }));
@@ -928,7 +906,7 @@ class FileTransferService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status MergeFile(::grpc::ServerContext* /*context*/, const ::filetransfer::FileRequest* /*request*/, ::filetransfer::OperationStatus* /*response*/) override {
+    ::grpc::Status MergeFile(::grpc::ServerContext* /*context*/, const ::filetransfer::MergeRequest* /*request*/, ::filetransfer::OperationStatus* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -941,7 +919,7 @@ class FileTransferService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawCallbackMethod_OverwriteFile() {
-      ::grpc::Service::MarkMethodRawCallback(5,
+      ::grpc::Service::MarkMethodRawCallback(4,
           new ::grpc::internal::CallbackClientStreamingHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
                    ::grpc::CallbackServerContext* context, ::grpc::ByteBuffer* response) { return this->OverwriteFile(context, response); }));
@@ -950,7 +928,7 @@ class FileTransferService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status OverwriteFile(::grpc::ServerContext* /*context*/, ::grpc::ServerReader< ::filetransfer::FileChunk>* /*reader*/, ::filetransfer::OperationStatus* /*response*/) override {
+    ::grpc::Status OverwriteFile(::grpc::ServerContext* /*context*/, ::grpc::ServerReader< ::filetransfer::OverwriteRequest>* /*reader*/, ::filetransfer::OperationStatus* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -958,80 +936,75 @@ class FileTransferService final {
       ::grpc::CallbackServerContext* /*context*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
-  class WithRawCallbackMethod_ForwardLeaderFiles : public BaseClass {
+  class WithRawCallbackMethod_UpdateFilesReplication : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithRawCallbackMethod_ForwardLeaderFiles() {
-      ::grpc::Service::MarkMethodRawCallback(6,
+    WithRawCallbackMethod_UpdateFilesReplication() {
+      ::grpc::Service::MarkMethodRawCallback(5,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->ForwardLeaderFiles(context, request, response); }));
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->UpdateFilesReplication(context, request, response); }));
     }
-    ~WithRawCallbackMethod_ForwardLeaderFiles() override {
+    ~WithRawCallbackMethod_UpdateFilesReplication() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status ForwardLeaderFiles(::grpc::ServerContext* /*context*/, const ::filetransfer::ForwardRequest* /*request*/, ::filetransfer::OperationStatus* /*response*/) override {
+    ::grpc::Status UpdateFilesReplication(::grpc::ServerContext* /*context*/, const ::filetransfer::ReplicationRequest* /*request*/, ::filetransfer::OperationStatus* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    virtual ::grpc::ServerUnaryReactor* ForwardLeaderFiles(
+    virtual ::grpc::ServerUnaryReactor* UpdateFilesReplication(
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
-  class WithStreamedUnaryMethod_FileExists : public BaseClass {
+  class WithRawCallbackMethod_UpdateOrder : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithStreamedUnaryMethod_FileExists() {
-      ::grpc::Service::MarkMethodStreamed(0,
-        new ::grpc::internal::StreamedUnaryHandler<
-          ::filetransfer::FileRequest, ::filetransfer::FileExistsStatus>(
-            [this](::grpc::ServerContext* context,
-                   ::grpc::ServerUnaryStreamer<
-                     ::filetransfer::FileRequest, ::filetransfer::FileExistsStatus>* streamer) {
-                       return this->StreamedFileExists(context,
-                         streamer);
-                  }));
+    WithRawCallbackMethod_UpdateOrder() {
+      ::grpc::Service::MarkMethodRawCallback(6,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->UpdateOrder(context, request, response); }));
     }
-    ~WithStreamedUnaryMethod_FileExists() override {
+    ~WithRawCallbackMethod_UpdateOrder() override {
       BaseClassMustBeDerivedFromService(this);
     }
-    // disable regular version of this method
-    ::grpc::Status FileExists(::grpc::ServerContext* /*context*/, const ::filetransfer::FileRequest* /*request*/, ::filetransfer::FileExistsStatus* /*response*/) override {
+    // disable synchronous version of this method
+    ::grpc::Status UpdateOrder(::grpc::ServerContext* /*context*/, const ::filetransfer::UpdateOrderRequest* /*request*/, ::filetransfer::OperationStatus* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedFileExists(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::filetransfer::FileRequest,::filetransfer::FileExistsStatus>* server_unary_streamer) = 0;
+    virtual ::grpc::ServerUnaryReactor* UpdateOrder(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
-  class WithStreamedUnaryMethod_CreateFileLeader : public BaseClass {
+  class WithStreamedUnaryMethod_CreateFile : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithStreamedUnaryMethod_CreateFileLeader() {
-      ::grpc::Service::MarkMethodStreamed(1,
+    WithStreamedUnaryMethod_CreateFile() {
+      ::grpc::Service::MarkMethodStreamed(0,
         new ::grpc::internal::StreamedUnaryHandler<
-          ::filetransfer::FileRequest, ::filetransfer::OperationStatus>(
+          ::filetransfer::FileOrderRequest, ::filetransfer::OperationStatus>(
             [this](::grpc::ServerContext* context,
                    ::grpc::ServerUnaryStreamer<
-                     ::filetransfer::FileRequest, ::filetransfer::OperationStatus>* streamer) {
-                       return this->StreamedCreateFileLeader(context,
+                     ::filetransfer::FileOrderRequest, ::filetransfer::OperationStatus>* streamer) {
+                       return this->StreamedCreateFile(context,
                          streamer);
                   }));
     }
-    ~WithStreamedUnaryMethod_CreateFileLeader() override {
+    ~WithStreamedUnaryMethod_CreateFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status CreateFileLeader(::grpc::ServerContext* /*context*/, const ::filetransfer::FileRequest* /*request*/, ::filetransfer::OperationStatus* /*response*/) override {
+    ::grpc::Status CreateFile(::grpc::ServerContext* /*context*/, const ::filetransfer::FileOrderRequest* /*request*/, ::filetransfer::OperationStatus* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedCreateFileLeader(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::filetransfer::FileRequest,::filetransfer::OperationStatus>* server_unary_streamer) = 0;
+    virtual ::grpc::Status StreamedCreateFile(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::filetransfer::FileOrderRequest,::filetransfer::OperationStatus>* server_unary_streamer) = 0;
   };
   template <class BaseClass>
   class WithStreamedUnaryMethod_MergeFile : public BaseClass {
@@ -1039,12 +1012,12 @@ class FileTransferService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_MergeFile() {
-      ::grpc::Service::MarkMethodStreamed(4,
+      ::grpc::Service::MarkMethodStreamed(3,
         new ::grpc::internal::StreamedUnaryHandler<
-          ::filetransfer::FileRequest, ::filetransfer::OperationStatus>(
+          ::filetransfer::MergeRequest, ::filetransfer::OperationStatus>(
             [this](::grpc::ServerContext* context,
                    ::grpc::ServerUnaryStreamer<
-                     ::filetransfer::FileRequest, ::filetransfer::OperationStatus>* streamer) {
+                     ::filetransfer::MergeRequest, ::filetransfer::OperationStatus>* streamer) {
                        return this->StreamedMergeFile(context,
                          streamer);
                   }));
@@ -1053,53 +1026,80 @@ class FileTransferService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status MergeFile(::grpc::ServerContext* /*context*/, const ::filetransfer::FileRequest* /*request*/, ::filetransfer::OperationStatus* /*response*/) override {
+    ::grpc::Status MergeFile(::grpc::ServerContext* /*context*/, const ::filetransfer::MergeRequest* /*request*/, ::filetransfer::OperationStatus* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedMergeFile(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::filetransfer::FileRequest,::filetransfer::OperationStatus>* server_unary_streamer) = 0;
+    virtual ::grpc::Status StreamedMergeFile(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::filetransfer::MergeRequest,::filetransfer::OperationStatus>* server_unary_streamer) = 0;
   };
   template <class BaseClass>
-  class WithStreamedUnaryMethod_ForwardLeaderFiles : public BaseClass {
+  class WithStreamedUnaryMethod_UpdateFilesReplication : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithStreamedUnaryMethod_ForwardLeaderFiles() {
-      ::grpc::Service::MarkMethodStreamed(6,
+    WithStreamedUnaryMethod_UpdateFilesReplication() {
+      ::grpc::Service::MarkMethodStreamed(5,
         new ::grpc::internal::StreamedUnaryHandler<
-          ::filetransfer::ForwardRequest, ::filetransfer::OperationStatus>(
+          ::filetransfer::ReplicationRequest, ::filetransfer::OperationStatus>(
             [this](::grpc::ServerContext* context,
                    ::grpc::ServerUnaryStreamer<
-                     ::filetransfer::ForwardRequest, ::filetransfer::OperationStatus>* streamer) {
-                       return this->StreamedForwardLeaderFiles(context,
+                     ::filetransfer::ReplicationRequest, ::filetransfer::OperationStatus>* streamer) {
+                       return this->StreamedUpdateFilesReplication(context,
                          streamer);
                   }));
     }
-    ~WithStreamedUnaryMethod_ForwardLeaderFiles() override {
+    ~WithStreamedUnaryMethod_UpdateFilesReplication() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status ForwardLeaderFiles(::grpc::ServerContext* /*context*/, const ::filetransfer::ForwardRequest* /*request*/, ::filetransfer::OperationStatus* /*response*/) override {
+    ::grpc::Status UpdateFilesReplication(::grpc::ServerContext* /*context*/, const ::filetransfer::ReplicationRequest* /*request*/, ::filetransfer::OperationStatus* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedForwardLeaderFiles(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::filetransfer::ForwardRequest,::filetransfer::OperationStatus>* server_unary_streamer) = 0;
+    virtual ::grpc::Status StreamedUpdateFilesReplication(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::filetransfer::ReplicationRequest,::filetransfer::OperationStatus>* server_unary_streamer) = 0;
   };
-  typedef WithStreamedUnaryMethod_FileExists<WithStreamedUnaryMethod_CreateFileLeader<WithStreamedUnaryMethod_MergeFile<WithStreamedUnaryMethod_ForwardLeaderFiles<Service > > > > StreamedUnaryService;
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_UpdateOrder : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_UpdateOrder() {
+      ::grpc::Service::MarkMethodStreamed(6,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::filetransfer::UpdateOrderRequest, ::filetransfer::OperationStatus>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::filetransfer::UpdateOrderRequest, ::filetransfer::OperationStatus>* streamer) {
+                       return this->StreamedUpdateOrder(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_UpdateOrder() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status UpdateOrder(::grpc::ServerContext* /*context*/, const ::filetransfer::UpdateOrderRequest* /*request*/, ::filetransfer::OperationStatus* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedUpdateOrder(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::filetransfer::UpdateOrderRequest,::filetransfer::OperationStatus>* server_unary_streamer) = 0;
+  };
+  typedef WithStreamedUnaryMethod_CreateFile<WithStreamedUnaryMethod_MergeFile<WithStreamedUnaryMethod_UpdateFilesReplication<WithStreamedUnaryMethod_UpdateOrder<Service > > > > StreamedUnaryService;
   template <class BaseClass>
   class WithSplitStreamingMethod_GetFile : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithSplitStreamingMethod_GetFile() {
-      ::grpc::Service::MarkMethodStreamed(3,
+      ::grpc::Service::MarkMethodStreamed(2,
         new ::grpc::internal::SplitServerStreamingHandler<
-          ::filetransfer::GetRequest, ::filetransfer::FileChunk>(
+          ::filetransfer::FileRequest, ::filetransfer::GetResponse>(
             [this](::grpc::ServerContext* context,
                    ::grpc::ServerSplitStreamer<
-                     ::filetransfer::GetRequest, ::filetransfer::FileChunk>* streamer) {
+                     ::filetransfer::FileRequest, ::filetransfer::GetResponse>* streamer) {
                        return this->StreamedGetFile(context,
                          streamer);
                   }));
@@ -1108,15 +1108,15 @@ class FileTransferService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status GetFile(::grpc::ServerContext* /*context*/, const ::filetransfer::GetRequest* /*request*/, ::grpc::ServerWriter< ::filetransfer::FileChunk>* /*writer*/) override {
+    ::grpc::Status GetFile(::grpc::ServerContext* /*context*/, const ::filetransfer::FileRequest* /*request*/, ::grpc::ServerWriter< ::filetransfer::GetResponse>* /*writer*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     // replace default version of method with split streamed
-    virtual ::grpc::Status StreamedGetFile(::grpc::ServerContext* context, ::grpc::ServerSplitStreamer< ::filetransfer::GetRequest,::filetransfer::FileChunk>* server_split_streamer) = 0;
+    virtual ::grpc::Status StreamedGetFile(::grpc::ServerContext* context, ::grpc::ServerSplitStreamer< ::filetransfer::FileRequest,::filetransfer::GetResponse>* server_split_streamer) = 0;
   };
   typedef WithSplitStreamingMethod_GetFile<Service > SplitStreamedService;
-  typedef WithStreamedUnaryMethod_FileExists<WithStreamedUnaryMethod_CreateFileLeader<WithSplitStreamingMethod_GetFile<WithStreamedUnaryMethod_MergeFile<WithStreamedUnaryMethod_ForwardLeaderFiles<Service > > > > > StreamedService;
+  typedef WithStreamedUnaryMethod_CreateFile<WithSplitStreamingMethod_GetFile<WithStreamedUnaryMethod_MergeFile<WithStreamedUnaryMethod_UpdateFilesReplication<WithStreamedUnaryMethod_UpdateOrder<Service > > > > > StreamedService;
 };
 
 }  // namespace filetransfer

@@ -3,40 +3,79 @@ syntax = "proto3";
 package filetransfer;
 
 service FileTransferService {
-  rpc FileExists(FileRequest) returns (FileExistsStatus);
-  rpc CreateFileLeader(FileRequest) returns (OperationStatus);
-  rpc AppendFile(stream FileChunk) returns (OperationStatus);
-  rpc GetFile(GetRequest) returns (stream FileChunk);
-  rpc MergeFile(FileRequest) returns (OperationStatus);
-  rpc OverwriteFile(stream FileChunk) returns (OperationStatus);
-  rpc ForwardLeaderFiles(ForwardRequest) returns (OperationStatus);
+  rpc CreateFile(FileOrderRequest) returns (OperationStatus);
+  rpc AppendFile(stream AppendRequest) returns (OperationStatus);
+  rpc GetFile(FileRequest) returns (stream GetResponse);
+  rpc MergeFile(MergeRequest) returns (OperationStatus);
+  rpc OverwriteFile(stream OverwriteRequest) returns (OperationStatus);
+  rpc UpdateFilesReplication(ReplicationRequest) returns (OperationStatus);
+  rpc UpdateOrder(UpdateOrderRequest) returns (OperationStatus);
+}
+
+enum StatusCode {
+  SUCCESS = 0;
+  INVALID = 1;
+  NOT_FOUND = 2;
+  ALREADY_EXISTS = 3;
+}
+
+message OperationStatus {
+  StatusCode status = 1;
+  string message = 2;
 }
 
 message FileRequest {
   string filename = 1;
 }
 
-message FileExistsStatus {
-  bool exists = 1;
-}
-
-message FileChunk {
-  // The filename is only set in the first message
-  string filename = 2;
-  bytes content = 3;
-}
-
-message OperationStatus {
-  bool success = 1;
-  string message = 2;
-}
-
-message GetRequest {
+message FileOrderRequest {
   string filename = 1;
-  // Only return content since last merge if from_leader is true
-  bool from_leader = 2;
+  int32 order = 2;
 }
 
-message ForwardRequest {
-  string target_server = 1;
+message Chunk {
+  bytes content = 1;
+}
+
+message GetResponse {
+  // last message is status, other messages are chunks
+  oneof response {
+    Chunk chunk = 1;
+    OperationStatus status = 2;
+  }
+}
+
+message AppendRequest {
+  // first message is file request, then all chunks
+  oneof request {
+    FileRequest file_request = 1;
+    Chunk chunk = 2;
+  }
+}
+
+message MergeRequest {
+  string filename = 1;
+  // ip:port of non-leader successors in proper order
+  repeated string successors = 2;
+}
+
+message OverwriteRequest {
+  // first message is file request and order, then all chunks
+  oneof request {
+    FileOrderRequest file_request = 1;
+    Chunk chunk = 2;
+  }
+}
+
+message ReplicationRequest {
+  int32 failure_case = 1;
+  // ip:port of existing successor if applicable
+  optional string existing_successor = 2;
+  // possibly empty ip:port of new successors in proper order
+  repeated string new_successors = 3;
+}
+
+message UpdateOrderRequest {
+  int32 old_order = 1;
+  int32 new_order = 2;
 }

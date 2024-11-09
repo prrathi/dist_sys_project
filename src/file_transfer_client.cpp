@@ -1,30 +1,61 @@
 #include "file_transfer_client.h"
 #include <chrono>
 
+static const int TIMEOUT_MS = 2000;
+static const size_t BUFFER_SIZE = 1024 * 1024;  // 1MB buffer
+
 using grpc::Channel;
 using grpc::ClientContext;
 using grpc::Status;
 using grpc::ClientWriter;
 using grpc::ClientReader;
 using filetransfer::FileTransferService;
-using filetransfer::FileChunk;
+using filetransfer::StatusCode;
+using filetransfer::Chunk;
 using filetransfer::OperationStatus;
-using filetransfer::GetRequest;
 using filetransfer::FileRequest;
+using filetransfer::FileOrderRequest;
+using filetransfer::AppendRequest;
+using filetransfer::GetResponse;
+using filetransfer::MergeRequest;
+using filetransfer::OverwriteRequest;
+using filetransfer::ReplicationRequest;
+using filetransfer::UpdateOrderRequest;
 
 using namespace std;
 
 FileTransferClient::FileTransferClient(shared_ptr<Channel> channel)
     : stub_(FileTransferService::NewStub(channel)) {}
 
-bool FileTransferClient::CreateFile(const string& file_path, const string& hydfs_filename) {
+bool FileTransferClient::CreateFile(const string& hydfs_filename, int order) {
     ClientContext context;
     OperationStatus status;
-    int timeout = 2000;
-    std::chrono::system_clock::time_point deadline = std::chrono::system_clock::now() + std::chrono::milliseconds(timeout);
+    FileOrderRequest request;
+    request.set_filename(hydfs_filename);
+    request.set_order(order);
+    
+    Status rpc_status = stub_->CreateFile(&context, request, &status);
+    
+    if (rpc_status.ok() && status.status() == StatusCode::SUCCESS) {
+        cout << "File created successfully: " << status.message() << endl;
+        return true;
+    } else if (status.status() == StatusCode::ALREADY_EXISTS) {
+        cout << "File already exists: " << hydfs_filename << endl;
+        return false;
+    } else {
+        cout << "Failed to create file: " << status.message() << endl;
+        return false;
+    }
+}
+
+bool FileTransferClient::AppendFile(const string& file_path, const string& hydfs_filename) {
+    ClientContext context;
+    OperationStatus status;
+    chrono::system_clock::time_point deadline = 
+        chrono::system_clock::now() + chrono::milliseconds(TIMEOUT_MS);
     context.set_deadline(deadline);
     
-    unique_ptr<ClientWriter<FileChunk>> writer(stub_->OverwriteFile(&context, &status));
+    unique_ptr<ClientWriter<AppendRequest>> writer(stub_->AppendFile(&context, &status));
 
     ifstream infile(file_path, ios::binary);
     if (!infile) {
@@ -32,18 +63,20 @@ bool FileTransferClient::CreateFile(const string& file_path, const string& hydfs
         return false;
     }
 
-    FileChunk chunk;
-    chunk.set_filename(hydfs_filename);
-    writer->Write(chunk);
-    chunk.clear_filename();
+    // Send filename first
+    AppendRequest metadata_msg;
+    metadata_msg.mutable_file_request()->set_filename(hydfs_filename);
+    if (!writer->Write(metadata_msg)) {
+        cout << "Failed to write metadata" << "\n";
+        return false;
+    }
 
-    const size_t buffer_size = 1024 * 1024;
-    char buffer[buffer_size];
-    while (infile.read(buffer, buffer_size) || infile.gcount() > 0) {
-        chunk.set_content(buffer, infile.gcount());
-        std::chrono::system_clock::time_point deadline = std::chrono::system_clock::now() + std::chrono::milliseconds(timeout);
-        context.set_deadline(deadline);
-        if (!writer->Write(chunk)) {
+    // Send chunks
+    char buffer[BUFFER_SIZE];
+    while (infile.read(buffer, BUFFER_SIZE) || infile.gcount() > 0) {
+        AppendRequest chunk_msg;
+        chunk_msg.mutable_chunk()->set_content(buffer, infile.gcount());
+        if (!writer->Write(chunk_msg)) {
             cout << "Failed to write chunk to stream." << "\n";
             break;
         }
@@ -53,86 +86,126 @@ bool FileTransferClient::CreateFile(const string& file_path, const string& hydfs
     writer->WritesDone();
 
     Status rpc_status = writer->Finish();
-    if (rpc_status.ok() && status.success()) {
-        std::cout << "File uploaded successfully: " << status.message() << std::endl;
+    if (rpc_status.ok() && status.status() == StatusCode::SUCCESS) {
+        cout << "File uploaded successfully: " << status.message() << endl;
         return true;
     } else if (rpc_status.error_code() == grpc::StatusCode::DEADLINE_EXCEEDED) {
-        std::cout << "File upload failed due to timeout: " << rpc_status.error_message() << std::endl;
+        cout << "File upload failed due to timeout: " << rpc_status.error_message() << endl;
         return false;
     } else {
-        std::cout << "File upload failed: " << status.message() << std::endl;
+        cout << "File upload failed: " << status.message() << endl;
         return false;
     }
 }
 
-bool FileTransferClient::GetFile(const std::string& hydfs_filename, const std::string& local_filepath) {
-    ClientContext context;
-    GetRequest request;
+bool FileTransferClient::GetFile(const string& hydfs_filename, const string& local_filepath) {
+    FileRequest request;
     request.set_filename(hydfs_filename);
-    request.set_from_leader(false);
-
-    std::ofstream outfile(local_filepath, std::ios::binary);
+    
+    ClientContext context;
+    GetResponse response;
+    unique_ptr<ClientReader<GetResponse>> reader(stub_->GetFile(&context, request));
+    
+    // Read first response to check status
+    if (!reader->Read(&response)) {
+        cerr << "Failed to read response" << endl;
+        return false;
+    }
+    
+    if (response.has_status()) {
+        if (response.status().status() == StatusCode::NOT_FOUND) {
+            cerr << "File not found: " << response.status().message() << endl;
+            return false;
+        } else if (response.status().status() == StatusCode::SUCCESS) {
+            return true;
+        }
+    }
+    
+    // Open output file
+    ofstream outfile(local_filepath, ios::binary);
     if (!outfile) {
-        std::cerr << "Failed to open local file for writing: " << local_filepath << std::endl;
+        cerr << "Failed to open output file: " << local_filepath << endl;
         return false;
     }
 
-    int timeout = 30000;
-    std::chrono::system_clock::time_point deadline = std::chrono::system_clock::now() + std::chrono::milliseconds(timeout);
-    context.set_deadline(deadline);
-
-    FileChunk chunk;
-    std::unique_ptr<ClientReader<FileChunk>> reader(stub_->GetFile(&context, request));
-
-    while (reader->Read(&chunk)) {
-        outfile.write(chunk.content().data(), chunk.content().size());
+    // Write first chunk if it was data
+    if (response.has_chunk()) {
+        outfile.write(response.chunk().content().data(), response.chunk().content().size());
     }
-
-    outfile.close(); 
+    
+    // Read remaining responses
+    while (reader->Read(&response)) {
+        if (response.has_status()) {
+            if (response.status().status() == StatusCode::SUCCESS) {
+                break;
+            } else {
+                cerr << "Error: " << response.status().message() << endl;
+                outfile.close();
+                filesystem::remove(local_filepath);
+                return false;
+            }
+        }
+        outfile.write(response.chunk().content().data(), response.chunk().content().size());
+    }
+    
+    outfile.close();
+    
     Status status = reader->Finish();
-    if (status.ok()) {
-        std::cout << "File downloaded successfully." << std::endl;
-        return true;
-    } else if(status.error_code() == grpc::StatusCode::CANCELLED) {
-        std::cout << "Issue with downloading file: " << status.error_message() << std::endl;
-    } else if (status.error_code() == grpc::StatusCode::DEADLINE_EXCEEDED) {
-        std::cout << "File download failed due to timeout: " << status.error_message() << std::endl;
-        return false;
-    } else {
-        std::cout << "File download failed: " << status.error_message() << std::endl;
+    if (!status.ok()) {
+        cerr << "RPC failed: " << status.error_message() << endl;
+        filesystem::remove(local_filepath);
         return false;
     }
+    
     return true;
 }
 
-bool FileTransferClient::AppendFile(const string& file_path, const string& hydfs_filename) {
+bool FileTransferClient::MergeFile(const string& hydfs_filename) {
     ClientContext context;
     OperationStatus status;
-    int timeout = 2000;
-    std::chrono::system_clock::time_point deadline = std::chrono::system_clock::now() + std::chrono::milliseconds(timeout);
-    context.set_deadline(deadline);
+    MergeRequest request;
+    request.set_filename(hydfs_filename);
     
-    unique_ptr<ClientWriter<FileChunk>> writer(stub_->AppendFile(&context, &status));
+    Status rpc_status = stub_->MergeFile(&context, request, &status);
 
-    ifstream infile(file_path, ios::binary);
+    if (rpc_status.ok() && status.status() == StatusCode::SUCCESS) {
+        return true;
+    } else {
+        cout << "Failed to merge file: " << status.message() << "\n";
+        return false;
+    }
+}
+
+bool FileTransferClient::OverwriteFile(const string& local_hydfs_filepath, const string& hydfs_filename, int order) {
+    ClientContext context;
+    OperationStatus status;
+    
+    unique_ptr<ClientWriter<OverwriteRequest>> writer(stub_->OverwriteFile(&context, &status));
+
+    ifstream infile(local_hydfs_filepath, ios::binary);
     if (!infile) {
-        cout << "Failed to open file: " << file_path << "\n";
+        cout << "Failed to open file: " << local_hydfs_filepath << "\n";
         return false;
     }
 
-    FileChunk chunk;
-    chunk.set_filename(hydfs_filename);
-    writer->Write(chunk);
-    chunk.clear_filename();
+    // Send file metadata first
+    OverwriteRequest metadata_msg;
+    auto* file_request = metadata_msg.mutable_file_request();
+    file_request->set_filename(hydfs_filename);
+    file_request->set_order(order);
+    if (!writer->Write(metadata_msg)) {
+        cout << "Failed to write metadata" << "\n";
+        return false;
+    }
 
-    const size_t buffer_size = 1024 * 1024;
-    char buffer[buffer_size];
-    while (infile.read(buffer, buffer_size) || infile.gcount() > 0) {
-        chunk.set_content(buffer, infile.gcount());
-        std::chrono::system_clock::time_point deadline = std::chrono::system_clock::now() + std::chrono::milliseconds(timeout);
-        context.set_deadline(deadline);
-        if (!writer->Write(chunk)) {
-            cout << "Append: Failed to write chunk to stream." << "\n";
+    // Send file contents in chunks
+    char buffer[BUFFER_SIZE];
+    while (infile.read(buffer, BUFFER_SIZE) || infile.gcount() > 0) {
+        OverwriteRequest chunk_msg;
+        auto* chunk = chunk_msg.mutable_chunk();
+        chunk->set_content(buffer, infile.gcount());
+        if (!writer->Write(chunk_msg)) {
+            cout << "Failed to write chunk to stream." << "\n";
             break;
         }
     }
@@ -141,14 +214,53 @@ bool FileTransferClient::AppendFile(const string& file_path, const string& hydfs
     writer->WritesDone();
 
     Status rpc_status = writer->Finish();
-    if (rpc_status.ok() && status.success()) {
-        std::cout << "Append uploaded successfully: " << status.message() << std::endl;
+    if (rpc_status.ok() && status.status() == StatusCode::SUCCESS) {
         return true;
-    } else if (rpc_status.error_code() == grpc::StatusCode::DEADLINE_EXCEEDED) {
-        std::cout << "Append upload failed due to timeout: " << rpc_status.error_message() << std::endl;
-        return false;
     } else {
-        std::cout << "Append upload failed: " << status.message() << std::endl;
+        cout << "Failed to overwrite file: " << status.message() << "\n";
+        return false;
+    }
+}
+
+bool FileTransferClient::UpdateReplication(int failure_case, const string& existing_successor, const vector<string>& new_successors) {
+    ClientContext context;
+    OperationStatus status;
+    ReplicationRequest request;
+    
+    request.set_failure_case(failure_case);
+    
+    if (!existing_successor.empty()) {
+        request.set_existing_successor(existing_successor);
+    }
+    
+    // Add new successors to repeated field
+    for (const auto& successor : new_successors) {
+        request.add_new_successors(successor);
+    }
+    
+    Status rpc_status = stub_->UpdateFilesReplication(&context, request, &status);
+    
+    if (rpc_status.ok() && status.status() == StatusCode::SUCCESS) {
+        return true;
+    } else {
+        cout << "Failed to update replication: " << status.message() << endl;
+        return false;
+    }
+}
+
+bool FileTransferClient::UpdateOrder(int old_order, int new_order) {
+    ClientContext context;
+    OperationStatus status;
+    UpdateOrderRequest request;
+    request.set_old_order(old_order);
+    request.set_new_order(new_order);
+    
+    Status rpc_status = stub_->UpdateOrder(&context, request, &status);
+    
+    if (rpc_status.ok() && status.status() == StatusCode::SUCCESS) {
+        return true;
+    } else {
+        cout << "Failed to update order: " << status.message() << endl;
         return false;
     }
 }
