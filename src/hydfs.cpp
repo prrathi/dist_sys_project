@@ -256,13 +256,8 @@ void Hydfs::swim() {
     // Check if the user is prathi3 and change the hostname if so
     const char* user = getenv("USER");
     if (user != nullptr && strcmp(user, "prathi3") == 0) {
-      // introducerHostname = "fa24-cs425-5806.cs.illinois.edu";
       FIFO_PATH = "/tmp/mp3-prathi3";
-      // cout << "Introducer hostname changed to: " << introducerHostname << endl;
     }
-
-    // std::thread listener_thread(pipe_listener);
-    // listener_thread.detach(); 
 
     currNode = initNode();
 
@@ -328,7 +323,6 @@ void Hydfs::swim() {
 
             currNode.setCurrentPeriod(currNode.getCurrentPeriod() + 1);
         }
-        //std::this_thread::sleep_for(std::chrono::milliseconds(PERIOD)); // temp
     }
 }
 

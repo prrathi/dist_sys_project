@@ -2,27 +2,41 @@ syntax = "proto3";
 
 package filetransfer;
 
-
 service FileTransferService {
-  rpc CreateFile(stream FileChunk) returns (UploadStatus);
-  rpc GetFile(DownloadRequest) returns (stream FileChunk);
-  rpc AppendFile(stream FileChunk) returns (UploadStatus);
+  rpc FileExists(FileRequest) returns (FileExistsStatus);
+  rpc CreateFileLeader(FileRequest) returns (OperationStatus);
+  rpc AppendFile(stream FileChunk) returns (OperationStatus);
+  rpc GetFile(GetRequest) returns (stream FileChunk);
+  rpc MergeFile(FileRequest) returns (OperationStatus);
+  rpc OverwriteFile(stream FileChunk) returns (OperationStatus);
+  rpc ForwardLeaderFiles(ForwardRequest) returns (OperationStatus);
 }
 
-//will need server streaming one too for get    
+message FileRequest {
+  string filename = 1;
+}
+
+message FileExistsStatus {
+  bool exists = 1;
+}
 
 message FileChunk {
   // The filename is only set in the first message
-  string filename = 1;
-  bytes content = 2;
+  string filename = 2;
+  bytes content = 3;
 }
 
-
-message UploadStatus {
+message OperationStatus {
   bool success = 1;
   string message = 2;
 }
 
-message DownloadRequest {
+message GetRequest {
   string filename = 1;
+  // Only return content since last merge if from_leader is true
+  bool from_leader = 2;
+}
+
+message ForwardRequest {
+  string target_server = 1;
 }
