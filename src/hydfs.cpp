@@ -16,7 +16,7 @@
 #include <filesystem>
 
 #include "hydfs.h"
-#include "file_transfer_client.cpp"
+#include "file_transfer_client.h"
 #include "utils.h"
 
 #define LRUCache_CAPACITY 1024 * 1024 * 50

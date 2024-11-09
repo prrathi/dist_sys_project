@@ -1,4 +1,6 @@
-#pragma once
+#ifndef FILE_TRANSFER_CLIENT_H
+#define FILE_TRANSFER_CLIENT_H
+
 #include <iostream>
 #include <fstream>
 #include <memory>
@@ -15,3 +17,5 @@ public:
 private:
     std::unique_ptr<filetransfer::FileTransferService::Stub> stub_;
 }; 
+
+#endif // FILE_TRANSFER_CLIENT_H
