@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 set(CMAKE_CXX_STANDARD 17)
-project(SWIM)
+project(HYDFS)
 
 find_package(Protobuf CONFIG REQUIRED)
 find_package( gRPC CONFIG REQUIRED)
@@ -17,7 +17,6 @@ set(SOURCES
   src/LRUCache.cpp
   src/hydfs_server.cpp
   src/file_transfer_client.cpp
-  src/file_transfer_server.cpp
 )
 
 set(HEADERS
@@ -30,6 +29,8 @@ set(HEADERS
   includes/LRUCache.h
   includes/hydfs.grpc.pb.h
   includes/hydfs.pb.h
+  includes/hydfs_server.h
+  includes/file_transfer_client.h
 )
 
 include_directories(includes)

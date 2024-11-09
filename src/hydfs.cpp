@@ -16,25 +16,25 @@
 #include <filesystem>
 
 #include "hydfs.h"
-#include "file_transfer_client.cpp"
+#include "file_transfer_client.h"
 #include "utils.h"
 
-#define LRUCache_CAPACITY 1024 * 1024 * 50
-#define PERIOD 1200
-#define SUSPERIOD 6
-#define PINGPERIOD 750
-#define NORMALPERIOD 2000
-#define NORMALPINGPERIOD 1500
+// Implementation-specific constants
+static const int PERIOD = 650;
+static const int SUS_PERIOD = 7;
+static const int PING_PERIOD = 400;
+static const int NORMAL_PERIOD = 2000;
+static const int NORMAL_PING_PERIOD = 1500;
+static const int MODULUS = 8192;
+static const int GRPC_PORT = 8081;
+static const size_t LRU_CACHE_CAPACITY = 1024 * 1024 * 50;
 
-#define MODULUS 8192
-#define GRPC_PORT 8081
-#define LOGFILE "Logs/log.txt"
-
-using grpc::Server;
-using grpc::ServerBuilder;
+// Class static member definitions
+const char* DEFAULT_LOG_FILE = "Logs/log.txt";
+const char* DEFAULT_FIFO_PATH = "/tmp/mp3";
 
 Hydfs::Hydfs() 
-    : cache(LRUCache_CAPACITY)
+    : cache(LRU_CACHE_CAPACITY)
     , server()
 {
 }
@@ -48,7 +48,7 @@ void Hydfs::handleCreate(const std::string& filename, const std::string& hydfs_f
     }
     std::cout << "create called" << " target: " << target << "\n";
     FileTransferClient client(grpc::CreateChannel(target, grpc::InsecureChannelCredentials()));
-    bool res = client.CreateFile(filename, hydfs_filename);
+    bool res = client.CreateFile(hydfs_filename, 0);
     if (res) {
         std::cout << "Create Successful" << std::endl;
         std::vector<char> contents = readFileIntoVector(filename);
@@ -229,7 +229,7 @@ void Hydfs::handleCommand(const std::string& command) {
             currNode.updateState(currState);
         }
         currNode.setSusStatus(true);
-        currNode.setPingTime(PINGPERIOD);
+        currNode.setPingTime(PING_PERIOD);
         currNode.setPeriodTime(PERIOD);
     } else if (command == "disable_sus\n") {
         for (const auto& id : currNode.getAllIds()) {
@@ -238,8 +238,8 @@ void Hydfs::handleCommand(const std::string& command) {
             currNode.updateState(currState);
         }
         currNode.setSusStatus(false);
-        currNode.setPingTime(NORMALPINGPERIOD);
-        currNode.setPeriodTime(NORMALPERIOD);
+        currNode.setPingTime(NORMAL_PING_PERIOD);
+        currNode.setPeriodTime(NORMAL_PERIOD);
     } else if (command == "status_sus\n") {
         if (currNode.getSusStatus()) {
             std::cout << "Sus status: enabled" << std::endl;
@@ -262,13 +262,13 @@ void Hydfs::handleCommand(const std::string& command) {
 void Hydfs::pipeListener() {
     // make the named pipe if it doesn't exist
     std::cout << "ASDASD\n";
-    if (mkfifo(FIFO_PATH.c_str(), 0666) == -1 && errno != EEXIST) {
+    if (mkfifo(DEFAULT_FIFO_PATH, 0666) == -1 && errno != EEXIST) {
         perror("mkfifo");
         exit(EXIT_FAILURE);
     }
 
     while (true) {
-        int fd = open(FIFO_PATH.c_str(), O_RDONLY);
+        int fd = open(DEFAULT_FIFO_PATH, O_RDONLY);
         if (fd == -1) {
             perror("open");
             exit(EXIT_FAILURE);
@@ -296,13 +296,8 @@ void Hydfs::swim() {
     // Check if the user is prathi3 and change the hostname if so
     const char* user = getenv("USER");
     if (user != nullptr && strcmp(user, "prathi3") == 0) {
-      // introducerHostname = "fa24-cs425-5806.cs.illinois.edu";
-      FIFO_PATH = "/tmp/mp3-prathi3";
-      // cout << "Introducer hostname changed to: " << introducerHostname << endl;
+        FIFO_PATH = "/tmp/mp3-prathi3";
     }
-
-    // std::thread listener_thread(pipe_listener);
-    // listener_thread.detach(); 
 
     currNode = initNode();
 
@@ -369,7 +364,6 @@ void Hydfs::swim() {
 
             currNode.setCurrentPeriod(currNode.getCurrentPeriod() + 1);
         }
-        //std::this_thread::sleep_for(std::chrono::milliseconds(PERIOD)); // temp
     }
 }
 
@@ -406,8 +400,8 @@ FullNode Hydfs::initNode() {
 
     std::vector<PassNodeState> nodeStates = {currNodeState};
     if (hostname_str == introducerHostname) {
-        return FullNode(true, nodeId, nodeStates, 0, false, false, 0, NORMALPINGPERIOD, NORMALPERIOD, SUSPERIOD, false, LOGFILE);
+        return FullNode(true, nodeId, nodeStates, 0, false, false, 0, NORMAL_PING_PERIOD, NORMAL_PERIOD, SUS_PERIOD, false, DEFAULT_LOG_FILE);
     } else {
-        return FullNode(false, nodeId, nodeStates, 0, false, false, 0, NORMALPINGPERIOD, NORMALPERIOD, SUSPERIOD, false, LOGFILE);
+        return FullNode(false, nodeId, nodeStates, 0, false, false, 0, NORMAL_PING_PERIOD, NORMAL_PERIOD, SUS_PERIOD, false, DEFAULT_LOG_FILE);
     }
 }

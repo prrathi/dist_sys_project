@@ -13,14 +13,6 @@
 
 using namespace std;
 
-size_t circularDistance(size_t hash1, size_t hash2, size_t modulus) {
-    if (hash1 > hash2) {
-      swap(hash1,hash2);
-    }
-    size_t diff = hash2 - hash1; 
-    return min(diff, modulus - diff);
-}
-
 size_t hashString(const string& str, size_t modulus) {
     hash<string> hasher;
     return hasher(str) % modulus;
@@ -28,13 +20,12 @@ size_t hashString(const string& str, size_t modulus) {
 
 vector<pair<string, pair<size_t, size_t>>> find3Successors(const string& filename, const unordered_set<string>& nodeIds, size_t modulus) {
     size_t filenameHash = hashString(filename, modulus);
-    //cout << "filenameHash: " << filenameHash << "\n";
     vector<pair<size_t, string>> nodeHashes;
 
     for (const auto& nodeId : nodeIds) {
         string hostname = nodeId.substr(0, nodeId.rfind("-"));
         size_t nodeHash = hashString(hostname, modulus);
-        nodeHashes.push_back({circularDistance(nodeHash, filenameHash, modulus), hostname});
+        nodeHashes.push_back({(nodeHash - filenameHash) % modulus, hostname});
     }
 
     sort(nodeHashes.begin(), nodeHashes.end());

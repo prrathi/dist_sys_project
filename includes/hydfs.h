@@ -1,5 +1,4 @@
-#ifndef HYDFS_H
-#define HYDFS_H
+#pragma once
 
 #include <condition_variable>
 #include <mutex>
@@ -44,5 +43,3 @@ private:
     bool leave = false;
     HydfsServer server;
 };
-
-#endif // HYDFS_H
