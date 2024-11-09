@@ -20,9 +20,9 @@
 #include "utils.h"
 
 #define LRUCache_CAPACITY 1024 * 1024 * 50
-#define PERIOD 650
+#define PERIOD 1000
 #define SUSPERIOD 7
-#define PINGPERIOD 400
+#define PINGPERIOD 750
 #define NORMALPERIOD 2000
 #define NORMALPINGPERIOD 1500
 
