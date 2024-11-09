@@ -32,7 +32,7 @@ vector<pair<string, pair<size_t, size_t>>> find3Successors(const string& filenam
     vector<pair<size_t, string>> nodeHashes;
 
     for (const auto& nodeId : nodeIds) {
-        string hostname = nodeId.substr(nodeId.rfind("-") + 1);
+        string hostname = nodeId.substr(0, nodeId.rfind("-"));
         size_t nodeHash = hashString(hostname, modulus);
         nodeHashes.push_back({circularDistance(nodeHash, filenameHash, modulus), hostname});
     }
