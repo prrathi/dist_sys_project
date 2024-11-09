@@ -25,6 +25,8 @@ set(HEADERS
   includes/hydfs.h
   includes/utils.h
   includes/LRUCache.h
+  includes/hydfs.grpc.pb.h
+  includes/hydfs.pb.h
 )
 
 include_directories(includes)

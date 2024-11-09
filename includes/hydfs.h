@@ -15,6 +15,8 @@
 #include "hydfs_server.h"
 #include "LRUCache.h"
 
+using namespace std;
+
 class Hydfs {
 public:
     Hydfs();
