@@ -6,6 +6,10 @@
 #include <algorithm> 
 #include <unordered_set>
 #include <functional>
+#include <utility>
+#include <netdb.h>
+#include <arpa/inet.h>
+
 
 using namespace std;
 
@@ -22,7 +26,7 @@ size_t hashString(const string& str, size_t modulus) {
     return hasher(str) % modulus;
 }
 
-vector<string> find3Successors(const string& filename, const unordered_set<string>& nodeIds, size_t modulus) {
+vector<pair<string, pair<size_t, size_t>>> find3Successors(const string& filename, const unordered_set<string>& nodeIds, size_t modulus) {
     size_t filenameHash = hashString(filename, modulus);
     //cout << "filenameHash: " << filenameHash << "\n";
     vector<pair<size_t, string>> nodeHashes;
@@ -34,13 +38,20 @@ vector<string> find3Successors(const string& filename, const unordered_set<strin
     }
 
     sort(nodeHashes.begin(), nodeHashes.end());
-    vector<string> successors;
+    vector<pair<string, pair<size_t, size_t>>> successors;
     size_t i = 0;
 
     for (const auto& node : nodeHashes) {
         if (i==3) break;
-        successors.push_back(node.second);
+        successors.push_back({node.second, {hashString(node.second, modulus), filenameHash}});
         i++;        
     } 
     return successors;
+}
+
+std::string HostToIp(const std::string& host) {
+    hostent* hostname = gethostbyname(host.c_str());
+    if(hostname)
+        return std::string(inet_ntoa(**(in_addr**)hostname->h_addr_list));
+    return {};
 }

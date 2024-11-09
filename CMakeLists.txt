@@ -15,6 +15,9 @@ set(SOURCES
   src/hydfs.cpp
   src/utils.cpp
   src/LRUCache.cpp
+  src/hydfs_server.cpp
+  src/file_transfer_client.cpp
+  src/file_transfer_server.cpp
 )
 
 set(HEADERS
