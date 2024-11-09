@@ -43,7 +43,7 @@ target_link_libraries(${PROJECT_NAME} pthread gRPC::grpc++)
 # Define compiler flags
 target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra)
 
-# Define debug flags
-set(CMAKE_BUILD_TYPE Debug)
-target_compile_options(${PROJECT_NAME} PRIVATE -DDEBUG)
+# # Define debug flags
+# set(CMAKE_BUILD_TYPE Debug)
+# target_compile_options(${PROJECT_NAME} PRIVATE -DDEBUG)
 
