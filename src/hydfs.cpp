@@ -21,9 +21,9 @@
 #include "hydfs_server.h"
 
 // Implementation-specific constants
-static const int PERIOD = 1000;
-static const int SUS_PERIOD = 18;
-static const int PING_PERIOD = 1000;
+static const int PERIOD = 800;
+static const int SUS_PERIOD = 12;
+static const int PING_PERIOD = 800;
 static const int NORMAL_PERIOD = 3000;
 static const int NORMAL_PING_PERIOD = 2500;
 static const int MODULUS = 8192;
