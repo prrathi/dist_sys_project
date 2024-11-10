@@ -1,0 +1,42 @@
+*** compile and run ***
+protoc -I=protos/ --cpp_out=src/ protos/hydfs.proto && protoc -I=protos/ --grpc_out=src/ --plugin=protoc-gen-grpc=/home/prathi3/.local/bin/grpc_cpp_plugin protos/hydfs.proto && mv src/hydfs.grpc.pb.h includes/hydfs.grpc.pb.h && mv src/hydfs.pb.h includes/hydfs.pb.h
+rm -rf build; mkdir -p build; cd build; cmake ..; cmake --build .
+./build/HYDFS
+
+*** join ***
+python3 cli.py -c enable_sus -m prathi3@fa24-cs425-5801.cs.illinois.edu prathi3@fa24-cs425-5802.cs.illinois.edu prathi3@fa24-cs425-5803.cs.illinois.edu prathi3@fa24-cs425-5804.cs.illinois.edu prathi3@fa24-cs425-5805.cs.illinois.edu prathi3@fa24-cs425-5806.cs.illinois.edu prathi3@fa24-cs425-5807.cs.illinois.edu prathi3@fa24-cs425-5808.cs.illinois.edu prathi3@fa24-cs425-5809.cs.illinois.edu prathi3@fa24-cs425-5810.cs.illinois.edu
+python3 cli.py -c join -m prathi3@fa24-cs425-5802.cs.illinois.edu prathi3@fa24-cs425-5803.cs.illinois.edu prathi3@fa24-cs425-5804.cs.illinois.edu prathi3@fa24-cs425-5805.cs.illinois.edu prathi3@fa24-cs425-5806.cs.illinois.edu prathi3@fa24-cs425-5807.cs.illinois.edu prathi3@fa24-cs425-5808.cs.illinois.edu prathi3@fa24-cs425-5809.cs.illinois.edu prathi3@fa24-cs425-5810.cs.illinois.edu
+
+*** test 1 ***
+python3 cli.py -c create dataset/business_1.txt bus1
+python3 cli.py -c create dataset/business_2.txt bus2
+python3 cli.py -c create dataset/business_3.txt bus3
+python3 cli.py -c create dataset/business_4.txt bus4
+python3 cli.py -c create dataset/business_5.txt bus5
+python3 cli.py -c get bus1 demo/bus1_copy // different machine
+diff dataset/business_1.txt demo/bus1_copy
+
+*** test 2 ***
+python3 cli.py -c ls bus2
+python3 cli.py -c list_mem_ids
+python3 cli.py -c store
+
+*** test 3 ***
+* kill replicated machine and one other machine for file *
+python3 cli.py -c ls bus3
+python3 cli.py -c store
+
+*** test 4 ***
+python3 cli.py -c append dataset/business_6.txt bus4
+python3 cli.py -c append dataset/business_7.txt bus4
+python3 cli.py -c get bus4 demo/bus4_copy
+grep -n {} demo/bus4_copy
+grep -n {} demo/bus4_copy
+grep -n {} demo/bus4_copy
+
+*** test 5 ***
+python3 cli.py -c multiappend bus5,prathi3@fa24-cs425-5806.cs.illinois.edu,prathi3@fa24-cs425-5807.cs.illinois.edu,prathi3@fa24-cs425-5808.cs.illinois.edu,dataset/business_8.txt,dataset/business_9.txt,dataset/business_10.txt
+python3 cli.py -c merge bus5
+python3 cli.py -c getfromreplica fa24-cs425-58{}.cs.illinois.edu bus5 demo/bus5_copy_1 // replica 1
+python3 cli.py -c getfromreplica fa24-cs425-58{}.cs.illinois.edu bus5 demo/bus5_copy_2 // replica 2
+diff demo/bus5_copy_1 demo/bus5_copy_2
