@@ -226,6 +226,8 @@ Status HydfsServer::MergeFile(ServerContext* context, const MergeRequest* reques
     size_t shard = get_shard_index(filename);
     lock_guard<mutex> lock(shard_mutexes_[shard]);
 
+    cout << "merging " << filename << " at " << server_address_ << "\n";
+
     if (file_map_.find(filename) == file_map_.end()) {
         response->set_status(StatusCode::NOT_FOUND);
         return Status::OK;
@@ -255,10 +257,13 @@ Status HydfsServer::MergeFile(ServerContext* context, const MergeRequest* reques
 
     // clear the chunks vector since we've merged them
     file_map_[filename].second.clear();
+
+    cout << "sending merged " << filename << " to " << request->successors().size() << " successors\n";
     
     // forward the merged file to all successors from the request. hacky but ¯\_(ツ)_/¯
     int successor_order = 3 - request->successors().size();
     for (const string& successor_address : request->successors()) {
+        cout << "sending merged " << filename << " to " << successor_address << "\n";
         if (successor_address.empty()) {
             response->set_status(StatusCode::INVALID);
             response->set_message("Successor address is empty");
@@ -278,6 +283,8 @@ Status HydfsServer::OverwriteFile(ServerContext* context, ServerReader<Overwrite
     OverwriteRequest msg;
     ofstream outfile;
     string filename;
+
+    cout << "Received overwrite request for " << msg.file_request().filename() << " at " << server_address_ << "\n";
 
     // Get first message to get filename
     if (!reader->Read(&msg)) {
@@ -309,6 +316,8 @@ Status HydfsServer::OverwriteFile(ServerContext* context, ServerReader<Overwrite
     filesystem::path dir_path = filesystem::path(full_path).parent_path();
     filesystem::create_directories(dir_path);
 
+    cout << "Made dirs for overwrite of " << filename << " with node order " << order << "\n";
+
     // Open file for writing (truncating any existing content)
     outfile.open(full_path, ios::binary | ios::trunc);
     if (!outfile) {
@@ -324,6 +333,8 @@ Status HydfsServer::OverwriteFile(ServerContext* context, ServerReader<Overwrite
         }
     }
     outfile.close();
+
+    cout << "wrote " << filename << "\n";
 
     // reset chunks vector if exists
     file_map_[filename] = make_pair(order, vector<string>()); 
