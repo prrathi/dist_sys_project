@@ -386,6 +386,7 @@ void Hydfs::swim() {
 
     thread udp_server_thread(runUdpServer, ref(currNode));
     udp_server_thread.detach(); 
+    bool indicator = false;
 
     while (true) {
         if (!currNode.getIsIntroducer() && !join) {
@@ -396,7 +397,10 @@ void Hydfs::swim() {
             SwimMessage joinMessage(currNode.getId(), currNode.getState(currNode.getId()).nodeIncarnation, "", DingDong, currNode.getCurrentPeriod(), {currNode.getState(currNode.getId())});
             sendUdpRequest(introducerHostname, serializeMessage(joinMessage));
         }
-        cout << "Node " << currNode.getId() << " joined the group" << endl;
+        if (join && !indicator) {
+            cout << "Node " << currNode.getId() << " joined the group" << endl;
+            indicator = true;
+        }
 
         auto ids = currNode.getAllIds();
         vector<string> machinesToCheck; 
