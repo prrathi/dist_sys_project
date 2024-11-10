@@ -24,8 +24,6 @@ def execute_remote_command(machines, command):
     for machine in machines:
         ssh_command = f"ssh {machine} 'echo {command} > {FIFO}'"
         subprocess.run(ssh_command, shell=True, check=True)
-        if command == "join":
-            sleep(1.2)
         print(f"Sent {command} to {machine} pipe")
 
 def list_mem(machines):
