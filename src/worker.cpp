@@ -47,8 +47,10 @@ void updateState(FullNode& node, SwimMessage& message) {
         msgState.susBeginPeriod = node.getCurrentPeriod();
         writeToLog(node.getLogFile(), "On node " + node.getId() + ": Node " + msgState.nodeId + " is communicated to be sus at period " + to_string(node.getCurrentPeriod()) + ".");
       }
-      node.updateState(msgState);
-      node.addSendId(msgState.nodeId);
+      if (msgState.status != Dead) { // 
+        node.updateState(msgState);
+        node.addSendId(msgState.nodeId);
+      }
     } 
     else if (msgState.status == Alive) { 
       if ((currState.status == Alive || (currState.status == Sus && node.getSusStatus())) && (currState.nodeIncarnation < msgState.nodeIncarnation)) {

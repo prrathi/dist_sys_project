@@ -415,11 +415,11 @@ void Hydfs::swim() {
                     currNode.updateState(state);
                     currNode.addSendId(state.nodeId);
                 }
-                if (state.status == Dead && (currNode.getCurrentPeriod() - state.deadBeginPeriod == (uint16_t)(2 * (currNode.getAllIds().size()) - 1))) {
-                //if (state.status == Dead && (currNode.getCurrentPeriod() - state.deadBeginPeriod == NUM_NODES_TO_CALL)) {
-                    auto now = chrono::system_clock::now();
-                    auto now_time = chrono::system_clock::to_time_t(now);
-                    tm* now_tm = localtime(&now_time);
+                //if (state.status == Dead && (currNode.getCurrentPeriod() - state.deadBeginPeriod == (uint16_t)(2 * (currNode.getAllIds().size()) - 1))) {
+                if (state.status == Dead && (currNode.getCurrentPeriod() - state.deadBeginPeriod == NUM_NODES_TO_CALL)) {
+                    auto now = std::chrono::system_clock::now();
+                    auto now_time = std::chrono::system_clock::to_time_t(now);
+                    std::tm* now_tm = std::localtime(&now_time);
                     char buffer[10];
                     strftime(buffer, sizeof(buffer), "%M:%S", now_tm);
                     string timestamp(buffer);
