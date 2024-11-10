@@ -39,14 +39,14 @@ HydfsServer::HydfsServer() {
         exit(1);
     }
     string hostname_str = hostname;
-    string server_address(hostname_str + ":" + to_string(GRPC_PORT));
+    server_address_ = hostname_str + ":" + to_string(GRPC_PORT);
 
     ServerBuilder builder;
-    builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
+    builder.AddListeningPort(server_address_, grpc::InsecureServerCredentials());
     builder.RegisterService(this);
 
     server_ = builder.BuildAndStart();
-    cout << "gRPC Server listening on " << server_address << endl;
+    cout << "gRPC Server listening on " << server_address_ << endl;
     if (filesystem::exists("hydfs/")) {
         filesystem::remove_all("hydfs/");
     }
@@ -92,6 +92,8 @@ Status HydfsServer::AppendFile(ServerContext* context, ServerReader<AppendReques
         response->set_message("Failed to read initial message");
         return Status::OK;
     }
+
+    cout << "Received write request for " << msg.file_request().filename() << " at " << server_address_ << endl;
 
     // first message must contain file request
     if (!msg.has_file_request()) {
@@ -145,6 +147,8 @@ Status HydfsServer::AppendFile(ServerContext* context, ServerReader<AppendReques
     outfile.close();
 
     file_map_[filename].second.push_back(chunk_filename);
+
+    cout << "Completed write request for " << filename << " at " << server_address_ << endl;
     
     response->set_status(StatusCode::SUCCESS);
     return Status::OK;
@@ -152,6 +156,7 @@ Status HydfsServer::AppendFile(ServerContext* context, ServerReader<AppendReques
 
 Status HydfsServer::GetFile(ServerContext* context, const FileRequest* request, ServerWriter<GetResponse>* writer) {
     string filename = request->filename();
+    cout << "Received read request for " << filename << " at " << server_address_ << endl;
     vector<string> chunk_files;
     
     auto it = file_map_.find(filename);
@@ -207,6 +212,8 @@ Status HydfsServer::GetFile(ServerContext* context, const FileRequest* request, 
         infile.close();
     }
 
+    cout << "Completed read request for " << filename << " at " << server_address_ << endl;
+
     GetResponse final_response;
     OperationStatus* status = final_response.mutable_status();
     status->set_status(StatusCode::SUCCESS);
@@ -249,8 +256,8 @@ Status HydfsServer::MergeFile(ServerContext* context, const MergeRequest* reques
     // clear the chunks vector since we've merged them
     file_map_[filename].second.clear();
     
-    // forward the merged file to all successors from the request
-    int successor_order = 1;
+    // forward the merged file to all successors from the request. hacky but ¯\_(ツ)_/¯
+    int successor_order = 3 - request->successors().size();
     for (const string& successor_address : request->successors()) {
         if (successor_address.empty()) {
             response->set_status(StatusCode::INVALID);
@@ -332,37 +339,20 @@ Status HydfsServer::UpdateFilesReplication(ServerContext* context, const Replica
         locks.emplace_back(shard_mutexes_[i]);
     }
 
-    // encoding of failures
+    // encoding of failures - 0 and 1 are alive and dead resp for one pred and two successors. only one failure at a time needed due to sequential client detection
     int32_t failure_case = request->failure_case();
     int num_preceding_failures = 0;
     pair<int, int> existing_order = make_pair(-1, -1);
-    int new_order = 0;
     switch (failure_case) {
         case 1: // 001
             num_preceding_failures = 0;
-            new_order = 2;
             break;
         case 2: // 010
             num_preceding_failures = 0;
             existing_order = make_pair(2, 1);
-            new_order = 2;
-            break;
-        case 3: // 011
-            num_preceding_failures = 0;
-            new_order = 1;
             break;
         case 4: // 100
             num_preceding_failures = 1;
-            new_order = 2;
-            break;
-        case 5: // 101
-            num_preceding_failures = 1;
-            existing_order = make_pair(2, 1);
-            new_order = 2;
-            break;
-        case 6: // 110
-            num_preceding_failures = 2;
-            new_order = 1;
             break;
         default:
             response->set_status(StatusCode::INVALID);
@@ -382,25 +372,20 @@ Status HydfsServer::UpdateFilesReplication(ServerContext* context, const Replica
         }
     }
 
-    // for replication of 3, we're guaranteed at most one existing successor
+    // with current setup should have zero to one existing successor with updated order
     if (existing_order.first != -1) {
         auto channel = grpc::CreateChannel(request->existing_successor(), grpc::InsecureChannelCredentials());
         FileTransferClient client(channel);
         client.UpdateOrder(existing_order.first, existing_order.second);
     }
 
-    // for replication of 3, one or two elements. impl is suboptimal due to blocking RPC
-    for (const string& successor_address : request->new_successors()) {
-        if (!successor_address.empty()) {
-            auto channel = grpc::CreateChannel(successor_address, grpc::InsecureChannelCredentials());
-            FileTransferClient client(channel);
-            for (const string& filename : files_to_forward) {
-                client.OverwriteFile("hydfs/" + filename, filename, new_order);
-            }
-            new_order++;
-        }
+    // with current setup should have zero to one new successor with updated order, send request to self as leader
+    for (const string& filename : files_to_forward) {
+        auto channel = grpc::CreateChannel(server_address_, grpc::InsecureChannelCredentials());
+        FileTransferClient client(channel);
+        client.MergeFile(filename, vector<string>(request->new_successors().begin(), request->new_successors().end()));
     }
-    
+
     response->set_status(StatusCode::SUCCESS);
     return Status::OK;
 }

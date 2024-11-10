@@ -27,7 +27,7 @@ private:
     void handleCommand(const std::string& command);
     void handleClientRequests(const std::string& command);
     void handleCreate(const std::string& filename, const std::string& hydfs_filename);
-    void handleGet(const std::string& filename, const std::string& hydfs_filename, const std::string& target);
+    void handleGet(const std::string& filename, const std::string& hydfs_filename, const std::string& target, bool avoid_cache);
     void handleAppend(const std::string& filename, const std::string& hydfs_filename);
     void handleMerge(const std::string& hydfs_filename);
     void handleNodeFailureDetected(const std::string& failed_node_id, const unordered_set<std::string>& nodeIds);
