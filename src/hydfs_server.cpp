@@ -46,9 +46,15 @@ HydfsServer::HydfsServer() {
     ServerBuilder builder;
     builder.AddListeningPort(server_address_, grpc::InsecureServerCredentials());
     builder.RegisterService(this);
-
     server_ = builder.BuildAndStart();
+
+    ServerBuilder builder_2;
+    builder_2.AddListeningPort(server_address_2_, grpc::InsecureServerCredentials());
+    builder_2.RegisterService(this);
+    server_2_ = builder_2.BuildAndStart();
+
     cout << "gRPC Server listening on " << server_address_ << endl;
+    cout << "gRPC Server 2 listening on " << server_address_2_ << endl;
     if (filesystem::exists("hydfs/")) {
         filesystem::remove_all("hydfs/");
     }
