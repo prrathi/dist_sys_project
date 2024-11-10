@@ -185,6 +185,8 @@ Status HydfsServer::GetFile(ServerContext* context, const FileRequest* request, 
     GetResponse chunk_response;
     Chunk* chunk = chunk_response.mutable_chunk();
 
+    cout << "starting read request" << endl;
+
     // first the merged content if it exists
     ifstream infile("hydfs/" + filename, ios::binary);
     if (infile) {
@@ -199,6 +201,8 @@ Status HydfsServer::GetFile(ServerContext* context, const FileRequest* request, 
         }
         infile.close();
     }
+
+    cout << "done with merged content" << endl;
 
     // then the new chunks
     for (const string& chunk_filename : chunk_files) {
@@ -219,6 +223,8 @@ Status HydfsServer::GetFile(ServerContext* context, const FileRequest* request, 
         }
         infile.close();
     }
+
+    cout << "done with chunks" << endl;
 
     cout << "Completed read request for " << filename << " at " << server_address_ << endl;
 
