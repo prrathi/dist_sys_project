@@ -34,40 +34,42 @@ const char* DEFAULT_LOG_FILE = "Logs/log.txt";
 const char* DEFAULT_FIFO_PATH = "/tmp/mp3";
 
 Hydfs::Hydfs() 
-    : cache(LRU_CACHE_CAPACITY)
+    : lru_cache(LRU_CACHE_CAPACITY)
     , server()
 {
 }
 
 Hydfs::~Hydfs() {}
 
-void Hydfs::handleCreate(const std::string& filename, const std::string& hydfs_filename, const std::string& target) {
-    if (cache.exist(hydfs_filename)) {
+void Hydfs::handleCreate(const std::string& filename, const std::string& hydfs_filename) {
+    if (lru_cache.exist(hydfs_filename)) {
         std::cout << "File already exists on hydfs: cache" << std::endl;
         return;
     }
-    std::cout << "create called" << " target: " << target << "\n";
-    FileTransferClient client(grpc::CreateChannel(target, grpc::InsecureChannelCredentials()));
-    bool res = client.CreateFile(hydfs_filename, 0);
-    if (res) {
-        std::cout << "Create Successful" << std::endl;
-        std::vector<char> contents = readFileIntoVector(filename);
-        if (contents.size() > cache.capacity()) {
+    //std::cout << "create called" << "\n";
+    std::vector<std::string> successors = getAllSuccessors(hydfs_filename);
+    for (size_t i = 0; i < 3; i++) {
+        std::string targetHost = successors[i] + ":" + std::to_string(GRPC_PORT); 
+        FileTransferClient client(grpc::CreateChannel(targetHost, grpc::InsecureChannelCredentials()));
+        std::cout << "Create called, Target: " << targetHost << "\n";
+        bool res = client.CreateFile(hydfs_filename, i);
+        if (res) {
+            std::cout << "Create Successful on " << targetHost << "" << "\n";
+        } else  {
+            std::cout << "Failed to create file on " << targetHost << "\n";
+            //assume all succeed tbh
             return;
-        }   
-        std::lock_guard<std::mutex> lock(cacheMtx);
-        cache.put(hydfs_filename, make_pair(contents.size(), contents));
-    } else {
-        std::cout << "Create Failed" << std::endl;
+        }
     }
+    handleAppend(filename, hydfs_filename);
 }
 
 void Hydfs::handleGet(const std::string& filename, const std::string& hydfs_filename, const std::string& target) {
 
     // check here whether in cache, only need local consistency which is guaranteed
-    if (cache.exist(hydfs_filename)) {
+    if (lru_cache.exist(hydfs_filename)) {
         std::lock_guard<std::mutex> lock(cacheMtx);
-        std::vector<char> contents = cache.get(hydfs_filename).second;
+        std::vector<char> contents = lru_cache.get(hydfs_filename).second;
         std::ofstream file(filename, std::ios::binary);
         if (!file) {
             std::cout << "Failed to open file: " << filename << "\n";
@@ -81,28 +83,105 @@ void Hydfs::handleGet(const std::string& filename, const std::string& hydfs_file
     FileTransferClient client(grpc::CreateChannel(target, grpc::InsecureChannelCredentials()));
     bool res = client.GetFile(hydfs_filename, filename);
     if (res) {
+        // assuming stuff .. can fix change later if issues come
         std::cout << "Get Successful" << std::endl;
+        std::cout << "Caching" << "\n";
+        std::vector<char> contents = readFileIntoVector(filename);
+        if (contents.size() > lru_cache.capacity()) {
+            return;
+        }   
+        std::lock_guard<std::mutex> lock(cacheMtx);
+        lru_cache.put(hydfs_filename, make_pair(contents.size(), contents));
     } else {
         std::cout << "Get Failed" << std::endl;
     }
 }
 
-void Hydfs::handleAppend(const std::string& filename, const std::string& hydfs_filename, const std::string& target) {
-    std::cout << "Append called" << " target: " << target << "\n";
-    FileTransferClient client(grpc::CreateChannel(target, grpc::InsecureChannelCredentials()));
-    bool res = client.AppendFile(filename, hydfs_filename);
+void Hydfs::handleAppend(const std::string& filename, const std::string& hydfs_filename) {
+    std::vector<std::string> successors = getAllSuccessors(hydfs_filename);
+    for (size_t i = 0; i < 3; i++) {
+        std::string targetHost = successors[i] + ":" + std::to_string(GRPC_PORT); 
+        FileTransferClient client(grpc::CreateChannel(targetHost, grpc::InsecureChannelCredentials()));
+        std::cout << "Append called, Target: " << targetHost << "\n";
+        bool res = client.AppendFile(filename, hydfs_filename);
+        if (res) {
+            std::cout << "Append Successful: " << targetHost << "\n";
+        } else {
+            std::cout << "Append Failed on target: " << targetHost << std::endl;
+            return;
+        }
+    }
+    std::lock_guard<std::mutex> lock(cacheMtx);
+    lru_cache.remove(hydfs_filename);
+}
+
+void Hydfs::handleMerge(const std::string& hydfs_filename) {
+    std::string file_leader = getAllSuccessors(hydfs_filename)[0];
+    std::string targetHost = file_leader + ":" + std::to_string(GRPC_PORT);
+    FileTransferClient client(grpc::CreateChannel(targetHost, grpc::InsecureChannelCredentials()));
+    std::cout << "Merge called, Target: " << targetHost << "\n";
+    bool res = client.MergeFile(hydfs_filename);
     if (res) {
-        std::cout << "Append Successful" << std::endl;
-        std::lock_guard<std::mutex> lock(cacheMtx);
-        cache.remove(hydfs_filename);
+        std::cout << "Merge Successful" << std::endl;
     } else {
-        std::cout << "Append Failed" << std::endl;
+        std::cout << "Merge Failed on target: " << targetHost << std::endl;
+        return;
+    }
+
+}
+
+void Hydfs::handleNodeFailureDetected(const std::string& failed_node_id, const unordered_set<std::string>& nodeIds) {
+    auto successors = findSuccessors(failed_node_id, nodeIds, MODULUS);
+    std::string successor = successors[0].first +  ":" + std::to_string(GRPC_PORT); // 1 2 3
+    std::string pred1 = find2Predecessor(failed_node_id, nodeIds, MODULUS).first + ":" + std::to_string(GRPC_PORT);
+    std::string pred2 = find2Predecessor(failed_node_id, nodeIds, MODULUS).first + ":" + std::to_string(GRPC_PORT);
+
+
+    // right now only handling non consec failures case 1, 2, 4? 
+    // for the new leader of whatever went down
+    // another case here
+    FileTransferClient client(grpc::CreateChannel(successor, grpc::InsecureChannelCredentials()));
+    std::string new_sucessor = successors[2].first + ":" + std::to_string(GRPC_PORT);
+    bool res = client.UpdateReplication(4, successor, {new_sucessor}); // assuming the 1 means dead 
+    if (res) {
+        std::cout << "UpdateReplication Successful" <<  "\n";
+    } else {
+        std::cout << "UpdateReplication Failed" << "\n";
+    }
+
+    // first predecessor, also need case of multiple?
+    FileTransferClient client2(grpc::CreateChannel(pred1, grpc::InsecureChannelCredentials()));
+    std::string successor2 = successors[1].first +  ":" + std::to_string(GRPC_PORT);
+    res = client2.UpdateReplication(2, successor, {successor2}); // assuming the 1 means dead 
+    if (res) {
+        std::cout << "UpdateReplication Successful" <<  "\n";
+    } else {
+        std::cout << "UpdateReplication Failed" << "\n";
+    }
+
+    // 2nd alive + 1st alive
+    FileTransferClient client3(grpc::CreateChannel(pred2, grpc::InsecureChannelCredentials()));
+    res = client3.UpdateReplication(1, pred1, {successor}); // assuming the 1 means dead 
+    if (res) {
+        std::cout << "UpdateReplication Successful" <<  "\n";
+    } else {
+        std::cout << "UpdateReplication Failed" << "\n";
     }
 }
 
+std::vector<std::string> Hydfs::getAllSuccessors(const std::string& filename) {
+    std::vector<std::pair<std::string, std::pair<size_t, size_t>>> successors =  find3SuccessorsFile(filename, currNode.getAllIds(), MODULUS);
+    std::vector<std::string> res;
+    for (size_t i = 0; i < successors.size(); i++) {
+        res.push_back(successors[i].first);
+    }
+    return res;
+}
+
+
 // deterministic for node x filename
 std::string Hydfs::getTarget(const std::string& filename) {
-    std::vector<std::pair<std::string, std::pair<size_t, size_t>>> successors = find3Successors(filename, currNode.getAllIds(), MODULUS);
+    std::vector<std::pair<std::string, std::pair<size_t, size_t>>> successors = find3SuccessorsFile(filename, currNode.getAllIds(), MODULUS);
     size_t currHash = hashString(currNode.getId() + filename, MODULUS);
     std::mt19937 gen(currHash); 
     std::uniform_int_distribution<> distrib(0, successors.size() - 1);
@@ -120,10 +199,8 @@ void Hydfs::handleClientRequests(const std::string& command) {
         loc_delim = command.find(" ", loc_delim + 1);
         std::string hydfs_filename = command.substr(loc_delim + 1, command.find("\n") - loc_delim - 1);
 
-        std::string targetHost = getTarget(hydfs_filename) + ":" + std::to_string(GRPC_PORT); // use the hydfs filename right?
-
-        cout << "Create" << filename << " hydfs: " << hydfs_filename << " targetHost: " << targetHost << "\n";
-        handleCreate(filename, hydfs_filename, targetHost);
+        //cout << "Create" << filename << " hydfs: " << hydfs_filename << " targetHost: " << targetHost << "\n";
+        handleCreate(filename, hydfs_filename);
 
     } else if (command.substr(0, 3) == "get") {
         
@@ -144,23 +221,24 @@ void Hydfs::handleClientRequests(const std::string& command) {
         loc_delim = command.find(" ", loc_delim + 1);
         std::string hydfs_filename = command.substr(loc_delim + 1, command.find("\n") - loc_delim - 1);
 
-        std::string targetHost = getTarget(hydfs_filename) + ":" + std::to_string(GRPC_PORT); // use the hydfs filename right?
-
-        cout << "Append" << filename << " hydfs: " << hydfs_filename << " targetHost: " << targetHost << "\n";
-        handleAppend(filename, hydfs_filename, targetHost);
+        //cout << "Append" << filename << " hydfs: " << hydfs_filename << " targetHost: " << targetHost << "\n";
+        handleAppend(filename, hydfs_filename);
 
     } else if (command.substr(0, 5) == "merge") {
-
+        size_t loc_delim = command.find(" ");
+        std::string hydfs_filename = command.substr(loc_delim + 1, command.find("\n") - loc_delim - 1);
+        handleMerge(hydfs_filename);
 
     } else if (command.substr(0, 2) == "ls") {
         size_t loc_delim = command.find(" ");
         std::string hydfs_filename = command.substr(loc_delim + 1, command.find("\n", loc_delim + 1) - loc_delim - 1);
         cout << "ls: " << hydfs_filename << "\n";
-        std::vector<std::pair<std::string, std::pair<size_t, size_t>>> successors = find3Successors(hydfs_filename, currNode.getAllIds(), MODULUS);
+        std::vector<std::pair<std::string, std::pair<size_t, size_t>>> successors = find3SuccessorsFile(hydfs_filename, currNode.getAllIds(), MODULUS);
         for (const auto& successor : successors) {
             std::cout << HostToIp(successor.first) << " Node ID: " << successor.second.first <<   "\n";
         }
         std::cout << "File ID: " << successors[0].second.second << "\n";
+
     } else if (command.substr(0, 5) == "store") {
         std::string path("hydfs/");
         if (std::filesystem::is_directory(path)) {
@@ -348,6 +426,9 @@ void Hydfs::swim() {
                     currNode.removeNode(state.nodeId);
                     currNode.removeNewId(state.nodeId);
                     currNode.removeSendId(state.nodeId);
+                    if (checkIfMinVM(currNode.getId(), currNode.getAllIds(), MODULUS)) {
+                        handleNodeFailureDetected(state.nodeId, currNode.getAllIds());   
+                    }
                 }
                 else if (state.status == Dead) {
                   writeToLog(currNode.getLogFile(), "On node " + currNode.getId() + ": Node " + state.nodeId + " is communicated as dead " + to_string(currNode.getCurrentPeriod()) + ".");

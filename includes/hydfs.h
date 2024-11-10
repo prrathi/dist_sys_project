@@ -26,13 +26,16 @@ public:
 private:
     void handleCommand(const std::string& command);
     void handleClientRequests(const std::string& command);
-    void handleCreate(const std::string& filename, const std::string& hydfs_filename, const std::string& target);
+    void handleCreate(const std::string& filename, const std::string& hydfs_filename);
     void handleGet(const std::string& filename, const std::string& hydfs_filename, const std::string& target);
-    void handleAppend(const std::string& filename, const std::string& hydfs_filename, const std::string& target);
+    void handleAppend(const std::string& filename, const std::string& hydfs_filename);
+    void handleMerge(const std::string& hydfs_filename);
+    void handleNodeFailureDetected(const std::string& failed_node_id, const unordered_set<std::string>& nodeIds);
     std::string getTarget(const std::string& filename);
+    std::vector<std::string> getAllSuccessors(const std::string& filename);
     FullNode initNode();
 private:
-    LRUCache cache;
+    LRUCache lru_cache;
     const std::string introducerHostname = "fa24-cs425-5801.cs.illinois.edu";
     std::string FIFO_PATH = "/tmp/mp3";
     FullNode currNode;
