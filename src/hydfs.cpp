@@ -40,7 +40,7 @@ Hydfs::Hydfs()
     : lru_cache(LRU_CACHE_CAPACITY)
     , server()
 {
-    if (getenv("USER") == "prathi3" || getenv("USER") == "praneet") {
+    if (string(getenv("USER")) == "prathi3" || string(getenv("USER")) == "praneet") {
         DEFAULT_FIFO_PATH = "/tmp/mp3-prathi3";
     }
 }
