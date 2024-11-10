@@ -426,6 +426,7 @@ void Hydfs::swim() {
                     std::strftime(buffer, sizeof(buffer), "%M:%S", now_tm);
                     std::string timestamp(buffer);
                     writeToLog(currNode.getLogFile(), "On node " + currNode.getId() + ": Node " + state.nodeId + " is removed after being dead for too long " + to_string(currNode.getCurrentPeriod()) + " at " + timestamp + ".");
+                    cout << "Node " << state.nodeId << " is removed after being dead for too long " << currNode.getCurrentPeriod() << " at " << timestamp << "\n";
                     currNode.removeNode(state.nodeId);
                     currNode.removeNewId(state.nodeId);
                     currNode.removeSendId(state.nodeId);
