@@ -43,13 +43,11 @@ vector<pair<string, pair<size_t, size_t>>> find3SuccessorsFile(const string& fil
 vector<pair<string, pair<size_t, size_t>>> findSuccessors(const string& failed_node_id, const unordered_set<string>& nodeIds, size_t modulus) {
     string curr_node_hostname = failed_node_id.substr(0, failed_node_id.rfind("-"));
     size_t failed_node_hash = hashString(curr_node_hostname, modulus);
-    cout << "Failed node id: " << failed_node_id << " hash: " << failed_node_hash << "\n";
     vector<pair<size_t, string>> nodeHashes;
 
     for (const auto& nodeId : nodeIds) {
         string hostname = nodeId.substr(0, nodeId.rfind("-"));
         size_t nodeHash = hashString(hostname, modulus);
-        cout << "Node id: " << nodeId << " hash: " << nodeHash << "\n";
         nodeHashes.push_back({(nodeHash - failed_node_hash) % modulus, hostname});
     }
 
@@ -58,7 +56,6 @@ vector<pair<string, pair<size_t, size_t>>> findSuccessors(const string& failed_n
     size_t i = 0;
 
     for (const auto& node : nodeHashes) {
-        cout << "Top " << i << " closest is node id: " << node.second << " hash: " << node.first << "\n";
         if (i==3) break;
         successors.push_back({node.second, {hashString(node.second, modulus), failed_node_hash}});
         i++;        

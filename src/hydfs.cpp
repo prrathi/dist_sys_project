@@ -160,19 +160,25 @@ void Hydfs::handleNodeFailureDetected(const string& failed_node_id, const unorde
     } else {
         cout << "UpdateReplication Failed" << "\n";
     }
+    cout << "here1" << "\n";
 
     // replication for files with immediately preceding leader
     FileTransferClient client2(grpc::CreateChannel(predecessor1, grpc::InsecureChannelCredentials()));
+    cout << "here2" << "\n";
     res = client2.UpdateReplication(2, successor1, {successor2}); 
+    cout << "here3" << "\n";
     if (res) {
         cout << "UpdateReplication Successful" <<  "\n";
     } else {
         cout << "UpdateReplication Failed" << "\n";
     }
+    cout << "here4" << "\n";
 
     // replication for files with second preceding leader
     FileTransferClient client3(grpc::CreateChannel(predecessor2, grpc::InsecureChannelCredentials()));
+    cout << "here5" << "\n";
     res = client3.UpdateReplication(1, predecessor1, {successor1}); 
+    cout << "here6" << "\n";
     if (res) {
         cout << "UpdateReplication Successful" <<  "\n";
     } else {

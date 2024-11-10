@@ -345,13 +345,16 @@ Status HydfsServer::UpdateFilesReplication(ServerContext* context, const Replica
     pair<int, int> existing_order = make_pair(-1, -1);
     switch (failure_case) {
         case 1: // 001
+            cout << "case 1" << "\n";
             num_preceding_failures = 0;
             break;
         case 2: // 010
+            cout << "case 2" << "\n";
             num_preceding_failures = 0;
             existing_order = make_pair(2, 1);
             break;
         case 4: // 100
+            cout << "case 4" << "\n";
             num_preceding_failures = 1;
             break;
         default:
