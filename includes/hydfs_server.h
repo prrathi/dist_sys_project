@@ -54,6 +54,8 @@ public:
                            const filetransfer::UpdateOrderRequest* request, 
                            filetransfer::OperationStatus* response) override;
 
+    std::vector<std::string> getAllFileNames();
+
 private:
     // Helper to get the correct mutex for a filename
     size_t get_shard_index(const std::string& filename) {

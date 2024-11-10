@@ -18,6 +18,7 @@
 #include "hydfs.h"
 #include "file_transfer_client.h"
 #include "utils.h"
+#include "hydfs_server.h"
 
 // Implementation-specific constants
 static const int PERIOD = 1000;
@@ -241,17 +242,13 @@ void Hydfs::handleClientRequests(const std::string& command) {
         std::cout << "File ID: " << successors[0].second.second << "\n";
 
     } else if (command.substr(0, 5) == "store") {
-        std::string path("hydfs/");
-        if (std::filesystem::is_directory(path)) {
-            std::cout << "Listing directory: " << path << "\n";
-            for (const auto &entry : std::filesystem::directory_iterator(path)) {
-                std::string path(entry.path());
-                std::string last_element(path.substr(path.rfind("/") + 1));
-                std::cout << last_element << " ID: " << hashString(last_element, MODULUS) << "\n";
-            }
-            string hostname = currNode.getId().substr(0, currNode.getId().find("-"));
-            std::cout << "VM: " << hostname << " VM ID: " << hashString(hostname, MODULUS) << "\n";
+        std::vector<std::string> fileNames = server.getAllFileNames();
+        for (const auto& fileName : fileNames) {
+            std::cout << "Filename: " << fileName << " ID: " << hashString(fileName, MODULUS) << "\n";
         }
+        string hostname = currNode.getId().substr(0, currNode.getId().rfind("-"));
+        std::cout << "VM: " << hostname << " VM ID: " << hashString(hostname, MODULUS) << "\n";
+
     } else if (command.substr(0, 14) == "getfromreplica") {
         size_t loc_delim = command.find(" ");
         std::string VMaddress = command.substr(loc_delim + 1, command.find(" ", loc_delim + 1) - loc_delim - 1);
@@ -267,7 +264,7 @@ void Hydfs::handleClientRequests(const std::string& command) {
         cout << "list_mem_ids" << "\n";
         vector<pair<size_t, string>> nodes_on_ring; 
         for (const auto& id : currNode.getAllIds()) {
-            string hostname = id.substr(0, id.find("-"));
+            string hostname = id.substr(0, id.rfind("-"));
             nodes_on_ring.push_back({hashString(hostname, MODULUS), hostname});
         }
         sort(nodes_on_ring.begin(), nodes_on_ring.end());
