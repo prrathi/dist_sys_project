@@ -20,9 +20,9 @@
 #include "utils.h"
 
 // Implementation-specific constants
-static const int PERIOD = 800;
-static const int SUS_PERIOD = 4;
-static const int PING_PERIOD = 650;
+static const int PERIOD = 1200;
+static const int SUS_PERIOD = 5;
+static const int PING_PERIOD = 1000;
 static const int NORMAL_PERIOD = 2000;
 static const int NORMAL_PING_PERIOD = 1500;
 static const int MODULUS = 8192;
@@ -340,7 +340,7 @@ void Hydfs::handleCommand(const std::string& command) {
 
 void Hydfs::pipeListener() {
     // make the named pipe if it doesn't exist
-    std::cout << "ASDASD\n";
+    //std::cout << "ASDASD\n";
     if (mkfifo(DEFAULT_FIFO_PATH, 0666) == -1 && errno != EEXIST) {
         perror("mkfifo");
         exit(EXIT_FAILURE);
