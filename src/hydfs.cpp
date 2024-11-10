@@ -264,6 +264,8 @@ void Hydfs::handleClientRequests(const string& command) {
         string filename = command.substr(loc_delim + 1, command.find("\n") - loc_delim - 1);
 
         string targetHost = VMaddress + ":" + to_string(GRPC_PORT); 
+
+        cout << "Getfromreplica" << filename << " hydfs: " << hydfs_filename << " targetHost: " << targetHost << "\n";
         handleGet(filename, hydfs_filename, targetHost);  // should just be like get right
 
     } else if (command.substr(0, 12) == "list_mem_ids") {
