@@ -61,6 +61,7 @@ private:
     }
 
     std::string server_address_;
+    std::string server_address_2_;
     std::unique_ptr<grpc::Server> server_;
     // Each HYDFS filename stores node's order and chunked filenames ordered by time. Note that merged content is stored at original filename
     std::unordered_map<std::string, std::pair<int32_t, std::vector<std::string>>> file_map_;

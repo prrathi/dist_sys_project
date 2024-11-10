@@ -26,7 +26,7 @@ static const int PING_PERIOD = 1000;
 static const int NORMAL_PERIOD = 3000;
 static const int NORMAL_PING_PERIOD = 2500;
 static const int MODULUS = 8192;
-static const int GRPC_PORT = 8081;
+static const int GRPC_PORT_SERVER = 8081;
 static const size_t LRU_CACHE_CAPACITY = 1024 * 1024 * 50;
 static const size_t NUM_NODES_TO_CALL = 3;
 
@@ -56,7 +56,7 @@ void Hydfs::handleCreate(const string& filename, const string& hydfs_filename) {
     //cout << "create called" << "\n";
     vector<string> successors = getAllSuccessors(hydfs_filename);
     for (size_t i = 0; i < 3; i++) {
-        string targetHost = successors[i] + ":" + to_string(GRPC_PORT); 
+        string targetHost = successors[i] + ":" + to_string(GRPC_PORT_SERVER); 
         FileTransferClient client(grpc::CreateChannel(targetHost, grpc::InsecureChannelCredentials()));
         cout << "Create called, Target: " << targetHost << "\n";
         bool res = client.CreateFile(hydfs_filename, i);
@@ -107,7 +107,7 @@ void Hydfs::handleGet(const string& filename, const string& hydfs_filename, cons
 void Hydfs::handleAppend(const string& filename, const string& hydfs_filename) {
     vector<string> successors = getAllSuccessors(hydfs_filename);
     for (size_t i = 0; i < 3; i++) {
-        string targetHost = successors[i] + ":" + to_string(GRPC_PORT); 
+        string targetHost = successors[i] + ":" + to_string(GRPC_PORT_SERVER); 
         FileTransferClient client(grpc::CreateChannel(targetHost, grpc::InsecureChannelCredentials()));
         cout << "Append called, Target: " << targetHost << "\n";
         bool res = client.AppendFile(filename, hydfs_filename);
@@ -124,7 +124,7 @@ void Hydfs::handleAppend(const string& filename, const string& hydfs_filename) {
 
 void Hydfs::handleMerge(const string& hydfs_filename) {
     vector<string> successors = getAllSuccessors(hydfs_filename);
-    string target_host = successors[0] + ":" + to_string(GRPC_PORT);
+    string target_host = successors[0] + ":" + to_string(GRPC_PORT_SERVER);
     vector<string> non_leader_successors(successors.begin() + 1, successors.end());
     FileTransferClient client(grpc::CreateChannel(target_host, grpc::InsecureChannelCredentials()));
     cout << "Merge called, Target: " << target_host << "\n";
@@ -142,12 +142,12 @@ void Hydfs::handleMerge(const string& hydfs_filename) {
 void Hydfs::handleNodeFailureDetected(const string& failed_node_id, const unordered_set<string>& nodeIds) {
     cout << "Handling node failure of " << failed_node_id << " on " << currNode.getId() << "\n";
     auto successors = findSuccessors(failed_node_id, nodeIds, MODULUS);
-    string successor1 = successors[0].first +  ":" + to_string(GRPC_PORT);
-    string successor2 = successors[1].first + ":" + to_string(GRPC_PORT);
-    string successor3 = successors[2].first + ":" + to_string(GRPC_PORT);
+    string successor1 = successors[0].first +  ":" + to_string(GRPC_PORT_SERVER);
+    string successor2 = successors[1].first + ":" + to_string(GRPC_PORT_SERVER);
+    string successor3 = successors[2].first + ":" + to_string(GRPC_PORT_SERVER);
     pair<string, string> preds = find2Predecessor(failed_node_id, nodeIds, MODULUS);
-    string predecessor1 = preds.first + ":" + to_string(GRPC_PORT); // immediately preceding leader
-    string predecessor2 = preds.second + ":" + to_string(GRPC_PORT); // second preceding leader
+    string predecessor1 = preds.first + ":" + to_string(GRPC_PORT_SERVER); // immediately preceding leader
+    string predecessor2 = preds.second + ":" + to_string(GRPC_PORT_SERVER); // second preceding leader
 
     cout << "Successors: " << successor1 << " " << successor2 << " " << successor3 << "\n";
     cout << "Predecessors: " << predecessor1 << " " << predecessor2 << "\n";
@@ -233,7 +233,7 @@ void Hydfs::handleClientRequests(const string& command) {
         loc_delim = command.find(" ", loc_delim + 1);
         string filename = command.substr(loc_delim + 1, command.find("\n") - loc_delim - 1);
 
-        string targetHost = getTarget(hydfs_filename) + ":" + to_string(GRPC_PORT); // use the hydfs filename right?
+        string targetHost = getTarget(hydfs_filename) + ":" + to_string(GRPC_PORT_SERVER); // use the hydfs filename right?
 
         cout << "Get" << filename << " hydfs: " << hydfs_filename << " targetHost: " << targetHost << "\n";
         handleGet(filename, hydfs_filename, targetHost, false);
@@ -273,7 +273,7 @@ void Hydfs::handleClientRequests(const string& command) {
         loc_delim = command.find(" ", loc_delim + 1);
         string filename = command.substr(loc_delim + 1, command.find("\n") - loc_delim - 1);
 
-        string targetHost = VMaddress + ":" + to_string(GRPC_PORT); 
+        string targetHost = VMaddress + ":" + to_string(GRPC_PORT_SERVER); 
 
         cout << "Getfromreplica" << filename << " hydfs: " << hydfs_filename << " targetHost: " << targetHost << "\n";
         handleGet(filename, hydfs_filename, targetHost, true);  // should just be like get right

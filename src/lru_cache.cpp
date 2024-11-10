@@ -5,7 +5,7 @@
 #include <string>
 #include <fstream>
 #include <iostream>
-#include "LRUCache.h"
+#include "lru_cache.h"
 using namespace std;
 
 std::vector<char> readFileIntoVector(const std::string& filename) {

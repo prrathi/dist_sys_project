@@ -9,7 +9,8 @@
 #include "hydfs_server.h"
 #include "file_transfer_client.h"
 
-static const int GRPC_PORT = 8082;
+static const int GRPC_PORT_SERVER = 8081;
+static const int GRPC_PORT_SERVER_2 = 8082;
 static const size_t BUFFER_SIZE = 1024 * 1024;  // 1MB buffer
 
 using namespace std;
@@ -39,7 +40,8 @@ HydfsServer::HydfsServer() {
         exit(1);
     }
     string hostname_str = hostname;
-    server_address_ = hostname_str + ":" + to_string(GRPC_PORT);
+    server_address_ = hostname_str + ":" + to_string(GRPC_PORT_SERVER);
+    server_address_2_ = hostname_str + ":" + to_string(GRPC_PORT_SERVER_2);
 
     ServerBuilder builder;
     builder.AddListeningPort(server_address_, grpc::InsecureServerCredentials());
@@ -397,7 +399,7 @@ Status HydfsServer::UpdateFilesReplication(ServerContext* context, const Replica
 
     // with current setup should have zero to one new successor with updated order, send request to self as leader
     for (const string& filename : files_to_forward) {
-        auto channel = grpc::CreateChannel(server_address_, grpc::InsecureChannelCredentials());
+        auto channel = grpc::CreateChannel(server_address_2_, grpc::InsecureChannelCredentials());
         FileTransferClient client(channel);
         cout << "forwarding " << filename << " to " << request->new_successors()[0] << " from " << server_address_ << "\n";
         client.MergeFile(filename, vector<string>(request->new_successors().begin(), request->new_successors().end()));
