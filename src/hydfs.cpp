@@ -20,9 +20,9 @@
 #include "utils.h"
 
 // Implementation-specific constants
-static const int PERIOD = 650;
-static const int SUS_PERIOD = 7;
-static const int PING_PERIOD = 400;
+static const int PERIOD = 800;
+static const int SUS_PERIOD = 4;
+static const int PING_PERIOD = 650;
 static const int NORMAL_PERIOD = 2000;
 static const int NORMAL_PING_PERIOD = 1500;
 static const int MODULUS = 8192;
@@ -415,7 +415,8 @@ void Hydfs::swim() {
                     currNode.updateState(state);
                     currNode.addSendId(state.nodeId);
                 }
-                if (state.status == Dead && (currNode.getCurrentPeriod() - state.deadBeginPeriod > (uint16_t)(2 * (currNode.getAllIds().size()) - 1))) {
+                // problem is this called multiple times...
+                if (state.status == Dead && (currNode.getCurrentPeriod() - state.deadBeginPeriod == (uint16_t)(2 * (currNode.getAllIds().size()) - 1))) {
                     auto now = std::chrono::system_clock::now();
                     auto now_time = std::chrono::system_clock::to_time_t(now);
                     std::tm* now_tm = std::localtime(&now_time);
@@ -478,11 +479,11 @@ FullNode Hydfs::initNode() {
         0, 
         0,
     };
-
+    // start in sus mode
     std::vector<PassNodeState> nodeStates = {currNodeState};
     if (hostname_str == introducerHostname) {
-        return FullNode(true, nodeId, nodeStates, 0, false, false, 0, NORMAL_PING_PERIOD, NORMAL_PERIOD, SUS_PERIOD, false, DEFAULT_LOG_FILE);
+        return FullNode(true, nodeId, nodeStates, 0, false, false, 0, NORMAL_PING_PERIOD, NORMAL_PERIOD, SUS_PERIOD, true, DEFAULT_LOG_FILE);
     } else {
-        return FullNode(false, nodeId, nodeStates, 0, false, false, 0, NORMAL_PING_PERIOD, NORMAL_PERIOD, SUS_PERIOD, false, DEFAULT_LOG_FILE);
+        return FullNode(false, nodeId, nodeStates, 0, false, false, 0, NORMAL_PING_PERIOD, NORMAL_PERIOD, SUS_PERIOD, true, DEFAULT_LOG_FILE);
     }
 }
