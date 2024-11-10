@@ -140,6 +140,7 @@ void Hydfs::handleMerge(const string& hydfs_filename) {
 }
 
 void Hydfs::handleNodeFailureDetected(const string& failed_node_id, const unordered_set<string>& nodeIds) {
+    cout << "Handling node failure of " << failed_node_id << " on " << currNode.getId() << "\n";
     auto successors = findSuccessors(failed_node_id, nodeIds, MODULUS);
     string successor1 = successors[0].first +  ":" + to_string(GRPC_PORT);
     string successor2 = successors[1].first + ":" + to_string(GRPC_PORT);
@@ -147,6 +148,9 @@ void Hydfs::handleNodeFailureDetected(const string& failed_node_id, const unorde
     pair<string, string> preds = find2Predecessor(failed_node_id, nodeIds, MODULUS);
     string predecessor1 = preds.first + ":" + to_string(GRPC_PORT); // immediately preceding leader
     string predecessor2 = preds.second + ":" + to_string(GRPC_PORT); // second preceding leader
+
+    cout << "Successors: " << successor1 << " " << successor2 << " " << successor3 << "\n";
+    cout << "Predecessors: " << predecessor1 << " " << predecessor2 << "\n";
 
     // replication for files with new leader
     FileTransferClient client(grpc::CreateChannel(successor1, grpc::InsecureChannelCredentials()));
