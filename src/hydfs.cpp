@@ -239,7 +239,7 @@ void Hydfs::handleClientRequests(const string& command) {
         cout << "ls: " << hydfs_filename << "\n";
         vector<pair<string, pair<size_t, size_t>>> successors = find3SuccessorsFile(hydfs_filename, currNode.getAllIds(), MODULUS);
         for (const auto& successor : successors) {
-            cout << HostToIp(successor.first) << " Node ID: " << successor.second.first <<   "\n";
+            cout << successor.first << " Node ID: " << successor.second.first <<   "\n";
         }
         cout << "File ID: " << successors[0].second.second << "\n";
 
@@ -270,7 +270,7 @@ void Hydfs::handleClientRequests(const string& command) {
         cout << "list_mem_ids" << "\n";
         vector<pair<size_t, string>> nodes_on_ring; 
         for (const auto& id : currNode.getAllIds()) {
-            string hostname = id.substr(0, id.find("-"));
+            string hostname = id.substr(0, id.rfind("-"));
             nodes_on_ring.push_back({hashString(hostname, MODULUS), hostname});
         }
         sort(nodes_on_ring.begin(), nodes_on_ring.end());
