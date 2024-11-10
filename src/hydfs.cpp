@@ -375,7 +375,6 @@ void Hydfs::runServer() {
 }
 
 void Hydfs::swim() {
-    // Check if the user is prathi3 and change the hostname if so
     const char* user = getenv("USER");
     if (user != nullptr && strcmp(user, "prathi3") == 0) {
         FIFO_PATH = "/tmp/mp3-prathi3";
@@ -397,6 +396,7 @@ void Hydfs::swim() {
             SwimMessage joinMessage(currNode.getId(), currNode.getState(currNode.getId()).nodeIncarnation, "", DingDong, currNode.getCurrentPeriod(), {currNode.getState(currNode.getId())});
             sendUdpRequest(introducerHostname, serializeMessage(joinMessage));
         }
+        cout << "Node " << currNode.getId() << " joined the group" << endl;
 
         auto ids = currNode.getAllIds();
         vector<string> machinesToCheck; 
