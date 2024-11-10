@@ -71,10 +71,10 @@ void Hydfs::handleCreate(const string& filename, const string& hydfs_filename) {
     handleAppend(filename, hydfs_filename);
 }
 
-void Hydfs::handleGet(const string& filename, const string& hydfs_filename, const string& target) {
+void Hydfs::handleGet(const string& filename, const string& hydfs_filename, const string& target, bool avoid_cache) {
 
     // check here whether in cache, only need local consistency which is guaranteed
-    if (lru_cache.exist(hydfs_filename)) {
+    if (lru_cache.exist(hydfs_filename) && !avoid_cache) {
         lock_guard<mutex> lock(cacheMtx);
         vector<char> contents = lru_cache.get(hydfs_filename).second;
         ofstream file(filename, ios::binary);
@@ -135,6 +135,8 @@ void Hydfs::handleMerge(const string& hydfs_filename) {
         cout << "Merge Failed on target: " << target_host << endl;
         return;
     }
+    lock_guard<mutex> lock(cacheMtx);
+    lru_cache.remove(hydfs_filename);
 }
 
 void Hydfs::handleNodeFailureDetected(const string& failed_node_id, const unordered_set<string>& nodeIds) {
@@ -226,7 +228,7 @@ void Hydfs::handleClientRequests(const string& command) {
         string targetHost = getTarget(hydfs_filename) + ":" + to_string(GRPC_PORT); // use the hydfs filename right?
 
         cout << "Get" << filename << " hydfs: " << hydfs_filename << " targetHost: " << targetHost << "\n";
-        handleGet(filename, hydfs_filename, targetHost);
+        handleGet(filename, hydfs_filename, targetHost, false);
 
     } else if (command.substr(0, 5) == "merge") {
         size_t loc_delim = command.find(" ");
@@ -266,7 +268,7 @@ void Hydfs::handleClientRequests(const string& command) {
         string targetHost = VMaddress + ":" + to_string(GRPC_PORT); 
 
         cout << "Getfromreplica" << filename << " hydfs: " << hydfs_filename << " targetHost: " << targetHost << "\n";
-        handleGet(filename, hydfs_filename, targetHost);  // should just be like get right
+        handleGet(filename, hydfs_filename, targetHost, true);  // should just be like get right
 
     } else if (command.substr(0, 12) == "list_mem_ids") {
         cout << "list_mem_ids" << "\n";
