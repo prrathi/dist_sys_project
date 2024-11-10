@@ -160,11 +160,14 @@ bool FileTransferClient::GetFile(const string& hydfs_filename, const string& loc
     return true;
 }
 
-bool FileTransferClient::MergeFile(const string& hydfs_filename) {
+bool FileTransferClient::MergeFile(const string& hydfs_filename, const vector<string>& successors) {
     ClientContext context;
     OperationStatus status;
     MergeRequest request;
     request.set_filename(hydfs_filename);
+    for (const string& successor : successors) {
+        request.add_successors(successor);
+    }
     
     Status rpc_status = stub_->MergeFile(&context, request, &status);
 
