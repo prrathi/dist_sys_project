@@ -27,49 +27,49 @@ def execute_remote_command(machines, command):
         print(f"Sent {command} to {machine} pipe")
 
 def list_mem(machines):
-    if machines[0] == "localhost" or machines[0] == socket.gethostname():
+    if len(machines) == 1 and (machines[0] == "localhost" or machines[0] == socket.gethostname()):
         execute_local_command("list_mem")
         return
     execute_remote_command(machines, "list_mem")
 
 def list_self(machines):
-    if machines[0] == "localhost" or machines[0] == socket.gethostname():
+    if len(machines) == 1 and (machines[0] == "localhost" or machines[0] == socket.gethostname()):
         execute_local_command("list_self")
         return
     execute_remote_command(machines, "list_self")
 
 def join(machines):
-    if machines[0] == "localhost" or machines[0] == socket.gethostname():
+    if len(machines) == 1 and (machines[0] == "localhost" or machines[0] == socket.gethostname()):
         execute_local_command("join")
         return
     execute_remote_command(machines, "join")
 
 def leave(machines):
-    if machines[0] == "localhost" or machines[0] == socket.gethostname():
+    if len(machines) == 1 and (machines[0] == "localhost" or machines[0] == socket.gethostname()):
         execute_local_command("leave")
         return
     execute_remote_command(machines, "leave")
 
 def enable_sus(machines):
-    if machines[0] == "localhost" or machines[0] == socket.gethostname():
+    if len(machines) == 1 and (machines[0] == "localhost" or machines[0] == socket.gethostname()):
         execute_local_command("enable_sus")
         return
     execute_remote_command(machines, "enable_sus")
 
 def disable_sus(machines):
-    if machines[0] == "localhost" or machines[0] == socket.gethostname():
+    if len(machines) == 1 and (machines[0] == "localhost" or machines[0] == socket.gethostname()):
         execute_local_command("disable_sus")
         return
     execute_remote_command(machines, "disable_sus")
 
 def status_sus(machines):
-    if machines[0] == "localhost" or machines[0] == socket.gethostname():
+    if len(machines) == 1 and (machines[0] == "localhost" or machines[0] == socket.gethostname()):
         execute_local_command("status_sus")
         return
     execute_remote_command(machines, "status_sus")
 
 def list_suspected(machines):
-    if machines[0] == "localhost" or machines[0] == socket.gethostname():
+    if len(machines) == 1 and (machines[0] == "localhost" or machines[0] == socket.gethostname()):
         execute_local_command("list_suspected")
         return
     execute_remote_command(machines, "list_suspected")
@@ -78,49 +78,49 @@ def list_suspected(machines):
 # MP3
 
 def createfile(machines, args):
-    if machines[0] == "localhost" or machines[0] == socket.gethostname():
+    if len(machines) == 1 and (machines[0] == "localhost" or machines[0] == socket.gethostname()):
         execute_local_command("create " + args)
         return
     execute_remote_command(machines, "create " + args)
 
 def getfile(machines, args):
-    if machines[0] == "localhost" or machines[0] == socket.gethostname():
+    if len(machines) == 1 and (machines[0] == "localhost" or machines[0] == socket.gethostname()):
         execute_local_command("get " + args)
         return
     execute_remote_command(machines, "get " + args)
 
 def appendfile(machines, args):
-    if machines[0] == "localhost" or machines[0] == socket.gethostname():
+    if len(machines) == 1 and (machines[0] == "localhost" or machines[0] == socket.gethostname()):
         execute_local_command("append " + args)
         return
     execute_remote_command(machines, "append " + args)
 
 def mergefile(machines, args):
-    if machines[0] == "localhost" or machines[0] == socket.gethostname():
+    if len(machines) == 1 and (machines[0] == "localhost" or machines[0] == socket.gethostname()):
         execute_local_command("merge " + args)
         return
     execute_remote_command(machines, "merge " + args)
 
 def listfiles(machines, args):
-    if machines[0] == "localhost" or machines[0] == socket.gethostname():
+    if len(machines) == 1 and (machines[0] == "localhost" or machines[0] == socket.gethostname()):
         execute_local_command("ls " + args)
         return
     execute_remote_command(machines, "ls " + args)
 
 def storefile(machines):
-    if machines[0] == "localhost" or machines[0] == socket.gethostname():
+    if len(machines) == 1 and (machines[0] == "localhost" or machines[0] == socket.gethostname()):
         execute_local_command("store")
         return
     execute_remote_command(machines, "store")
 
 def getfromreplica(machines, args):
-    if machines[0] == "localhost" or machines[0] == socket.gethostname():
+    if len(machines) == 1 and (machines[0] == "localhost" or machines[0] == socket.gethostname()):
         execute_local_command("getfromreplica " + args)
         return
     execute_remote_command(machines, "getfromreplica " + args)
 
 def list_mem_ids(machines):
-    if machines[0] == "localhost" or machines[0] == socket.gethostname():
+    if len(machines) == 1 and (machines[0] == "localhost" or machines[0] == socket.gethostname()):
         execute_local_command("list_mem_ids")
         return
     execute_remote_command(machines, "list_mem_ids")
