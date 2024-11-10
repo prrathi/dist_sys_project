@@ -9,7 +9,7 @@
 #include "hydfs_server.h"
 #include "file_transfer_client.h"
 
-static const int GRPC_PORT = 8081;
+static const int GRPC_PORT = 8082;
 static const size_t BUFFER_SIZE = 1024 * 1024;  // 1MB buffer
 
 using namespace std;
@@ -399,7 +399,7 @@ Status HydfsServer::UpdateFilesReplication(ServerContext* context, const Replica
     for (const string& filename : files_to_forward) {
         auto channel = grpc::CreateChannel(server_address_, grpc::InsecureChannelCredentials());
         FileTransferClient client(channel);
-        cout << "forwarding " << filename << " to " << request->new_successors()[0] << "\n";
+        cout << "forwarding " << filename << " to " << request->new_successors()[0] << " from " << server_address_ << "\n";
         client.MergeFile(filename, vector<string>(request->new_successors().begin(), request->new_successors().end()));
     }
 
