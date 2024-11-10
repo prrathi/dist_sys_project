@@ -32,7 +32,7 @@ static const size_t NUM_NODES_TO_CALL = 3;
 
 // Class static member definitions
 const char* DEFAULT_LOG_FILE = "Logs/log.txt";
-const char* DEFAULT_FIFO_PATH = "/tmp/mp3";
+char* DEFAULT_FIFO_PATH = "/tmp/mp3";
 
 using namespace std;
 
@@ -40,6 +40,9 @@ Hydfs::Hydfs()
     : lru_cache(LRU_CACHE_CAPACITY)
     , server()
 {
+    if (getenv("USER") == "prathi3" || getenv("USER") == "praneet") {
+        DEFAULT_FIFO_PATH = "/tmp/mp3-prathi3";
+    }
 }
 
 Hydfs::~Hydfs() {}
