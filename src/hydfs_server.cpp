@@ -228,7 +228,7 @@ Status HydfsServer::MergeFile(ServerContext* context, const MergeRequest* reques
     size_t shard = get_shard_index(filename);
     lock_guard<mutex> lock(shard_mutexes_[shard]);
 
-    cout << "merging " << filename << " at " << server_address_ << "\n";
+    cout << "MERGINGGGG " << filename << " at " << server_address_ << "\n";
 
     if (file_map_.find(filename) == file_map_.end()) {
         response->set_status(StatusCode::NOT_FOUND);
