@@ -372,6 +372,7 @@ Status HydfsServer::UpdateFilesReplication(ServerContext* context, const Replica
         // If order becomes 0 and we have target servers, this file needs to be forwarded
         if (new_order == 0 && !request->new_successors().empty()) {
             files_to_forward.push_back(filename);
+            cout << "plan to forward " << filename << " from " << server_address_ << "\n";
         }
     }
 
@@ -379,6 +380,7 @@ Status HydfsServer::UpdateFilesReplication(ServerContext* context, const Replica
     if (existing_order.first != -1) {
         auto channel = grpc::CreateChannel(request->existing_successor(), grpc::InsecureChannelCredentials());
         FileTransferClient client(channel);
+        cout << "updating order of " << request->existing_successor() << " to " << existing_order.second << "\n";
         client.UpdateOrder(existing_order.first, existing_order.second);
     }
 
@@ -386,6 +388,7 @@ Status HydfsServer::UpdateFilesReplication(ServerContext* context, const Replica
     for (const string& filename : files_to_forward) {
         auto channel = grpc::CreateChannel(server_address_, grpc::InsecureChannelCredentials());
         FileTransferClient client(channel);
+        cout << "forwarding " << filename << " to " << request->new_successors()[0] << "\n";
         client.MergeFile(filename, vector<string>(request->new_successors().begin(), request->new_successors().end()));
     }
 
