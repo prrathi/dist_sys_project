@@ -240,7 +240,9 @@ Status HydfsServer::GetFile(ServerContext* context, const FileRequest* request, 
 Status HydfsServer::MergeFile(ServerContext* context, const MergeRequest* request, OperationStatus* response) {
     string filename = request->filename();
     size_t shard = get_shard_index(filename);
+    cout << "merging file 0" << endl;
     lock_guard<mutex> lock(shard_mutexes_[shard]);
+    cout << "merging file 1" << endl;
 
     cout << "MERGINGGGG " << filename << " at " << server_address_ << "\n";
 

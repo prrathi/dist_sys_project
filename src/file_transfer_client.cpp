@@ -169,7 +169,9 @@ bool FileTransferClient::MergeFile(const string& hydfs_filename, const vector<st
         request.add_successors(successor);
     }
     
+    cout << "merging file 1" << endl;
     Status rpc_status = stub_->MergeFile(&context, request, &status);
+    cout << "merging file 2" << endl;
 
     if (rpc_status.ok() && status.status() == StatusCode::SUCCESS) {
         return true;
