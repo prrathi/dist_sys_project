@@ -28,6 +28,7 @@ static const int NORMAL_PING_PERIOD = 1500;
 static const int MODULUS = 8192;
 static const int GRPC_PORT = 8081;
 static const size_t LRU_CACHE_CAPACITY = 1024 * 1024 * 50;
+static const size_t NUM_NODES_TO_CALL = 3;
 
 // Class static member definitions
 const char* DEFAULT_LOG_FILE = "Logs/log.txt";
@@ -416,7 +417,8 @@ void Hydfs::swim() {
                     currNode.addSendId(state.nodeId);
                 }
                 // problem is this called multiple times...
-                if (state.status == Dead && (currNode.getCurrentPeriod() - state.deadBeginPeriod == (uint16_t)(2 * (currNode.getAllIds().size()) - 1))) {
+                //if (state.status == Dead && (currNode.getCurrentPeriod() - state.deadBeginPeriod == (uint16_t)(2 * (currNode.getAllIds().size()) - 1))) {
+                if (state.status == Dead && (currNode.getCurrentPeriod() - state.deadBeginPeriod == NUM_NODES_TO_CALL)) {
                     auto now = std::chrono::system_clock::now();
                     auto now_time = std::chrono::system_clock::to_time_t(now);
                     std::tm* now_tm = std::localtime(&now_time);
