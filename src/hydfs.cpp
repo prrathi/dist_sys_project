@@ -43,6 +43,7 @@ Hydfs::Hydfs()
     if (string(getenv("USER")) == "prathi3" || string(getenv("USER")) == "praneet") {
         DEFAULT_FIFO_PATH = "/tmp/mp3-prathi3";
     }
+    cout << "FIFO PATH: " << DEFAULT_FIFO_PATH << "\n";
 }
 
 Hydfs::~Hydfs() {}
