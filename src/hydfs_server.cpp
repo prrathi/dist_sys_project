@@ -46,7 +46,7 @@ HydfsServer::HydfsServer() {
     builder.RegisterService(this);
 
     server_ = builder.BuildAndStart();
-    cout << "gRPC Server listening on " << server_address << endl;
+    cout << "gRPC Server listening on " << server_address_ << endl;
     if (filesystem::exists("hydfs/")) {
         filesystem::remove_all("hydfs/");
     }
