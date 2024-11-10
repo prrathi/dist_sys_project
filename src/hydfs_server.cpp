@@ -428,3 +428,13 @@ Status HydfsServer::UpdateOrder(ServerContext* context, const UpdateOrderRequest
     response->set_status(StatusCode::SUCCESS);
     return Status::OK;
 }
+
+
+std::vector<std::string> HydfsServer::getAllFileNames() {
+    // not gonna lock
+    std::vector<std::string> file_names;
+    for (auto& [filename, file_info] : file_map_) {
+        file_names.push_back(filename);
+    }
+    return file_names;
+}

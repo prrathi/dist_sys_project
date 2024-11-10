@@ -18,11 +18,12 @@
 #include "hydfs.h"
 #include "file_transfer_client.h"
 #include "utils.h"
+#include "hydfs_server.h"
 
 // Implementation-specific constants
-static const int PERIOD = 1000;
-static const int SUS_PERIOD = 18;
-static const int PING_PERIOD = 1000;
+static const int PERIOD = 800;
+static const int SUS_PERIOD = 12;
+static const int PING_PERIOD = 800;
 static const int NORMAL_PERIOD = 3000;
 static const int NORMAL_PING_PERIOD = 2500;
 static const int MODULUS = 8192;
@@ -250,17 +251,13 @@ void Hydfs::handleClientRequests(const string& command) {
         cout << "File ID: " << successors[0].second.second << "\n";
 
     } else if (command.substr(0, 5) == "store") {
-        string path("hydfs/");
-        if (filesystem::is_directory(path)) {
-            cout << "Listing directory: " << path << "\n";
-            for (const auto &entry : filesystem::directory_iterator(path)) {
-                string path(entry.path());
-                string last_element(path.substr(path.rfind("/") + 1));
-                cout << last_element << " ID: " << hashString(last_element, MODULUS) << "\n";
-            }
-            string hostname = currNode.getId().substr(0, currNode.getId().find("-"));
-            cout << "VM: " << hostname << " VM ID: " << hashString(hostname, MODULUS) << "\n";
+        std::vector<std::string> fileNames = server.getAllFileNames();
+        for (const auto& fileName : fileNames) {
+            std::cout << "Filename: " << fileName << " ID: " << hashString(fileName, MODULUS) << "\n";
         }
+        string hostname = currNode.getId().substr(0, currNode.getId().rfind("-"));
+        std::cout << "VM: " << hostname << " VM ID: " << hashString(hostname, MODULUS) << "\n";
+
     } else if (command.substr(0, 14) == "getfromreplica") {
         size_t loc_delim = command.find(" ");
         string VMaddress = command.substr(loc_delim + 1, command.find(" ", loc_delim + 1) - loc_delim - 1);
