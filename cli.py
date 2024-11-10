@@ -24,7 +24,7 @@ def execute_remote_command(machines, command):
     for machine in machines:
         ssh_command = f"ssh {machine} 'echo {command} > {FIFO}'"
         subprocess.run(ssh_command, shell=True, check=True)
-        print(f"Sent {command} to {machine} pipe")
+        print(f"Sent {command} to {machine} pipe at {FIFO}")
 
 def list_mem(machines):
     if len(machines) == 1 and (machines[0] == "localhost" or machines[0] == socket.gethostname()):
@@ -135,7 +135,8 @@ def multiappend(machines, args):
     # print(vm_list)
     # print(command_list)
     for vm, command in zip(vm_list, command_list):
-        appendfile([vm], command)
+        print("Calling appendfile with command: " + command + " " + filename)
+        appendfile([vm], command + " " + filename)
 
 
 if __name__ == "__main__":
