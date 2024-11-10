@@ -64,12 +64,14 @@ HydfsServer::HydfsServer() {
 HydfsServer::~HydfsServer() {
     if (server_) {
         server_->Shutdown();
+        server_2_->Shutdown();
     }
 }
 
 void HydfsServer::wait() {
     if (server_) {
         server_->Wait();
+        server_2_->Wait();
     }
 }
 

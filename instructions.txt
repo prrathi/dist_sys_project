@@ -4,7 +4,6 @@ rm -rf build; mkdir -p build; cd build; cmake ..; cmake --build .
 ./build/HYDFS
 
 *** join ***
-python3 cli.py -c enable_sus -m prathi3@fa24-cs425-5801.cs.illinois.edu prathi3@fa24-cs425-5802.cs.illinois.edu prathi3@fa24-cs425-5803.cs.illinois.edu prathi3@fa24-cs425-5804.cs.illinois.edu prathi3@fa24-cs425-5805.cs.illinois.edu prathi3@fa24-cs425-5806.cs.illinois.edu prathi3@fa24-cs425-5807.cs.illinois.edu prathi3@fa24-cs425-5808.cs.illinois.edu prathi3@fa24-cs425-5809.cs.illinois.edu prathi3@fa24-cs425-5810.cs.illinois.edu
 python3 cli.py -c join -m prathi3@fa24-cs425-5802.cs.illinois.edu prathi3@fa24-cs425-5803.cs.illinois.edu prathi3@fa24-cs425-5804.cs.illinois.edu prathi3@fa24-cs425-5805.cs.illinois.edu prathi3@fa24-cs425-5806.cs.illinois.edu prathi3@fa24-cs425-5807.cs.illinois.edu prathi3@fa24-cs425-5808.cs.illinois.edu prathi3@fa24-cs425-5809.cs.illinois.edu prathi3@fa24-cs425-5810.cs.illinois.edu
 
 *** test 1 ***
