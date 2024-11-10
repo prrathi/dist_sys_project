@@ -216,7 +216,7 @@ void Hydfs::handleClientRequests(const string& command) {
         //cout << "Append" << filename << " hydfs: " << hydfs_filename << " targetHost: " << targetHost << "\n";
         handleAppend(filename, hydfs_filename);
 
-    } else if (command.substr(0, 3) == "get") {
+    } else if (command.substr(0, 4) == "get ") {
         
         size_t loc_delim = command.find(" ");
         string hydfs_filename = command.substr(loc_delim + 1, command.find(" ", loc_delim + 1) - loc_delim - 1);
