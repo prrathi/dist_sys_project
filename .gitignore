@@ -5,3 +5,5 @@ instructions.txt
 plot*
 build/
 demo/*
+report_dataset_merge
+report_dataset_cache
