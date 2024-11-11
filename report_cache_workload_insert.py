@@ -1,5 +1,6 @@
 from cli import createfile
 import os
+from time import sleep
 
 HOME=os.getenv("HOME")
 
@@ -10,4 +11,5 @@ if __name__ == "__main__":
         filename = f"{HOME}/cs425MPs/g58_mp3/report_dataset_cache/file_{i}.dat"
         command = filename + f" file_{i}.dat"
         print(command)
-        #createfile(["localhost"], filename)
+        createfile(["localhost"], command)
+        sleep(0.1)

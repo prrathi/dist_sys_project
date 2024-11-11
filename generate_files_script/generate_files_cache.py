@@ -1,6 +1,6 @@
 import os
 import random
-import numpy as np
+
 
 NUM_FILES = 10000
 FILE_SIZE = 4 * 1024  # 4KB

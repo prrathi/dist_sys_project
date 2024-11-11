@@ -59,10 +59,14 @@ HydfsServer::HydfsServer() {
 
     cout << "gRPC Server listening on " << server_address_ << endl;
     cout << "gRPC Server 2 listening on " << server_address_2_ << endl;
-    if (filesystem::exists("hydfs/")) {
-        filesystem::remove_all("hydfs/");
+    // if (filesystem::exists("hydfs/")) {
+    //    filesystem::remove_all("hydfs/");
+    // }
+    // filesystem::create_directory("hydfs");
+    for (const auto&entry : filesystem::directory_iterator("hydfs")) {
+	string filename = entry.path().filename().string();
+	file_map_[filename] = make_pair(0, vector<string>());
     }
-    filesystem::create_directory("hydfs");
 }
 
 HydfsServer::~HydfsServer() {
