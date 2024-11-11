@@ -12,7 +12,7 @@
 #include "worker.h"
 #include "talker.h"
 #include "hydfs_server.h"
-#include "LRUCache.h"
+#include "lru_cache.h"
 
 using namespace std;
 

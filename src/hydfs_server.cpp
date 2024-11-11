@@ -9,7 +9,8 @@
 #include "hydfs_server.h"
 #include "file_transfer_client.h"
 
-static const int GRPC_PORT = 8081;
+static const int GRPC_PORT_SERVER = 8081;
+static const int GRPC_PORT_SERVER_2 = 8082;
 static const size_t BUFFER_SIZE = 1024 * 1024;  // 1MB buffer
 
 using namespace std;
@@ -39,14 +40,21 @@ HydfsServer::HydfsServer() {
         exit(1);
     }
     string hostname_str = hostname;
-    server_address_ = hostname_str + ":" + to_string(GRPC_PORT);
+    server_address_ = hostname_str + ":" + to_string(GRPC_PORT_SERVER);
+    server_address_2_ = hostname_str + ":" + to_string(GRPC_PORT_SERVER_2);
 
     ServerBuilder builder;
     builder.AddListeningPort(server_address_, grpc::InsecureServerCredentials());
     builder.RegisterService(this);
-
     server_ = builder.BuildAndStart();
+
+    ServerBuilder builder_2;
+    builder_2.AddListeningPort(server_address_2_, grpc::InsecureServerCredentials());
+    builder_2.RegisterService(this);
+    server_2_ = builder_2.BuildAndStart();
+
     cout << "gRPC Server listening on " << server_address_ << endl;
+    cout << "gRPC Server 2 listening on " << server_address_2_ << endl;
     if (filesystem::exists("hydfs/")) {
         filesystem::remove_all("hydfs/");
     }
@@ -56,12 +64,14 @@ HydfsServer::HydfsServer() {
 HydfsServer::~HydfsServer() {
     if (server_) {
         server_->Shutdown();
+        server_2_->Shutdown();
     }
 }
 
 void HydfsServer::wait() {
     if (server_) {
         server_->Wait();
+        server_2_->Wait();
     }
 }
 
@@ -224,7 +234,11 @@ Status HydfsServer::GetFile(ServerContext* context, const FileRequest* request, 
 Status HydfsServer::MergeFile(ServerContext* context, const MergeRequest* request, OperationStatus* response) {
     string filename = request->filename();
     size_t shard = get_shard_index(filename);
+    cout << "server merging file 0 on " << server_address_ << endl;
     lock_guard<mutex> lock(shard_mutexes_[shard]);
+    cout << "server merging file 1 on " << server_address_ << endl;
+
+    cout << "MERGINGGGG " << filename << " at " << server_address_ << "\n";
 
     if (file_map_.find(filename) == file_map_.end()) {
         response->set_status(StatusCode::NOT_FOUND);
@@ -255,10 +269,13 @@ Status HydfsServer::MergeFile(ServerContext* context, const MergeRequest* reques
 
     // clear the chunks vector since we've merged them
     file_map_[filename].second.clear();
+
+    cout << "sending merged " << filename << " to " << request->successors().size() << " successors\n";
     
     // forward the merged file to all successors from the request. hacky but ¯\_(ツ)_/¯
     int successor_order = 3 - request->successors().size();
     for (const string& successor_address : request->successors()) {
+        cout << "sending merged " << filename << " to " << successor_address << "\n";
         if (successor_address.empty()) {
             response->set_status(StatusCode::INVALID);
             response->set_message("Successor address is empty");
@@ -278,6 +295,8 @@ Status HydfsServer::OverwriteFile(ServerContext* context, ServerReader<Overwrite
     OverwriteRequest msg;
     ofstream outfile;
     string filename;
+
+    cout << "Received overwrite request for " << msg.file_request().filename() << " at " << server_address_ << "\n";
 
     // Get first message to get filename
     if (!reader->Read(&msg)) {
@@ -309,6 +328,8 @@ Status HydfsServer::OverwriteFile(ServerContext* context, ServerReader<Overwrite
     filesystem::path dir_path = filesystem::path(full_path).parent_path();
     filesystem::create_directories(dir_path);
 
+    cout << "Made dirs for overwrite of " << filename << " with node order " << order << "\n";
+
     // Open file for writing (truncating any existing content)
     outfile.open(full_path, ios::binary | ios::trunc);
     if (!outfile) {
@@ -325,6 +346,8 @@ Status HydfsServer::OverwriteFile(ServerContext* context, ServerReader<Overwrite
     }
     outfile.close();
 
+    cout << "wrote " << filename << "\n";
+
     // reset chunks vector if exists
     file_map_[filename] = make_pair(order, vector<string>()); 
 
@@ -333,57 +356,65 @@ Status HydfsServer::OverwriteFile(ServerContext* context, ServerReader<Overwrite
 }
 
 Status HydfsServer::UpdateFilesReplication(ServerContext* context, const ReplicationRequest* request, OperationStatus* response) {
-    // lock all shards when handling failure detection -> new replication
-    vector<unique_lock<mutex>> locks;
-    for (size_t i = 0; i < SHARD_COUNT; i++) {
-        locks.emplace_back(shard_mutexes_[i]);
-    }
-
-    // encoding of failures - 0 and 1 are alive and dead resp for one pred and two successors. only one failure at a time needed due to sequential client detection
-    int32_t failure_case = request->failure_case();
-    int num_preceding_failures = 0;
-    pair<int, int> existing_order = make_pair(-1, -1);
-    switch (failure_case) {
-        case 1: // 001
-            num_preceding_failures = 0;
-            break;
-        case 2: // 010
-            num_preceding_failures = 0;
-            existing_order = make_pair(2, 1);
-            break;
-        case 4: // 100
-            num_preceding_failures = 1;
-            break;
-        default:
-            response->set_status(StatusCode::INVALID);
-            response->set_message("Invalid failure case");
-            return Status::OK;
-    }
-
     vector<string> files_to_forward;
-    // iterate through all files and update their order
-    for (auto& [filename, file_info] : file_map_) {
-        int32_t current_order = file_info.first;
-        int32_t new_order = max(0, current_order - num_preceding_failures);
-        file_info.first = new_order;
-        // If order becomes 0 and we have target servers, this file needs to be forwarded
-        if (new_order == 0 && !request->new_successors().empty()) {
-            files_to_forward.push_back(filename);
+    vector<string> new_successors;
+    string existing_successor;
+    pair<int, int> existing_order = make_pair(-1, -1);
+    int num_preceding_failures = 0;
+    
+    // First phase: Collect information under lock
+    {
+        // Lock scope
+        vector<unique_lock<mutex>> locks;
+        for (size_t i = 0; i < SHARD_COUNT; i++) {
+            locks.emplace_back(shard_mutexes_[i]);
         }
-    }
 
-    // with current setup should have zero to one existing successor with updated order
+        int32_t failure_case = request->failure_case();
+        cout << "Handling failure case: " << failure_case << " on " << server_address_ << "\n";
+        switch (failure_case) {
+            case 1: // 001
+                num_preceding_failures = 0;
+                break;
+            case 2: // 010
+                num_preceding_failures = 0;
+                existing_order = make_pair(2, 1);
+                break;
+            case 4: // 100
+                num_preceding_failures = 1;
+                break;
+            default:
+                response->set_status(StatusCode::INVALID);
+                response->set_message("Invalid failure case");
+                return Status::OK;
+        }
+
+        // Update orders and collect files that need forwarding
+        for (auto& [filename, file_info] : file_map_) {
+            int32_t current_order = file_info.first;
+            int32_t new_order = max(0, current_order - num_preceding_failures);
+            file_info.first = new_order;
+            if (new_order == 0 && !request->new_successors().empty()) {
+                files_to_forward.push_back(filename);
+            }
+        }
+
+        // Store information we'll need after releasing locks
+        new_successors.assign(request->new_successors().begin(), request->new_successors().end());
+        existing_successor = request->existing_successor();
+    } // Locks are released here
+
+    // Second phase: Forward files and update orders without holding locks
     if (existing_order.first != -1) {
-        auto channel = grpc::CreateChannel(request->existing_successor(), grpc::InsecureChannelCredentials());
+        auto channel = grpc::CreateChannel(existing_successor, grpc::InsecureChannelCredentials());
         FileTransferClient client(channel);
         client.UpdateOrder(existing_order.first, existing_order.second);
     }
 
-    // with current setup should have zero to one new successor with updated order, send request to self as leader
     for (const string& filename : files_to_forward) {
-        auto channel = grpc::CreateChannel(server_address_, grpc::InsecureChannelCredentials());
+        auto channel = grpc::CreateChannel(server_address_2_, grpc::InsecureChannelCredentials());
         FileTransferClient client(channel);
-        client.MergeFile(filename, vector<string>(request->new_successors().begin(), request->new_successors().end()));
+        client.MergeFile(filename, new_successors);
     }
 
     response->set_status(StatusCode::SUCCESS);

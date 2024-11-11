@@ -20,11 +20,26 @@ def execute_local_command(command):
     subprocess.run(ssh_command, shell=True, check=True)
     print(f"Sent {command} to local pipe")
 
-def execute_remote_command(machines, command):
-    for machine in machines:
-        ssh_command = f"ssh {machine} 'echo {command} > {FIFO}'"
-        subprocess.run(ssh_command, shell=True, check=True)
-        print(f"Sent {command} to {machine} pipe at {FIFO}")
+def execute_remote_command(machines, command, parallel=False):
+    if parallel:
+        processes = []
+        for machine in machines:
+            ssh_command = f"ssh {machine} 'echo {command} > {FIFO}'"
+            p = subprocess.Popen(ssh_command, shell=True)
+            processes.append((p, machine))
+            print(f"Started sending {command} to {machine} pipe at {FIFO}")
+        
+        for p, machine in processes:
+            p.wait()
+            if p.returncode != 0:
+                print(f"Warning: Command failed for {machine}")
+            else:
+                print(f"Finished sending {command} to {machine} pipe at {FIFO}")
+    else:
+        for machine in machines:
+            ssh_command = f"ssh {machine} 'echo {command} > {FIFO}'"
+            subprocess.run(ssh_command, shell=True, check=True)
+            print(f"Sent {command} to {machine} pipe at {FIFO}")
 
 def list_mem(machines):
     if len(machines) == 1 and (machines[0] == "localhost" or machines[0] == socket.gethostname()):
@@ -42,7 +57,7 @@ def join(machines):
     if len(machines) == 1 and (machines[0] == "localhost" or machines[0] == socket.gethostname()):
         execute_local_command("join")
         return
-    execute_remote_command(machines, "join")
+    execute_remote_command(machines, "join", parallel=True)
 
 def leave(machines):
     if len(machines) == 1 and (machines[0] == "localhost" or machines[0] == socket.gethostname()):

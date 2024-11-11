@@ -14,7 +14,7 @@ set(SOURCES
   src/talker.cpp
   src/hydfs.cpp
   src/utils.cpp
-  src/LRUCache.cpp
+  src/lru_cache.cpp
   src/hydfs_server.cpp
   src/file_transfer_client.cpp
 )
@@ -26,7 +26,7 @@ set(HEADERS
   includes/talker.h
   includes/hydfs.h
   includes/utils.h
-  includes/LRUCache.h
+  includes/lru_cache.h
   includes/hydfs.grpc.pb.h
   includes/hydfs.pb.h
   includes/hydfs_server.h
