@@ -127,6 +127,7 @@ void Hydfs::handleAppend(const string& filename, const string& hydfs_filename) {
 }
 
 void Hydfs::handleMerge(const string& hydfs_filename) {
+    auto start_time = std::chrono::high_resolution_clock::now();
     vector<string> successors = getAllSuccessors(hydfs_filename);
     for (size_t i = 0; i < successors.size(); i++) {
         successors[i] = successors[i] + ":" + to_string(GRPC_PORT_SERVER);
@@ -136,6 +137,9 @@ void Hydfs::handleMerge(const string& hydfs_filename) {
     FileTransferClient client(grpc::CreateChannel(target_host, grpc::InsecureChannelCredentials()));
     cout << "Merge called, Target: " << target_host << "\n";
     bool res = client.MergeFile(hydfs_filename, non_leader_successors);
+    auto end_time = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsed_seconds = end_time - start_time;
+    cout << "Merge operation completed in " << elapsed_seconds.count() << " seconds\n";
     if (res) {
         cout << "Merge Successful" << endl;
     } else {
