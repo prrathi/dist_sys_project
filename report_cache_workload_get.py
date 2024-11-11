@@ -14,7 +14,11 @@ def uniform_read_workload(file_count, read_count):
 
 def zipfian_read_workload(file_count, read_count, alpha=1.2):
     zipf_distribution = np.random.zipf(alpha, read_count)
-    return [f"file_{min(x - 1, file_count - 1)}.dat" for x in zipf_distribution if x <= file_count]
+    values = [f"file_{min(x - 1, file_count - 1)}.dat" for x in zipf_distribution if x <= file_count]
+    print("before", len(values))
+    values.extend([f"file_{random.randint(0, file_count - 1)}.dat" for _ in range(read_count - len(values))])
+    print("after", len(values))
+    return values
 
 def generate_work(file_count, read_count, workload_type, get_probability):
     workload = []
@@ -52,4 +56,4 @@ if __name__ == "__main__":
     file_count = 10000
     num_reads= 25000
     work_load = generate_work(file_count, num_reads, workload_type, get_prob)
-    callCommands(work_load)
+    #callCommands(work_load)
