@@ -364,31 +364,44 @@ Status HydfsServer::MergeFile(ServerContext* context, const MergeRequest* reques
 
 Status HydfsServer::OverwriteFile(ServerContext* context, ServerReader<OverwriteRequest>* reader, OperationStatus* response) {
     OverwriteRequest msg;
-    ofstream outfile;
     string filename;
+    int order;
 
-    cout << "Received overwrite request for " << msg.file_request().filename() << " at " << server_address_ << "\n";
+    // Get first message with retries
+    int retry_count = 0;
+    bool read_success = false;
+    while (retry_count < MAX_RETRIES && !read_success) {
+        if (reader->Read(&msg)) {
+            read_success = true;
+            break;
+        }
+        retry_count++;
+        std::this_thread::sleep_for(std::chrono::milliseconds(RETRY_DELAY_MS));
+    }
 
-    // Get first message to get filename
-    if (!reader->Read(&msg)) {
+    if (!read_success) {
         response->set_status(StatusCode::INVALID);
-        response->set_message("Failed to read initial message");
+        response->set_message("Failed to read initial message after retries");
         return Status::OK;
     }
 
-    // First message must contain file request
+    // Validate first message
     if (!msg.has_file_request()) {
         response->set_status(StatusCode::INVALID);
         response->set_message("First message must contain file request");
         return Status::OK;
     }
+
     filename = msg.file_request().filename();
+    order = msg.file_request().order();
+
     if (filename.empty()) {
         response->set_status(StatusCode::INVALID);
         response->set_message("Filename is missing in file request");
         return Status::OK;
     }
-    int order = msg.file_request().order();
+
+    cout << "Received overwrite request for " << filename << " with order " << order << " at " << server_address_ << "\n";
 
     // Create lock once we have filename
     size_t shard = get_shard_index(filename);
@@ -399,29 +412,33 @@ Status HydfsServer::OverwriteFile(ServerContext* context, ServerReader<Overwrite
     filesystem::path dir_path = filesystem::path(full_path).parent_path();
     filesystem::create_directories(dir_path);
 
-    cout << "Made dirs for overwrite of " << filename << " with node order " << order << "\n";
-
     // Open file for writing (truncating any existing content)
-    outfile.open(full_path, ios::binary | ios::trunc);
+    ofstream outfile(full_path, ios::binary | ios::trunc);
     if (!outfile) {
         response->set_status(StatusCode::INVALID);
         response->set_message("Could not open file for writing");
         return Status::OK;
     }
 
-    // process remaining messages
+    // Process remaining messages (chunks)
     while (reader->Read(&msg)) {
         if (msg.has_chunk()) {
             outfile.write(msg.chunk().content().data(), msg.chunk().content().size());
+            if (outfile.fail()) {
+                response->set_status(StatusCode::INVALID);
+                response->set_message("Failed to write chunk to file");
+                return Status::OK;
+            }
         }
     }
+    
     outfile.close();
 
-    cout << "wrote " << filename << "\n";
+    // Update or create file entry in map
+    file_map_[filename] = make_pair(order, vector<string>());
 
-    // reset chunks vector if exists
-    file_map_[filename] = make_pair(order, vector<string>()); 
-
+    cout << "Completed overwrite request for " << filename << " at " << server_address_ << endl;
+    
     response->set_status(StatusCode::SUCCESS);
     return Status::OK;
 }
