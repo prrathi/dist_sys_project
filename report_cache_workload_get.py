@@ -51,9 +51,11 @@ def callCommands(work_load):
 # ad files into hydfs
 if __name__ == "__main__":
     # manually change cache size ranging from 4MB 8MB 20MB and 40MB
-
+    t1 = time()
     workload_type, get_prob = os.sys.argv[1], float(os.sys.argv[2])
     file_count = 10000
     num_reads= 25000
     work_load = generate_work(file_count, num_reads, workload_type, get_prob)
-    #callCommands(work_load)
+    callCommands(work_load)
+    print(f'execution time: {time() - t1}')
+

@@ -20,7 +20,7 @@ def execute_local_command(command):
     subprocess.run(ssh_command, shell=True, check=True)
     print(f"Sent {command} to local pipe")
 
-def execute_remote_command(machines, command, parallel=False):
+def execute_remote_command(machines, command, parallel=True):
     if parallel:
         processes = []
         for machine in machines:
