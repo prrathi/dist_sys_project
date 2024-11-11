@@ -37,6 +37,7 @@ void runUdpServer(FullNode& node) {
 	int sockfd;  // listen on sock_fd
 	struct addrinfo hints, *servinfo, *p;
 	struct sockaddr_storage their_addr; // connector's address information
+	char s[INET6_ADDRSTRLEN];
 	char buf[MAXBUFLEN];
 	socklen_t addr_len;
 	int rv;
@@ -103,9 +104,9 @@ void runUdpServer(FullNode& node) {
 				continue;
 			}
 		}
-
-		std::thread requestThread(handleRequest, std::ref(node), buf);
-		requestThread.detach();
+		handleRequest(node, buf);
+		// std::thread requestThread(handleRequest, std::ref(node), buf);
+		// requestThread.detach();
 	}
 
 	close(sockfd);

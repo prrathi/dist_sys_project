@@ -68,6 +68,11 @@
         "valarray": "cpp",
         "__nullptr": "cpp",
         "__node_handle": "cpp",
-        "future": "cpp"
+        "future": "cpp",
+        "__functional_03": "cpp",
+        "target": "cpp",
+        "list": "cpp",
+        "set": "cpp",
+        "variant": "cpp"
     }
 }
