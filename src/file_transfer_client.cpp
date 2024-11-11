@@ -1,6 +1,6 @@
-#include "file_transfer_client.h"
 #include <chrono>
-
+#include <thread>
+#include "file_transfer_client.h"
 static const int TIMEOUT_MS = 2000;
 static const size_t BUFFER_SIZE = 1024 * 1024;  // 1MB buffer
 
@@ -34,7 +34,20 @@ bool FileTransferClient::CreateFile(const string& hydfs_filename, int order) {
     request.set_filename(hydfs_filename);
     request.set_order(order);
     
-    Status rpc_status = stub_->CreateFile(&context, request, &status);
+    chrono::system_clock::time_point deadline = 
+        chrono::system_clock::now() + chrono::milliseconds(TIMEOUT_MS);
+    context.set_deadline(deadline);
+    
+    int max_retries = 3;
+    int retry_count = 0;
+    Status rpc_status;
+    
+    while (retry_count < max_retries) {
+        rpc_status = stub_->CreateFile(&context, request, &status);
+        if (rpc_status.ok()) break;
+        retry_count++;
+        this_thread::sleep_for(chrono::milliseconds(100));
+    }
     
     if (rpc_status.ok() && status.status() == StatusCode::SUCCESS) {
         cout << "File created successfully: " << status.message() << endl;
@@ -52,10 +65,24 @@ bool FileTransferClient::AppendFile(const string& file_path, const string& hydfs
     ClientContext context;
     OperationStatus status;
     chrono::system_clock::time_point deadline = 
-        chrono::system_clock::now() + chrono::milliseconds(TIMEOUT_MS);
+        chrono::system_clock::now() + chrono::milliseconds(TIMEOUT_MS * 5);
     context.set_deadline(deadline);
     
-    unique_ptr<ClientWriter<AppendRequest>> writer(stub_->AppendFile(&context, &status));
+    int max_retries = 3;
+    int retry_count = 0;
+    unique_ptr<ClientWriter<AppendRequest>> writer;
+    
+    while (retry_count < max_retries) {
+        writer = stub_->AppendFile(&context, &status);
+        if (writer) break;
+        retry_count++;
+        this_thread::sleep_for(chrono::milliseconds(100));
+    }
+
+    if (!writer) {
+        cout << "Failed to establish connection for append" << "\n";
+        return false;
+    }
 
     ifstream infile(file_path, ios::binary);
     if (!infile) {
@@ -67,7 +94,7 @@ bool FileTransferClient::AppendFile(const string& file_path, const string& hydfs
     AppendRequest metadata_msg;
     metadata_msg.mutable_file_request()->set_filename(hydfs_filename);
     if (!writer->Write(metadata_msg)) {
-        cout << "Failed to write metadata" << "\n";
+        cout << "Failed to write metadata append" << "\n";
         return false;
     }
 
@@ -103,8 +130,26 @@ bool FileTransferClient::GetFile(const string& hydfs_filename, const string& loc
     request.set_filename(hydfs_filename);
     
     ClientContext context;
+    chrono::system_clock::time_point deadline = 
+        chrono::system_clock::now() + chrono::milliseconds(TIMEOUT_MS * 5);
+    context.set_deadline(deadline);
+    
     GetResponse response;
-    unique_ptr<ClientReader<GetResponse>> reader(stub_->GetFile(&context, request));
+    int max_retries = 3;
+    int retry_count = 0;
+    unique_ptr<ClientReader<GetResponse>> reader;
+    
+    while (retry_count < max_retries) {
+        reader = stub_->GetFile(&context, request);
+        if (reader) break;
+        retry_count++;
+        this_thread::sleep_for(chrono::milliseconds(100));
+    }
+    
+    if (!reader) {
+        cerr << "Failed to establish connection for get" << endl;
+        return false;
+    }
     
     // Read first response to check status
     if (!reader->Read(&response)) {
@@ -133,7 +178,7 @@ bool FileTransferClient::GetFile(const string& hydfs_filename, const string& loc
         outfile.write(response.chunk().content().data(), response.chunk().content().size());
     }
     
-    // Read remaining responses
+    // Read remaining responses with timeout handling
     while (reader->Read(&response)) {
         if (response.has_status()) {
             if (response.status().status() == StatusCode::SUCCESS) {
@@ -141,7 +186,6 @@ bool FileTransferClient::GetFile(const string& hydfs_filename, const string& loc
             } else {
                 cerr << "Error: " << response.status().message() << endl;
                 outfile.close();
-                filesystem::remove(local_filepath);
                 return false;
             }
         }
@@ -153,7 +197,6 @@ bool FileTransferClient::GetFile(const string& hydfs_filename, const string& loc
     Status status = reader->Finish();
     if (!status.ok()) {
         cerr << "RPC failed: " << status.error_message() << endl;
-        filesystem::remove(local_filepath);
         return false;
     }
     
@@ -169,14 +212,26 @@ bool FileTransferClient::MergeFile(const string& hydfs_filename, const vector<st
         request.add_successors(successor);
     }
     
-    cout << "merging file 1" << endl;
-    Status rpc_status = stub_->MergeFile(&context, request, &status);
-    cout << "merging file 2" << endl;
+    chrono::system_clock::time_point deadline = 
+        chrono::system_clock::now() + chrono::milliseconds(TIMEOUT_MS * 10);
+    context.set_deadline(deadline);
+    
+    int max_retries = 3;
+    int retry_count = 0;
+    Status rpc_status;
+    
+    while (retry_count < max_retries) {
+        rpc_status = stub_->MergeFile(&context, request, &status);
+        if (rpc_status.ok()) break;
+        retry_count++;
+        this_thread::sleep_for(chrono::milliseconds(100));
+    }
 
     if (rpc_status.ok() && status.status() == StatusCode::SUCCESS) {
         return true;
     } else {
         cout << "Failed to merge file: " << status.message() << "\n";
+        cout << "RPC status: " << rpc_status.error_message() << "\n";
         return false;
     }
 }
@@ -185,7 +240,25 @@ bool FileTransferClient::OverwriteFile(const string& local_hydfs_filepath, const
     ClientContext context;
     OperationStatus status;
     
-    unique_ptr<ClientWriter<OverwriteRequest>> writer(stub_->OverwriteFile(&context, &status));
+    chrono::system_clock::time_point deadline = 
+        chrono::system_clock::now() + chrono::milliseconds(TIMEOUT_MS * 5);
+    context.set_deadline(deadline);
+    
+    int max_retries = 3;
+    int retry_count = 0;
+    unique_ptr<ClientWriter<OverwriteRequest>> writer;
+    
+    while (retry_count < max_retries) {
+        writer = stub_->OverwriteFile(&context, &status);
+        if (writer) break;
+        retry_count++;
+        this_thread::sleep_for(chrono::milliseconds(100));
+    }
+
+    if (!writer) {
+        cout << "Failed to establish connection for overwrite" << "\n";
+        return false;
+    }
 
     ifstream infile(local_hydfs_filepath, ios::binary);
     if (!infile) {
@@ -198,8 +271,9 @@ bool FileTransferClient::OverwriteFile(const string& local_hydfs_filepath, const
     auto* file_request = metadata_msg.mutable_file_request();
     file_request->set_filename(hydfs_filename);
     file_request->set_order(order);
+    cout << hydfs_filename << " " << order << "\n";
     if (!writer->Write(metadata_msg)) {
-        cout << "Failed to write metadata" << "\n";
+        cout << "Failed to write metadata overwrite. Status: " << writer->Finish().error_message() << "\n";
         return false;
     }
 
@@ -232,18 +306,30 @@ bool FileTransferClient::UpdateReplication(int failure_case, const string& exist
     OperationStatus status;
     ReplicationRequest request;
     
+    chrono::system_clock::time_point deadline = 
+        chrono::system_clock::now() + chrono::milliseconds(TIMEOUT_MS * 2);
+    context.set_deadline(deadline);
+    
     request.set_failure_case(failure_case);
     
     if (!existing_successor.empty()) {
         request.set_existing_successor(existing_successor);
     }
     
-    // Add new successors to repeated field
     for (const auto& successor : new_successors) {
         request.add_new_successors(successor);
     }
     
-    Status rpc_status = stub_->UpdateFilesReplication(&context, request, &status);
+    int max_retries = 3;
+    int retry_count = 0;
+    Status rpc_status;
+    
+    while (retry_count < max_retries) {
+        rpc_status = stub_->UpdateFilesReplication(&context, request, &status);
+        if (rpc_status.ok()) break;
+        retry_count++;
+        this_thread::sleep_for(chrono::milliseconds(100));
+    }
     
     if (rpc_status.ok() && status.status() == StatusCode::SUCCESS) {
         return true;
@@ -257,10 +343,24 @@ bool FileTransferClient::UpdateOrder(int old_order, int new_order) {
     ClientContext context;
     OperationStatus status;
     UpdateOrderRequest request;
+    
+    chrono::system_clock::time_point deadline = 
+        chrono::system_clock::now() + chrono::milliseconds(TIMEOUT_MS);
+    context.set_deadline(deadline);
+    
     request.set_old_order(old_order);
     request.set_new_order(new_order);
     
-    Status rpc_status = stub_->UpdateOrder(&context, request, &status);
+    int max_retries = 3;
+    int retry_count = 0;
+    Status rpc_status;
+    
+    while (retry_count < max_retries) {
+        rpc_status = stub_->UpdateOrder(&context, request, &status);
+        if (rpc_status.ok()) break;
+        retry_count++;
+        this_thread::sleep_for(chrono::milliseconds(100));
+    }
     
     if (rpc_status.ok() && status.status() == StatusCode::SUCCESS) {
         return true;

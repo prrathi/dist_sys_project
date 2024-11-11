@@ -128,7 +128,10 @@ void Hydfs::handleAppend(const string& filename, const string& hydfs_filename) {
 
 void Hydfs::handleMerge(const string& hydfs_filename) {
     vector<string> successors = getAllSuccessors(hydfs_filename);
-    string target_host = successors[0] + ":" + to_string(GRPC_PORT_SERVER);
+    for (size_t i = 0; i < successors.size(); i++) {
+        successors[i] = successors[i] + ":" + to_string(GRPC_PORT_SERVER);
+    }
+    string target_host = successors[0];
     vector<string> non_leader_successors(successors.begin() + 1, successors.end());
     FileTransferClient client(grpc::CreateChannel(target_host, grpc::InsecureChannelCredentials()));
     cout << "Merge called, Target: " << target_host << "\n";
