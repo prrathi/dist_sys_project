@@ -31,7 +31,8 @@ if __name__ == "__main__":
                 local_filenames = [loc_4kb] * len(vm_list)
             else:
                 local_filenames = [loc_40kb] * len(vm_list)
-            launch_multiappend(hydfs_filename, vm_list, local_filenames)
+            for i in range(per_vm):
+                launch_multiappend(hydfs_filename, vm_list, local_filenames)
             # sleep(0.1)
     elif num_concurrent_clients == 2:
         per_vm = TOTAL_AMOUNT // num_concurrent_clients
@@ -43,7 +44,8 @@ if __name__ == "__main__":
                 local_filenames = [loc_4kb] * len(vm_list)
             else:
                 local_filenames = [loc_40kb] * len(vm_list)
-            launch_multiappend(hydfs_filename, vm_list, local_filenames)
+            for i in range(per_vm):
+                launch_multiappend(hydfs_filename, vm_list, local_filenames)
             # sleep(0.1)
     elif num_concurrent_clients == 5:
         per_vm = TOTAL_AMOUNT // num_concurrent_clients
@@ -55,7 +57,8 @@ if __name__ == "__main__":
                 local_filenames = [loc_4kb] * len(vm_list)
             else:
                 local_filenames = [loc_40kb] * len(vm_list)
-            launch_multiappend(hydfs_filename, vm_list, local_filenames)
+            for i in range(per_vm):
+                launch_multiappend(hydfs_filename, vm_list, local_filenames)
             # sleep(0.1)
     elif num_concurrent_clients == 10:
         per_vm = TOTAL_AMOUNT // num_concurrent_clients
@@ -67,7 +70,8 @@ if __name__ == "__main__":
                 local_filenames = [loc_4kb] * len(vm_list)
             else:
                 local_filenames = [loc_40kb] * len(vm_list)
-            launch_multiappend(hydfs_filename, vm_list, local_filenames)
+            for i in range(per_vm):
+                launch_multiappend(hydfs_filename, vm_list, local_filenames)
             # sleep(0.1)
  
 
