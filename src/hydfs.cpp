@@ -192,8 +192,8 @@ void Hydfs::handleNodeFailureDetected(const string& failed_node_id, const unorde
     }
 
     auto end_time = chrono::system_clock::now();
-    time_t seconds = chrono::system_clock::to_time_t(end_time);
-    auto microseconds = chrono::duration_cast<chrono::microseconds>(end_time.time_since_epoch()) % 1000000;
+    seconds = chrono::system_clock::to_time_t(end_time);
+    microseconds = chrono::duration_cast<chrono::microseconds>(end_time.time_since_epoch()) % 1000000;
     cout << seconds << '.' << setw(6) << setfill('0') << microseconds.count() << endl;
 }
 
