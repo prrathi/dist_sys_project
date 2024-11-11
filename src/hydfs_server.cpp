@@ -187,8 +187,6 @@ Status HydfsServer::GetFile(ServerContext* context, const FileRequest* request, 
     GetResponse chunk_response;
     Chunk* chunk = chunk_response.mutable_chunk();
 
-    cout << "starting read request" << endl;
-
     // first the merged content if it exists
     ifstream infile("hydfs/" + filename, ios::binary);
     if (infile) {
@@ -203,8 +201,6 @@ Status HydfsServer::GetFile(ServerContext* context, const FileRequest* request, 
         }
         infile.close();
     }
-
-    cout << "done with merged content" << endl;
 
     // then the new chunks
     for (const string& chunk_filename : chunk_files) {
@@ -225,8 +221,6 @@ Status HydfsServer::GetFile(ServerContext* context, const FileRequest* request, 
         }
         infile.close();
     }
-
-    cout << "done with chunks" << endl;
 
     cout << "Completed read request for " << filename << " at " << server_address_ << endl;
 
@@ -377,6 +371,7 @@ Status HydfsServer::UpdateFilesReplication(ServerContext* context, const Replica
         }
 
         int32_t failure_case = request->failure_case();
+        cout << "Handling failure case: " << failure_case << " on " << server_address_ << "\n";
         switch (failure_case) {
             case 1: // 001
                 num_preceding_failures = 0;
@@ -413,14 +408,12 @@ Status HydfsServer::UpdateFilesReplication(ServerContext* context, const Replica
     if (existing_order.first != -1) {
         auto channel = grpc::CreateChannel(existing_successor, grpc::InsecureChannelCredentials());
         FileTransferClient client(channel);
-        cout << "updating order of " << existing_successor << " to " << existing_order.second << "\n";
         client.UpdateOrder(existing_order.first, existing_order.second);
     }
 
     for (const string& filename : files_to_forward) {
         auto channel = grpc::CreateChannel(server_address_2_, grpc::InsecureChannelCredentials());
         FileTransferClient client(channel);
-        cout << "forwarding " << filename << " to " << new_successors[0] << " from " << server_address_ << "\n";
         client.MergeFile(filename, new_successors);
     }
 

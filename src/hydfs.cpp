@@ -93,6 +93,9 @@ void Hydfs::handleGet(const string& filename, const string& hydfs_filename, cons
     if (res) {
         // assuming stuff .. can fix change later if issues come
         cout << "Get Successful" << endl;
+        if (avoid_cache) {
+            return;
+        }
         cout << "Caching" << "\n";
         vector<char> contents = readFileIntoVector(filename);
         if (contents.size() > lru_cache.capacity()) {
