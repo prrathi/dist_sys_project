@@ -297,17 +297,8 @@ Status HydfsServer::MergeFile(ServerContext* context, const MergeRequest* reques
         return Status::OK;
     }
 
-    // Verify file is readable before forwarding
-    string full_path = "hydfs/" + filename;
-    ifstream test_read(full_path, ios::binary);
-    if (!test_read) {
-        response->set_status(StatusCode::INVALID);
-        response->set_message("Cannot read merged file: " + full_path);
-        return Status::OK;
-    }
-    test_read.close();
-
     // append to file if exists, otherwise create it
+    string full_path = "hydfs/" + filename;
     ofstream outfile(full_path, ios::binary | ios::app);
     if (!outfile) {
         response->set_status(StatusCode::INVALID);
@@ -327,6 +318,15 @@ Status HydfsServer::MergeFile(ServerContext* context, const MergeRequest* reques
         remove(chunk_path.c_str());
     }
     outfile.close();
+
+    // Verify file is readable before forwarding
+    ifstream test_read(full_path, ios::binary);
+    if (!test_read) {
+        response->set_status(StatusCode::INVALID);
+        response->set_message("Cannot read merged file: " + full_path);
+        return Status::OK;
+    }
+    test_read.close();
 
     // clear the chunks vector since we've merged them
     file_map_[filename].second.clear();
