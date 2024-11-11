@@ -127,7 +127,6 @@ void Hydfs::handleAppend(const string& filename, const string& hydfs_filename) {
 }
 
 void Hydfs::handleMerge(const string& hydfs_filename) {
-    auto start_time = std::chrono::high_resolution_clock::now();
     vector<string> successors = getAllSuccessors(hydfs_filename);
     for (size_t i = 0; i < successors.size(); i++) {
         successors[i] = successors[i] + ":" + to_string(GRPC_PORT_SERVER);
@@ -137,9 +136,6 @@ void Hydfs::handleMerge(const string& hydfs_filename) {
     FileTransferClient client(grpc::CreateChannel(target_host, grpc::InsecureChannelCredentials()));
     cout << "Merge called, Target: " << target_host << "\n";
     bool res = client.MergeFile(hydfs_filename, non_leader_successors);
-    auto end_time = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> elapsed_seconds = end_time - start_time;
-    cout << "Merge operation completed in " << elapsed_seconds.count() << " seconds\n";
     if (res) {
         cout << "Merge Successful" << endl;
     } else {
@@ -164,6 +160,11 @@ void Hydfs::handleNodeFailureDetected(const string& failed_node_id, const unorde
     cout << "Predecessors: " << predecessor1 << " " << predecessor2 << "\n";
 
     // replication for files with new leader
+    auto start_time = chrono::system_clock::now();
+    time_t seconds = chrono::system_clock::to_time_t(start_time);
+    auto microseconds = chrono::duration_cast<chrono::microseconds>(start_time.time_since_epoch()) % 1000000;
+    cout << seconds << '.' << setw(6) << setfill('0') << microseconds.count() << endl;
+
     FileTransferClient client(grpc::CreateChannel(successor1, grpc::InsecureChannelCredentials()));
     bool res = client.UpdateReplication(4, successor2, {successor3}); 
     if (res) {
@@ -189,6 +190,11 @@ void Hydfs::handleNodeFailureDetected(const string& failed_node_id, const unorde
     } else {
         cout << "UpdateReplication Failed" << "\n";
     }
+
+    auto end_time = chrono::system_clock::now();
+    time_t seconds = chrono::system_clock::to_time_t(end_time);
+    auto microseconds = chrono::duration_cast<chrono::microseconds>(end_time.time_since_epoch()) % 1000000;
+    cout << seconds << '.' << setw(6) << setfill('0') << microseconds.count() << endl;
 }
 
 vector<string> Hydfs::getAllSuccessors(const string& filename) {
@@ -261,12 +267,12 @@ void Hydfs::handleClientRequests(const string& command) {
         cout << "File ID: " << successors[0].second.second << "\n";
 
     } else if (command.substr(0, 5) == "store") {
-        std::vector<std::string> fileNames = server.getAllFileNames();
+        vector<string> fileNames = server.getAllFileNames();
         for (const auto& fileName : fileNames) {
-            std::cout << "Filename: " << fileName << " ID: " << hashString(fileName, MODULUS) << "\n";
+            cout << "Filename: " << fileName << " ID: " << hashString(fileName, MODULUS) << "\n";
         }
         string hostname = currNode.getId().substr(0, currNode.getId().rfind("-"));
-        std::cout << "VM: " << hostname << " VM ID: " << hashString(hostname, MODULUS) << "\n";
+        cout << "VM: " << hostname << " VM ID: " << hashString(hostname, MODULUS) << "\n";
 
     } else if (command.substr(0, 14) == "getfromreplica") {
         size_t loc_delim = command.find(" ");
@@ -358,7 +364,7 @@ void Hydfs::handleCommand(const string& command) {
 
 void Hydfs::pipeListener() {
     // make the named pipe if it doesn't exist
-    //std::cout << "ASDASD\n";
+    //cout << "ASDASD\n";
     if (mkfifo(DEFAULT_FIFO_PATH, 0666) == -1 && errno != EEXIST) {
         perror("mkfifo");
         exit(EXIT_FAILURE);
@@ -440,9 +446,9 @@ void Hydfs::swim() {
                 }
                 //if (state.status == Dead && (currNode.getCurrentPeriod() - state.deadBeginPeriod == (uint16_t)(2 * (currNode.getAllIds().size()) - 1))) {
                 if (state.status == Dead && (currNode.getCurrentPeriod() - state.deadBeginPeriod == NUM_NODES_TO_CALL)) {
-                    auto now = std::chrono::system_clock::now();
-                    auto now_time = std::chrono::system_clock::to_time_t(now);
-                    std::tm* now_tm = std::localtime(&now_time);
+                    auto now = chrono::system_clock::now();
+                    auto now_time = chrono::system_clock::to_time_t(now);
+                    tm* now_tm = localtime(&now_time);
                     char buffer[10];
                     strftime(buffer, sizeof(buffer), "%M:%S", now_tm);
                     string timestamp(buffer);
@@ -466,7 +472,7 @@ void Hydfs::swim() {
             // t.detach();
             handlePing(currNode, machineId);
             // when deciding what message we should be piggybacking onto pings if the period an update was made is within 2N-1 periods then we choose to send it
-            // std::this_thread::sleep_for(std::chrono::milliseconds(currNode.getPeriodTime())); // do need this? hm
+            // this_thread::sleep_for(chrono::milliseconds(currNode.getPeriodTime())); // do need this? hm
 
             currNode.setCurrentPeriod(currNode.getCurrentPeriod() + 1);
         }
