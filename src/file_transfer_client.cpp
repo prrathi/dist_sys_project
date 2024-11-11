@@ -271,8 +271,9 @@ bool FileTransferClient::OverwriteFile(const string& local_hydfs_filepath, const
     auto* file_request = metadata_msg.mutable_file_request();
     file_request->set_filename(hydfs_filename);
     file_request->set_order(order);
+    cout << hydfs_filename << " " << order << "\n";
     if (!writer->Write(metadata_msg)) {
-        cout << "Failed to write metadata overwrite" << "\n";
+        cout << "Failed to write metadata overwrite. Status: " << writer->Finish().error_message() << "\n";
         return false;
     }
 

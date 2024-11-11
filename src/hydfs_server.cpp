@@ -289,10 +289,7 @@ Status HydfsServer::MergeFile(ServerContext* context, const MergeRequest* reques
     string filename = request->filename();
     size_t shard = get_shard_index(filename);
     
-    cout << "server merging file 0 on " << server_address_ << endl;
     lock_guard<mutex> lock(shard_mutexes_[shard]);
-    cout << "server merging file 1 on " << server_address_ << endl;
-
     cout << "MERGINGGGG " << filename << " at " << server_address_ << "\n";
 
     if (file_map_.find(filename) == file_map_.end()) {
@@ -300,8 +297,17 @@ Status HydfsServer::MergeFile(ServerContext* context, const MergeRequest* reques
         return Status::OK;
     }
 
-    // append to file if exists, otherwise create it
+    // Verify file is readable before forwarding
     string full_path = "hydfs/" + filename;
+    ifstream test_read(full_path, ios::binary);
+    if (!test_read) {
+        response->set_status(StatusCode::INVALID);
+        response->set_message("Cannot read merged file: " + full_path);
+        return Status::OK;
+    }
+    test_read.close();
+
+    // append to file if exists, otherwise create it
     ofstream outfile(full_path, ios::binary | ios::app);
     if (!outfile) {
         response->set_status(StatusCode::INVALID);
