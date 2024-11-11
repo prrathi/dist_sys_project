@@ -5,6 +5,7 @@
 #include <iomanip>
 #include <sstream>
 #include <random>
+#include <thread>
 #include <grpcpp/grpcpp.h>
 #include "hydfs_server.h"
 #include "file_transfer_client.h"
@@ -12,6 +13,9 @@
 static const int GRPC_PORT_SERVER = 8081;
 static const int GRPC_PORT_SERVER_2 = 8082;
 static const size_t BUFFER_SIZE = 1024 * 1024;  // 1MB buffer
+static const int SERVER_TIMEOUT_MS = 5000;  // 5 second server timeout
+static const int MAX_RETRIES = 3;
+static const int RETRY_DELAY_MS = 100;
 
 using namespace std;
 
@@ -95,11 +99,22 @@ Status HydfsServer::AppendFile(ServerContext* context, ServerReader<AppendReques
     ofstream outfile;
     string filename;
     string chunk_filename;
+    
+    // get first message to get filename with retry
+    int retry_count = 0;
+    bool read_success = false;
+    while (retry_count < MAX_RETRIES && !read_success) {
+        if (reader->Read(&msg)) {
+            read_success = true;
+            break;
+        }
+        retry_count++;
+        this_thread::sleep_for(chrono::milliseconds(RETRY_DELAY_MS));
+    }
 
-    // get first message to get filename
-    if (!reader->Read(&msg)) {
+    if (!read_success) {
         response->set_status(StatusCode::INVALID);
-        response->set_message("Failed to read initial message");
+        response->set_message("Failed to read initial message after retries");
         return Status::OK;
     }
 
@@ -148,12 +163,37 @@ Status HydfsServer::AppendFile(ServerContext* context, ServerReader<AppendReques
         return Status::OK;
     }
 
-    // process remaining messages
-    while (reader->Read(&msg)) {
+    // process remaining messages with timeout handling
+    while (true) {
+        retry_count = 0;
+        read_success = false;
+        
+        while (retry_count < MAX_RETRIES && !read_success) {
+            if (reader->Read(&msg)) {
+                read_success = true;
+                break;
+            }
+            if (context->IsCancelled()) {
+                response->set_status(StatusCode::INVALID);
+                response->set_message("Operation cancelled due to timeout");
+                return Status::OK;
+            }
+            retry_count++;
+            this_thread::sleep_for(chrono::milliseconds(RETRY_DELAY_MS));
+        }
+
+        if (!read_success) break;  // End of stream or persistent failure
+
         if (msg.has_chunk()) {
             outfile.write(msg.chunk().content().data(), msg.chunk().content().size());
+            if (outfile.fail()) {
+                response->set_status(StatusCode::INVALID);
+                response->set_message("Failed to write chunk to file");
+                return Status::OK;
+            }
         }
     }
+
     outfile.close();
 
     file_map_[filename].second.push_back(chunk_filename);
@@ -187,53 +227,68 @@ Status HydfsServer::GetFile(ServerContext* context, const FileRequest* request, 
     GetResponse chunk_response;
     Chunk* chunk = chunk_response.mutable_chunk();
 
-    // first the merged content if it exists
+    // Read and send file contents with retry logic
+    auto send_chunk = [&](const char* data, size_t size) -> bool {
+        chunk->set_content(data, size);
+        int retry_count = 0;
+        while (retry_count < MAX_RETRIES) {
+            if (writer->Write(chunk_response)) return true;
+            if (context->IsCancelled()) return false;
+            retry_count++;
+            this_thread::sleep_for(chrono::milliseconds(RETRY_DELAY_MS));
+        }
+        return false;
+    };
+
+    // First the merged content if it exists
     ifstream infile("hydfs/" + filename, ios::binary);
     if (infile) {
         while (infile.read(buffer, BUFFER_SIZE) || infile.gcount() > 0) {
-            chunk->set_content(buffer, infile.gcount());
-            if (!writer->Write(chunk_response)) {
-                OperationStatus* status = chunk_response.mutable_status();
-                status->set_status(StatusCode::INVALID);
-                status->set_message("Failed to write chunk");
-                return Status::OK;
+            if (!send_chunk(buffer, infile.gcount())) {
+                return Status::CANCELLED;
             }
         }
         infile.close();
     }
 
-    // then the new chunks
+    // Then the new chunks
     for (const string& chunk_filename : chunk_files) {
-        ifstream infile("hydfs/" + chunk_filename, ios::binary);
-        if (!infile) {
+        ifstream chunk_file("hydfs/" + chunk_filename, ios::binary);
+        if (!chunk_file) {
             cout << "Server failed to open chunk: " << chunk_filename << endl;
             continue;
         }
 
-        while (infile.read(buffer, BUFFER_SIZE) || infile.gcount() > 0) {
-            chunk->set_content(buffer, infile.gcount());
-            if (!writer->Write(chunk_response)) {
-                OperationStatus* status = chunk_response.mutable_status();
-                status->set_status(StatusCode::INVALID);
-                status->set_message("Failed to write chunk");
-                return Status::OK;
+        while (chunk_file.read(buffer, BUFFER_SIZE) || chunk_file.gcount() > 0) {
+            if (!send_chunk(buffer, chunk_file.gcount())) {
+                return Status::CANCELLED;
             }
         }
-        infile.close();
+        chunk_file.close();
+    }
+
+    // Send final success status
+    GetResponse final_response;
+    OperationStatus* status = final_response.mutable_status();
+    status->set_status(StatusCode::SUCCESS);
+    
+    int retry_count = 0;
+    while (retry_count < MAX_RETRIES) {
+        if (writer->Write(final_response)) break;
+        if (context->IsCancelled()) return Status::CANCELLED;
+        retry_count++;
+        this_thread::sleep_for(chrono::milliseconds(RETRY_DELAY_MS));
     }
 
     cout << "Completed read request for " << filename << " at " << server_address_ << endl;
 
-    GetResponse final_response;
-    OperationStatus* status = final_response.mutable_status();
-    status->set_status(StatusCode::SUCCESS);
-    writer->Write(final_response);
     return Status::OK;
 }
 
 Status HydfsServer::MergeFile(ServerContext* context, const MergeRequest* request, OperationStatus* response) {
     string filename = request->filename();
     size_t shard = get_shard_index(filename);
+    
     cout << "server merging file 0 on " << server_address_ << endl;
     lock_guard<mutex> lock(shard_mutexes_[shard]);
     cout << "server merging file 1 on " << server_address_ << endl;
@@ -281,9 +336,25 @@ Status HydfsServer::MergeFile(ServerContext* context, const MergeRequest* reques
             response->set_message("Successor address is empty");
             return Status::OK;
         }
-        auto channel = grpc::CreateChannel(successor_address, grpc::InsecureChannelCredentials());
-        FileTransferClient client(channel);
-        client.OverwriteFile(full_path, filename, successor_order);
+
+        int retry_count = 0;
+        bool success = false;
+        while (retry_count < MAX_RETRIES && !success) {
+            auto channel = grpc::CreateChannel(successor_address, grpc::InsecureChannelCredentials());
+            FileTransferClient client(channel);
+            if (client.OverwriteFile(full_path, filename, successor_order)) {
+                success = true;
+                break;
+            }
+            retry_count++;
+            this_thread::sleep_for(chrono::milliseconds(RETRY_DELAY_MS));
+        }
+
+        if (!success) {
+            response->set_status(StatusCode::INVALID);
+            response->set_message("Failed to forward to successor after retries");
+            return Status::OK;
+        }
         successor_order++;
     }
 
@@ -442,9 +513,9 @@ Status HydfsServer::UpdateOrder(ServerContext* context, const UpdateOrderRequest
 }
 
 
-std::vector<std::string> HydfsServer::getAllFileNames() {
+vector<string> HydfsServer::getAllFileNames() {
     // not gonna lock
-    std::vector<std::string> file_names;
+    vector<string> file_names;
     for (auto& [filename, file_info] : file_map_) {
         file_names.push_back(filename);
     }
