@@ -8,3 +8,5 @@ demo/*
 report_dataset_merge
 report_dataset_cache
 .DS_Store
+__pycache__/
+hydfs/
