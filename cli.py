@@ -6,11 +6,11 @@ import argparse
 import subprocess
 import socket
 
-FIFO = '/tmp/mp3'  # Named pipe path. The server should have already made this pipe when it starts (check if already exists)
+FIFO = '/tmp/mp4'  # Named pipe path. The server should have already made this pipe when it starts (check if already exists)
 import os
 user = os.getenv("USER")
 if user in ["praneet", "prathi3"]:
-    FIFO = '/tmp/mp3-prathi3'
+    FIFO = '/tmp/mp4-prathi3'
 
 # the server should read from pipe and execute whatever command it recieves
 

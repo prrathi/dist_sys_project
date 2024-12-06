@@ -17,19 +17,14 @@
 #include <ctime>
 
 #include "hydfs.h"
-
+#include "rainstorm_node.h"
 
 int main() {
-    Hydfs hydfs;
-    
-    std::thread listener_thread([&hydfs](){ hydfs.pipeListener(); });
-    std::thread swim_thread([&hydfs](){ hydfs.swim(); });
-    std::thread server_thread([&hydfs](){ hydfs.runServer(); });
 
-    listener_thread.join();
-    swim_thread.join();
-    server_thread.join();
-    
+    RainStormNode node;
+
+    node.runHydfs();
+
     return 0;
 
 }

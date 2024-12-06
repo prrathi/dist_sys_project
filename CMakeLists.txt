@@ -17,6 +17,11 @@ set(SOURCES
   src/lru_cache.cpp
   src/hydfs_server.cpp
   src/file_transfer_client.cpp
+  src/helper.cpp
+  src/rainstorm_node.cpp
+  src/rainstorm_node_server.cpp
+  src/rainstorm_service_client.cpp
+  src/rainstorm_leader.cpp
 )
 
 set(HEADERS
@@ -31,12 +36,19 @@ set(HEADERS
   includes/hydfs.pb.h
   includes/hydfs_server.h
   includes/file_transfer_client.h
+  includes/helper.h
+  includes/rainstorm_node.h
+  includes/rainstorm_node_server.h
+  includes/rainstorm_service_client.h
+  includes/rainstorm_leader.h
+  includes/rainstorm.grpc.pb.h
+  includes/rainstorm.pb.h
 )
 
 include_directories(includes)
 
 # Define executable
-add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS} src/hydfs.grpc.pb.cc src/hydfs.pb.cc)
+add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS} src/hydfs.grpc.pb.cc src/hydfs.pb.cc src/rainstorm.grpc.pb.cc src/rainstorm.pb.cc)
 
 # Define dependencies
 target_link_libraries(${PROJECT_NAME} pthread gRPC::grpc++)

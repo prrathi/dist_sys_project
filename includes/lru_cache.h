@@ -5,7 +5,6 @@
 #include <string>
 #include <iostream>
 
-std::vector<char> readFileIntoVector(const std::string& filename);
 class LRUCache{
 public:
         LRUCache(int cache_capacity);

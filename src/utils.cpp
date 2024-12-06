@@ -40,6 +40,7 @@ vector<pair<string, pair<size_t, size_t>>> find3SuccessorsFile(const string& fil
     return successors;
 }
 
+
 vector<pair<string, pair<size_t, size_t>>> findSuccessors(const string& failed_node_id, const unordered_set<string>& nodeIds, size_t modulus) {
     string curr_node_hostname = failed_node_id.substr(0, failed_node_id.rfind("-"));
     size_t failed_node_hash = hashString(curr_node_hostname, modulus);

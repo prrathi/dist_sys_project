@@ -19,6 +19,7 @@
 #include "file_transfer_client.h"
 #include "utils.h"
 #include "hydfs_server.h"
+#include "helper.h"
 
 // Implementation-specific constants
 static const int PERIOD = 800;
@@ -26,14 +27,14 @@ static const int SUS_PERIOD = 12;
 static const int PING_PERIOD = 800;
 static const int NORMAL_PERIOD = 3000;
 static const int NORMAL_PING_PERIOD = 2500;
-static const int MODULUS = 8192;
+static const int MODULUS = 8192 * 2;
 static const int GRPC_PORT_SERVER = 8081;
 static const size_t LRU_CACHE_CAPACITY = 1024 * 1024 * 50;
 static const size_t NUM_NODES_TO_CALL = 3;
 
 // Class static member definitions
 const char* DEFAULT_LOG_FILE = "Logs/log.txt";
-char* DEFAULT_FIFO_PATH = "/tmp/mp3";
+char* DEFAULT_FIFO_PATH = "/tmp/mp4";
 
 using namespace std;
 
@@ -42,7 +43,7 @@ Hydfs::Hydfs()
     , server()
 {
     if (string(getenv("USER")) == "prathi3" || string(getenv("USER")) == "praneet") {
-        DEFAULT_FIFO_PATH = "/tmp/mp3-prathi3";
+        DEFAULT_FIFO_PATH = "/tmp/mp4-prathi3";
     }
     cout << "FIFO PATH: " << DEFAULT_FIFO_PATH << "\n";
 }
@@ -398,7 +399,7 @@ void Hydfs::runServer() {
 void Hydfs::swim() {
     const char* user = getenv("USER");
     if (user != nullptr && strcmp(user, "prathi3") == 0) {
-        FIFO_PATH = "/tmp/mp3-prathi3";
+        FIFO_PATH = "/tmp/mp4-prathi3";
     }
 
     currNode = initNode();
@@ -516,4 +517,30 @@ FullNode Hydfs::initNode() {
     } else {
         return FullNode(false, nodeId, nodeStates, 0, false, false, 0, NORMAL_PING_PERIOD, NORMAL_PERIOD, SUS_PERIOD, true, DEFAULT_LOG_FILE);
     }
+}
+
+
+void Hydfs::getFile(const string& filename, const string& hydfs_filename) {
+    string targetHost = getTarget(hydfs_filename) + ":" + to_string(GRPC_PORT_SERVER);
+    cout << "Get" << filename << " hydfs: " << hydfs_filename << " targetHost: " << targetHost << "\n";
+    handleGet(filename, hydfs_filename, targetHost, false);
+}
+
+void Hydfs::createFile(const string& filename, const string& hydfs_filename) {
+    handleCreate(filename, hydfs_filename);
+}   
+
+void Hydfs::appendFile(const string& filename, const string& hydfs_filename) {
+    handleAppend(filename, hydfs_filename);
+}
+
+// just getting vms unordered, easier to check for task usage in leader
+vector<string> Hydfs::getVMs() {
+    auto nodeIds = currNode.getAllIds();
+    vector<string> nodes;
+    for (const auto& nodeId : nodeIds) {
+        string hostname = nodeId.substr(0, nodeId.rfind("-"));
+        nodes.push_back(hostname);
+    }
+    return nodes;
 }

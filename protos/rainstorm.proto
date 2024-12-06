@@ -1,0 +1,87 @@
+syntax = "proto3";
+
+package rainstorm;
+
+enum StatusCode {
+  SUCCESS = 0;
+  INVALID = 1;
+  NOT_FOUND = 2;
+  ALREADY_EXISTS = 3;
+}
+
+message OperationStatus {
+  StatusCode status = 1;
+  string message = 2;
+}
+
+// I guess run executables with popen + args .. need to limit calls to 32k-64k bytes .. kinda slow?
+// each connection between task has 2 uni-directional streams 
+// - 1 client side stream from src to server, 1 client side stream from server to src 
+// - src streams data to server, server copies it somewhere and at some point executes program on data chunk, stream ack to src, and stores 
+// the resultant data 
+// would copy k,v data to some buffer associated with task, then at some point send to next stage associated with task 
+
+// actually nvm ill just do 1 client streaming from src to dest and to ack just do normal for now... or maybe both normal what if overload?
+// could do like bidirectional async streaming but ... may be complex? bidirectional sync streaming might not be that complex? meh prob fine
+// actually i change my mind i think bidirectional sync probably not that hard
+
+// used the finished to see if was finished properly (including acks)
+
+service RainstormService {
+    rpc NewSrcTask(NewSrcTaskRequest) returns (OperationStatus); // tell node to start being src node.
+    rpc NewStageTask(NewSrcTaskRequest) returns (OperationStatus); // tell node to start being stage task node (check if existing log files in hydfs)
+    rpc UpdateSrcTaskSend(UpdateSrcTaskSendRequest) returns (OperationStatus); // tell node to start new grpc stream for task (state) to new next node
+    rpc UpdateDstTaskRecieve(UpdateDstTaskRecieveRequest) returns (OperationStatus); // tell node where to establish new stream to send data and to send acks
+    rpc SendDataChunks(stream StreamDataChunk) returns (stream AckDataChunk); // make sure to gracefully exit if connection lost // maybe batch instead..
+}
+
+
+message NewSrcTaskRequest {
+    string id = 1;
+    string src_filename = 2;
+    int32 stage_number = 3;
+    repeated string next_server_addresses = 4;  
+}
+
+message NewStageTaskRequest {
+    string id = 1;
+    string executable = 2;
+    int32 stage_number = 3;
+    repeated string next_server_addresses = 4;
+    repeated string prev_server_addresses = 5;
+}
+
+
+message UpdateSrcTaskSendRequest {
+    string id = 1;
+    string old_next_server_address = 2;
+    string new_next_server_address = 3;
+}
+
+
+message UpdateDstTaskRecieveRequest {
+    string id = 1;
+    string old_prev_server_address = 2;
+    string new_prev_server_address = 3;
+}
+
+message KV {
+    string key = 1;
+    string value = 2;
+}
+
+message DataChunk {
+    oneof request {
+        string id = 1; 
+        KV pairs = 2;
+        bool finished = 3;
+    }
+}
+
+message StreamDataChunk {
+    repeated DataChunk chunks = 1;
+}
+
+message AckDataChunk { 
+    repeated DataChunk chunks = 1;
+}
