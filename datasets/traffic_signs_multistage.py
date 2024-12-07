@@ -41,8 +41,8 @@ if __name__ == "__main__":
     sign_post_filter = sys.argv[4]     # Sign_Post type (e.g., 'Punched Telespar')
 
     # Spark configuration
-    conf = SparkConf().setAppName("TrafficSignsMultiStage")
-    sc = SparkContext(master_url, "TrafficSignsMultiStage", conf=conf)
+    conf = SparkConf().setAppName("TrafficSignsWithFeedback")
+    sc = SparkContext(master_url, "TrafficSignsWithFeedback", conf=conf)
     sc.setLogLevel("ERROR")  # Minimal logging
 
     # Create StreamingContext
@@ -52,20 +52,47 @@ if __name__ == "__main__":
     # Read lines from the input directory
     lines = ssc.textFileStream(input_dir)
 
-    # Parse each line of the CSV
+    # Feedback: Check if data is flowing at the raw input level
+    def debug_raw_lines(rdd):
+        if rdd.isEmpty():
+            print(">>> No new files detected in the input directory.")
+        else:
+            print(f">>> Raw input batch size: {rdd.count()} lines.")
+
+    lines.foreachRDD(debug_raw_lines)
+
+    # Parse lines into fields
     parsed = lines.map(parse_line)
+
+    # Feedback: Parsed lines
+    def debug_parsed_lines(rdd):
+        if rdd.isEmpty():
+            print(">>> No parsed lines in this batch.")
+        else:
+            print(f">>> Parsed batch size: {rdd.count()} records.")
+    parsed.foreachRDD(debug_parsed_lines)
 
     # Stage 1: Filter by pattern X and extract fields
     stage1_output = stage1_filter_and_extract(parsed, filter_pattern)
-    # Minimal printing: Show first 5 records of Stage 1
-    print("### Stage 1: Filtered OBJECTID, Sign_Type ###")
-    stage1_output.map(lambda t: (t[0], t[1])).foreachRDD(lambda rdd: print(rdd.take(5)))  # Print first 5 rows of Stage 1 output
+    # Feedback: Stage 1 output
+    def debug_stage1_output(rdd):
+        if rdd.isEmpty():
+            print(">>> Stage 1 output: No data passed through filter.")
+        else:
+            print(f">>> Stage 1 output batch size: {rdd.count()} records.")
+            print(f"    Sample: {rdd.take(5)}")
+    stage1_output.foreachRDD(debug_stage1_output)
 
     # Stage 2: Filter by Sign_Post and count Categories
     running_counts = stage2_filter_signpost_and_count(stage1_output, sign_post_filter)
-    # Minimal printing: Show first 5 Category counts
-    print("### Stage 2: Running counts by Category ###")
-    running_counts.foreachRDD(lambda rdd: print(rdd.take(5)))  # Print first 5 rows of Stage 2 output
+    # Feedback: Stage 2 output
+    def debug_stage2_output(rdd):
+        if rdd.isEmpty():
+            print(">>> Stage 2 output: No matching categories found.")
+        else:
+            print(f">>> Stage 2 running counts batch size: {rdd.count()} records.")
+            print(f"    Sample: {rdd.take(5)}")
+    running_counts.foreachRDD(debug_stage2_output)
 
     # Save outputs to files for verification
     stage1_output.foreachRDD(lambda rdd: rdd.saveAsTextFile("Stage1_output"))
