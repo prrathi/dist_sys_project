@@ -4,7 +4,7 @@ import time
 # Configuration
 HOST = "0.0.0.0"  # Listen on all interfaces (for master node)
 PORT = 9999        # Port for the socket server
-CSV_FILE = "TrafficSigns.csv"  # Path to your CSV file
+CSV_FILE = "TrafficSigns_10000.csv"  # Path to your CSV file
 SLEEP_INTERVAL = 1  # Seconds between sending each line (simulates streaming)
 
 def send_csv_data(file_path, conn):
