@@ -5,8 +5,8 @@ import sys
 def parse_line(line):
     """Parse a CSV line into a tuple."""
     parts = line.split(",")
-    while len(parts) < 9:  # Ensure required fields are present
-        parts.append("")
+    if len(parts) < 9:  # Handle missing fields gracefully
+        parts += [""] * (9 - len(parts))
     try:
         return (parts[2].strip(), parts[3].strip(), parts[6].strip(), parts[8].strip())  # OBJECTID, Sign_Type, Sign_Post, Category
     except IndexError:
@@ -14,7 +14,11 @@ def parse_line(line):
 
 def stage1_filter_and_extract(dstream, filter_pattern):
     """Stage 1: Filter rows based on filter_pattern and extract relevant fields."""
-    filtered = dstream.filter(lambda row: row and (filter_pattern in row[0] or filter_pattern in row[1] or filter_pattern in row[2] or filter_pattern in row[3]))
+    filtered = dstream.filter(
+        lambda row: row and (
+            filter_pattern in row[0] or filter_pattern in row[1] or filter_pattern in row[2] or filter_pattern in row[3]
+        )
+    )
     stage1_output = filtered.map(lambda row: (row[0], row[1], row[2], row[3]))  # Pass all fields to Stage 2
     return stage1_output
 
@@ -31,15 +35,15 @@ def stage2_filter_signpost_and_count(dstream, sign_post_filter):
     return running_counts
 
 if __name__ == "__main__":
-    if len(sys.argv) != 5:
+    if len(sys.argv) != 6:
         print("Usage: traffic_signs_stream_socket.py <master_url> <socket_host> <socket_port> <filter_pattern_X> <sign_post_type>", file=sys.stderr)
         sys.exit(-1)
 
     master_url = sys.argv[1]
     socket_host = sys.argv[2]
     socket_port = int(sys.argv[3])
-    filter_pattern = sys.argv[4]
-    sign_post_filter = sys.argv[5]
+    filter_pattern = sys.argv[4]       # Pattern X to filter rows
+    sign_post_filter = sys.argv[5]    # Sign_Post type (e.g., 'Punched Telespar')
 
     # Spark configuration
     sc = SparkContext(master_url, "TrafficSignsSocket")
@@ -59,7 +63,10 @@ if __name__ == "__main__":
     running_counts = stage2_filter_signpost_and_count(stage1_output, sign_post_filter)
 
     # Debugging: Print Stage 1 and Stage 2 outputs
+    print("### Stage 1 Output ###")
     stage1_output.pprint()
+
+    print("### Stage 2 Running Counts ###")
     running_counts.pprint()
 
     # Start computation
