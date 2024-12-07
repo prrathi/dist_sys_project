@@ -50,7 +50,7 @@ if __name__ == "__main__":
     # Spark configuration
     conf = SparkConf().setAppName("TrafficSignsMultiStage")
     sc = SparkContext(master_url, "TrafficSignsMultiStage", conf=conf)
-    sc.setLogLevel("INFO")  # Set to INFO for debugging
+    #sc.setLogLevel("INFO")  # Set to INFO for debugging
 
     # Create StreamingContext
     ssc = StreamingContext(sc, 2)  # Batch interval of 2 seconds for debugging
