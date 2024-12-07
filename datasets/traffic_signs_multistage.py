@@ -3,43 +3,34 @@ from pyspark.streaming import StreamingContext
 import sys
 
 def parse_line(line):
-    # Adjust indices according to the dataset schema
+    # Parse a CSV line into a tuple
     parts = line.split(",")
-    # Ensure we have enough columns
-    while len(parts) < 4:
+    # Ensure we handle missing columns gracefully
+    while len(parts) < 9:
         parts.append("")
-    objectid = parts[0].strip()
-    sign_type = parts[1].strip()
-    sign_post = parts[2].strip()    # For the second stage filter
-    category = parts[3].strip()     # For counting
+    objectid = parts[2].strip()    # OBJECTID
+    sign_type = parts[3].strip()   # Sign_Type
+    sign_post = parts[6].strip()   # Sign_Post
+    category = parts[8].strip()    # Category
     return (objectid, sign_type, sign_post, category)
 
 def stage1_filter_and_extract(dstream, filter_pattern):
-    # Stage 1:
-    # Filter lines containing `filter_pattern` in any field and output (OBJECTID, Sign_Type, Sign_Post, Category)
+    # Stage 1: Filter by `filter_pattern` in any field and extract OBJECTID, Sign_Type
     filtered = dstream.filter(lambda row: filter_pattern in row[0] or filter_pattern in row[1] or filter_pattern in row[2] or filter_pattern in row[3])
-    # Extract just (OBJECTID, Sign_Type, Sign_Post, Category) as a tuple
-    # We keep Sign_Post and Category too, because Stage 2 needs them.
-    # In RainStorm, stage 1 might only produce a subset of columns. 
-    # For a closer analogy, we can imagine stage1.exe would only produce objectid, sign_type, and pass along sign_post, category for next stage.
-    stage1_output = filtered.map(lambda row: (row[0], row[1], row[2], row[3]))
+    stage1_output = filtered.map(lambda row: (row[0], row[1], row[2], row[3]))  # Pass all needed fields to next stage
     return stage1_output
 
 def stage2_filter_signpost_and_count(dstream, sign_post_filter):
-    # Stage 2:
-    # Filter by sign_post_filter and count by category
-    sign_post_filtered = dstream.filter(lambda t: t[2] == sign_post_filter)
-    # Key by category to count
-    categories = sign_post_filtered.map(lambda t: (t[3], 1))
-    
-    def updateFunc(new_values, running_count):
+    # Stage 2: Filter by Sign_Post and count by Category
+    sign_post_filtered = dstream.filter(lambda t: t[2] == sign_post_filter)  # Filter for matching Sign_Post
+    categories = sign_post_filtered.map(lambda t: (t[3], 1))  # Key by Category and count
+    # Running count of categories
+    def update_func(new_values, running_count):
         if running_count is None:
             running_count = 0
         return sum(new_values, running_count)
-    
-    running_counts = categories.updateStateByKey(updateFunc)
+    running_counts = categories.updateStateByKey(update_func)
     return running_counts
-
 
 if __name__ == "__main__":
     if len(sys.argv) != 5:
@@ -48,37 +39,38 @@ if __name__ == "__main__":
 
     master_url = sys.argv[1]
     input_dir = sys.argv[2]
-    filter_pattern = sys.argv[3]       # pattern X 
-    sign_post_filter = sys.argv[4]    
+    filter_pattern = sys.argv[3]       # Pattern X to filter rows
+    sign_post_filter = sys.argv[4]     # Sign_Post type (e.g., 'Punched Telespar')
 
+    # Spark configuration
     conf = SparkConf().setAppName("TrafficSignsMultiStage")
     sc = SparkContext(master_url, "TrafficSignsMultiStage", conf=conf)
     sc.setLogLevel("ERROR")
 
-    ssc = StreamingContext(sc, 1)
-    ssc.checkpoint("checkpoint_dir")
+    # Create StreamingContext
+    ssc = StreamingContext(sc, 1)  # Batch interval of 1 second
+    ssc.checkpoint("checkpoint_dir")  # Checkpoint directory for stateful operations
 
-    # Read lines from input directory as they appear
+    # Read lines from the input directory
     lines = ssc.textFileStream(input_dir)
+
+    # Parse each line of the CSV
     parsed = lines.map(parse_line)
 
-    # Stage 1: Filter & Extract
+    # Stage 1: Filter by pattern X and extract fields
     stage1_output = stage1_filter_and_extract(parsed, filter_pattern)
-    # Print Stage 1 output to console, like RainStorm’s first stage does
-    # Just OBJECTID, Sign_Type for demonstration
+    # Print Stage 1 output: OBJECTID, Sign_Type
     stage1_output.map(lambda t: (t[0], t[1])).pprint()
 
-    # Stage 2: Filter by Sign Post Type & Count Categories
+    # Stage 2: Filter by Sign_Post and count Categories
     running_counts = stage2_filter_signpost_and_count(stage1_output, sign_post_filter)
-
-    # Print Stage 2 output to console (running counts)
+    # Print Stage 2 output: Running counts by Category
     running_counts.pprint()
 
-    # Save outputs to files for final verification
-    # For Stage 1 output:
+    # Save outputs to files for verification
     stage1_output.foreachRDD(lambda rdd: rdd.saveAsTextFile("Stage1_output"))
-    # For Stage 2 output:
     running_counts.foreachRDD(lambda rdd: rdd.saveAsTextFile("Stage2_output"))
 
+    # Start computation
     ssc.start()
     ssc.awaitTermination()
