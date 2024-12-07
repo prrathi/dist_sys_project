@@ -11,18 +11,25 @@ def parse_line(line):
 
 def stage1_filter_and_extract(dstream, filter_pattern):
     """Stage 1: Filter rows based on filter_pattern and extract relevant fields."""
-    return dstream.filter(
+    filtered = dstream.filter(
         lambda row: filter_pattern in row[1] or filter_pattern in row[3]
-    ).map(lambda row: (row[0], row[1], row[2], row[3]))  # Pass filtered fields
+    ).map(lambda row: (row[0], row[1], row[2], row[3]))
+    filtered.foreachRDD(lambda rdd: print_stage_output(rdd, "Stage 1"))
+    return filtered
 
 def stage2_filter_signpost_and_count(dstream, sign_post_filter):
     """Stage 2: Filter by Sign_Post type and count categories."""
-    counts = (
-        dstream.filter(lambda t: t[2] == sign_post_filter)  # Filter for matching Sign_Post
-        .map(lambda t: (t[3], 1))  # Map by Category
-        .reduceByKey(lambda x, y: x + y)  # Count categories
-    )
+    filtered = dstream.filter(lambda t: t[2] == sign_post_filter)  # Filter for matching Sign_Post
+    counts = filtered.map(lambda t: (t[3], 1)).reduceByKey(lambda x, y: x + y)  # Count categories
+    counts.foreachRDD(lambda rdd: print_stage_output(rdd, "Stage 2"))
     return counts
+
+def print_stage_output(rdd, stage_name):
+    """Print the processed data in the current stage."""
+    if not rdd.isEmpty():
+        print(f"### {stage_name} Output ###")
+        for record in rdd.collect():
+            print(record)
 
 if __name__ == "__main__":
     if len(sys.argv) != 6:
@@ -51,10 +58,6 @@ if __name__ == "__main__":
 
     # Stage 2: Filter by Sign_Post and count Categories
     running_counts = stage2_filter_signpost_and_count(stage1_output, sign_post_filter)
-
-    # Output results
-    print("### Running Counts ###")
-    running_counts.pprint()  # Display category counts
 
     # Start computation
     ssc.start()
