@@ -12,7 +12,6 @@
 class RainStormClient {
 public:
     RainStormClient(std::shared_ptr<grpc::Channel> channel);
-    RainStormClient(std::shared_ptr<grpc::Channel> channel, RainStormNode rainstorm_node);
     bool NewSrcTask(const std::string &id, const std::string &src_filename);
     bool NewStageTask(const std::string &id, const std::string &next_server_address, const std::string &prev_server_address);
     bool UpdateSrcTaskSend(const std::string &id, const std::string &new_next_server_address);

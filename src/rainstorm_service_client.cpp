@@ -7,9 +7,6 @@ using namespace std;
 RainStormClient::RainStormClient(std::shared_ptr<grpc::Channel> channel)
     : stub_(rainstorm::RainstormService::NewStub(channel)) {}
 
-RainStormClient::RainStormClient(std::shared_ptr<grpc::Channel> channel, RainStormNode rainstorm_node)
-    : stub_(rainstorm::RainstormService::NewStub(channel)), rainstorm_node_(rainstorm_node) {}
-
 bool RainStormClient::NewSrcTask(const std::string &id, const std::string &src_filename) {
     grpc::ClientContext context;
     rainstorm::NewSrcTaskRequest request;
