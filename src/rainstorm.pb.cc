@@ -25,59 +25,51 @@ namespace _pbi = ::google::protobuf::internal;
 namespace _fl = ::google::protobuf::internal::field_layout;
 namespace rainstorm {
 
-inline constexpr UpdateSrcTaskSendRequest::Impl_::Impl_(
+inline constexpr UpdateTaskSndRequest::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
-      : id_(
+      : snd_address_(
             &::google::protobuf::internal::fixed_address_empty_string,
             ::_pbi::ConstantInitialized()),
-        old_next_server_address_(
-            &::google::protobuf::internal::fixed_address_empty_string,
-            ::_pbi::ConstantInitialized()),
-        new_next_server_address_(
-            &::google::protobuf::internal::fixed_address_empty_string,
-            ::_pbi::ConstantInitialized()),
+        index_{0},
+        snd_port_{0},
         _cached_size_{0} {}
 
 template <typename>
-PROTOBUF_CONSTEXPR UpdateSrcTaskSendRequest::UpdateSrcTaskSendRequest(::_pbi::ConstantInitialized)
+PROTOBUF_CONSTEXPR UpdateTaskSndRequest::UpdateTaskSndRequest(::_pbi::ConstantInitialized)
     : _impl_(::_pbi::ConstantInitialized()) {}
-struct UpdateSrcTaskSendRequestDefaultTypeInternal {
-  PROTOBUF_CONSTEXPR UpdateSrcTaskSendRequestDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
-  ~UpdateSrcTaskSendRequestDefaultTypeInternal() {}
+struct UpdateTaskSndRequestDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR UpdateTaskSndRequestDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~UpdateTaskSndRequestDefaultTypeInternal() {}
   union {
-    UpdateSrcTaskSendRequest _instance;
+    UpdateTaskSndRequest _instance;
   };
 };
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
-    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 UpdateSrcTaskSendRequestDefaultTypeInternal _UpdateSrcTaskSendRequest_default_instance_;
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 UpdateTaskSndRequestDefaultTypeInternal _UpdateTaskSndRequest_default_instance_;
 
-inline constexpr UpdateDstTaskRecieveRequest::Impl_::Impl_(
+inline constexpr UpdateTaskRcvRequest::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
-      : id_(
+      : rcv_address_(
             &::google::protobuf::internal::fixed_address_empty_string,
             ::_pbi::ConstantInitialized()),
-        old_prev_server_address_(
-            &::google::protobuf::internal::fixed_address_empty_string,
-            ::_pbi::ConstantInitialized()),
-        new_prev_server_address_(
-            &::google::protobuf::internal::fixed_address_empty_string,
-            ::_pbi::ConstantInitialized()),
+        index_{0},
+        rcv_port_{0},
         _cached_size_{0} {}
 
 template <typename>
-PROTOBUF_CONSTEXPR UpdateDstTaskRecieveRequest::UpdateDstTaskRecieveRequest(::_pbi::ConstantInitialized)
+PROTOBUF_CONSTEXPR UpdateTaskRcvRequest::UpdateTaskRcvRequest(::_pbi::ConstantInitialized)
     : _impl_(::_pbi::ConstantInitialized()) {}
-struct UpdateDstTaskRecieveRequestDefaultTypeInternal {
-  PROTOBUF_CONSTEXPR UpdateDstTaskRecieveRequestDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
-  ~UpdateDstTaskRecieveRequestDefaultTypeInternal() {}
+struct UpdateTaskRcvRequestDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR UpdateTaskRcvRequestDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~UpdateTaskRcvRequestDefaultTypeInternal() {}
   union {
-    UpdateDstTaskRecieveRequest _instance;
+    UpdateTaskRcvRequest _instance;
   };
 };
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
-    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 UpdateDstTaskRecieveRequestDefaultTypeInternal _UpdateDstTaskRecieveRequest_default_instance_;
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 UpdateTaskRcvRequestDefaultTypeInternal _UpdateTaskRcvRequest_default_instance_;
 
 inline constexpr OperationStatus::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
@@ -101,17 +93,47 @@ struct OperationStatusDefaultTypeInternal {
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 OperationStatusDefaultTypeInternal _OperationStatus_default_instance_;
 
+inline constexpr NewTgtTaskRequest::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : rcv_addresses_{},
+        rcv_ports_{},
+        _rcv_ports_cached_byte_size_{0},
+        query_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        _cached_size_{0} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR NewTgtTaskRequest::NewTgtTaskRequest(::_pbi::ConstantInitialized)
+    : _impl_(::_pbi::ConstantInitialized()) {}
+struct NewTgtTaskRequestDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR NewTgtTaskRequestDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~NewTgtTaskRequestDefaultTypeInternal() {}
+  union {
+    NewTgtTaskRequest _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 NewTgtTaskRequestDefaultTypeInternal _NewTgtTaskRequest_default_instance_;
+
 inline constexpr NewStageTaskRequest::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
-      : next_server_addresses_{},
-        prev_server_addresses_{},
-        id_(
+      : rcv_addresses_{},
+        rcv_ports_{},
+        _rcv_ports_cached_byte_size_{0},
+        snd_addresses_{},
+        snd_ports_{},
+        _snd_ports_cached_byte_size_{0},
+        query_id_(
             &::google::protobuf::internal::fixed_address_empty_string,
             ::_pbi::ConstantInitialized()),
         executable_(
             &::google::protobuf::internal::fixed_address_empty_string,
             ::_pbi::ConstantInitialized()),
-        stage_number_{0},
+        stage_id_{0},
+        task_id_{0},
+        task_count_{0},
         _cached_size_{0} {}
 
 template <typename>
@@ -130,14 +152,18 @@ PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
 
 inline constexpr NewSrcTaskRequest::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
-      : next_server_addresses_{},
-        id_(
+      : query_id_(
             &::google::protobuf::internal::fixed_address_empty_string,
             ::_pbi::ConstantInitialized()),
         src_filename_(
             &::google::protobuf::internal::fixed_address_empty_string,
             ::_pbi::ConstantInitialized()),
-        stage_number_{0},
+        snd_address_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        task_id_{0},
+        task_count_{0},
+        snd_port_{0},
         _cached_size_{0} {}
 
 template <typename>
@@ -156,7 +182,10 @@ PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
 
 inline constexpr KV::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
-      : key_(
+      : id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        key_(
             &::google::protobuf::internal::fixed_address_empty_string,
             ::_pbi::ConstantInitialized()),
         value_(
@@ -260,10 +289,12 @@ const ::uint32_t
         ~0u,  // no _inlined_string_donated_
         ~0u,  // no _split_
         ~0u,  // no sizeof(Split)
-        PROTOBUF_FIELD_OFFSET(::rainstorm::NewSrcTaskRequest, _impl_.id_),
+        PROTOBUF_FIELD_OFFSET(::rainstorm::NewSrcTaskRequest, _impl_.query_id_),
+        PROTOBUF_FIELD_OFFSET(::rainstorm::NewSrcTaskRequest, _impl_.task_id_),
+        PROTOBUF_FIELD_OFFSET(::rainstorm::NewSrcTaskRequest, _impl_.task_count_),
         PROTOBUF_FIELD_OFFSET(::rainstorm::NewSrcTaskRequest, _impl_.src_filename_),
-        PROTOBUF_FIELD_OFFSET(::rainstorm::NewSrcTaskRequest, _impl_.stage_number_),
-        PROTOBUF_FIELD_OFFSET(::rainstorm::NewSrcTaskRequest, _impl_.next_server_addresses_),
+        PROTOBUF_FIELD_OFFSET(::rainstorm::NewSrcTaskRequest, _impl_.snd_address_),
+        PROTOBUF_FIELD_OFFSET(::rainstorm::NewSrcTaskRequest, _impl_.snd_port_),
         ~0u,  // no _has_bits_
         PROTOBUF_FIELD_OFFSET(::rainstorm::NewStageTaskRequest, _internal_metadata_),
         ~0u,  // no _extensions_
@@ -272,33 +303,48 @@ const ::uint32_t
         ~0u,  // no _inlined_string_donated_
         ~0u,  // no _split_
         ~0u,  // no sizeof(Split)
-        PROTOBUF_FIELD_OFFSET(::rainstorm::NewStageTaskRequest, _impl_.id_),
+        PROTOBUF_FIELD_OFFSET(::rainstorm::NewStageTaskRequest, _impl_.query_id_),
+        PROTOBUF_FIELD_OFFSET(::rainstorm::NewStageTaskRequest, _impl_.stage_id_),
+        PROTOBUF_FIELD_OFFSET(::rainstorm::NewStageTaskRequest, _impl_.task_id_),
+        PROTOBUF_FIELD_OFFSET(::rainstorm::NewStageTaskRequest, _impl_.task_count_),
         PROTOBUF_FIELD_OFFSET(::rainstorm::NewStageTaskRequest, _impl_.executable_),
-        PROTOBUF_FIELD_OFFSET(::rainstorm::NewStageTaskRequest, _impl_.stage_number_),
-        PROTOBUF_FIELD_OFFSET(::rainstorm::NewStageTaskRequest, _impl_.next_server_addresses_),
-        PROTOBUF_FIELD_OFFSET(::rainstorm::NewStageTaskRequest, _impl_.prev_server_addresses_),
+        PROTOBUF_FIELD_OFFSET(::rainstorm::NewStageTaskRequest, _impl_.rcv_addresses_),
+        PROTOBUF_FIELD_OFFSET(::rainstorm::NewStageTaskRequest, _impl_.rcv_ports_),
+        PROTOBUF_FIELD_OFFSET(::rainstorm::NewStageTaskRequest, _impl_.snd_addresses_),
+        PROTOBUF_FIELD_OFFSET(::rainstorm::NewStageTaskRequest, _impl_.snd_ports_),
         ~0u,  // no _has_bits_
-        PROTOBUF_FIELD_OFFSET(::rainstorm::UpdateSrcTaskSendRequest, _internal_metadata_),
+        PROTOBUF_FIELD_OFFSET(::rainstorm::NewTgtTaskRequest, _internal_metadata_),
         ~0u,  // no _extensions_
         ~0u,  // no _oneof_case_
         ~0u,  // no _weak_field_map_
         ~0u,  // no _inlined_string_donated_
         ~0u,  // no _split_
         ~0u,  // no sizeof(Split)
-        PROTOBUF_FIELD_OFFSET(::rainstorm::UpdateSrcTaskSendRequest, _impl_.id_),
-        PROTOBUF_FIELD_OFFSET(::rainstorm::UpdateSrcTaskSendRequest, _impl_.old_next_server_address_),
-        PROTOBUF_FIELD_OFFSET(::rainstorm::UpdateSrcTaskSendRequest, _impl_.new_next_server_address_),
+        PROTOBUF_FIELD_OFFSET(::rainstorm::NewTgtTaskRequest, _impl_.query_id_),
+        PROTOBUF_FIELD_OFFSET(::rainstorm::NewTgtTaskRequest, _impl_.rcv_addresses_),
+        PROTOBUF_FIELD_OFFSET(::rainstorm::NewTgtTaskRequest, _impl_.rcv_ports_),
         ~0u,  // no _has_bits_
-        PROTOBUF_FIELD_OFFSET(::rainstorm::UpdateDstTaskRecieveRequest, _internal_metadata_),
+        PROTOBUF_FIELD_OFFSET(::rainstorm::UpdateTaskSndRequest, _internal_metadata_),
         ~0u,  // no _extensions_
         ~0u,  // no _oneof_case_
         ~0u,  // no _weak_field_map_
         ~0u,  // no _inlined_string_donated_
         ~0u,  // no _split_
         ~0u,  // no sizeof(Split)
-        PROTOBUF_FIELD_OFFSET(::rainstorm::UpdateDstTaskRecieveRequest, _impl_.id_),
-        PROTOBUF_FIELD_OFFSET(::rainstorm::UpdateDstTaskRecieveRequest, _impl_.old_prev_server_address_),
-        PROTOBUF_FIELD_OFFSET(::rainstorm::UpdateDstTaskRecieveRequest, _impl_.new_prev_server_address_),
+        PROTOBUF_FIELD_OFFSET(::rainstorm::UpdateTaskSndRequest, _impl_.index_),
+        PROTOBUF_FIELD_OFFSET(::rainstorm::UpdateTaskSndRequest, _impl_.snd_address_),
+        PROTOBUF_FIELD_OFFSET(::rainstorm::UpdateTaskSndRequest, _impl_.snd_port_),
+        ~0u,  // no _has_bits_
+        PROTOBUF_FIELD_OFFSET(::rainstorm::UpdateTaskRcvRequest, _internal_metadata_),
+        ~0u,  // no _extensions_
+        ~0u,  // no _oneof_case_
+        ~0u,  // no _weak_field_map_
+        ~0u,  // no _inlined_string_donated_
+        ~0u,  // no _split_
+        ~0u,  // no sizeof(Split)
+        PROTOBUF_FIELD_OFFSET(::rainstorm::UpdateTaskRcvRequest, _impl_.index_),
+        PROTOBUF_FIELD_OFFSET(::rainstorm::UpdateTaskRcvRequest, _impl_.rcv_address_),
+        PROTOBUF_FIELD_OFFSET(::rainstorm::UpdateTaskRcvRequest, _impl_.rcv_port_),
         ~0u,  // no _has_bits_
         PROTOBUF_FIELD_OFFSET(::rainstorm::KV, _internal_metadata_),
         ~0u,  // no _extensions_
@@ -307,6 +353,7 @@ const ::uint32_t
         ~0u,  // no _inlined_string_donated_
         ~0u,  // no _split_
         ~0u,  // no sizeof(Split)
+        PROTOBUF_FIELD_OFFSET(::rainstorm::KV, _impl_.id_),
         PROTOBUF_FIELD_OFFSET(::rainstorm::KV, _impl_.key_),
         PROTOBUF_FIELD_OFFSET(::rainstorm::KV, _impl_.value_),
         ~0u,  // no _has_bits_
@@ -345,20 +392,22 @@ static const ::_pbi::MigrationSchema
     schemas[] ABSL_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
         {0, -1, -1, sizeof(::rainstorm::OperationStatus)},
         {10, -1, -1, sizeof(::rainstorm::NewSrcTaskRequest)},
-        {22, -1, -1, sizeof(::rainstorm::NewStageTaskRequest)},
-        {35, -1, -1, sizeof(::rainstorm::UpdateSrcTaskSendRequest)},
-        {46, -1, -1, sizeof(::rainstorm::UpdateDstTaskRecieveRequest)},
-        {57, -1, -1, sizeof(::rainstorm::KV)},
-        {67, -1, -1, sizeof(::rainstorm::DataChunk)},
-        {79, -1, -1, sizeof(::rainstorm::StreamDataChunk)},
-        {88, -1, -1, sizeof(::rainstorm::AckDataChunk)},
+        {24, -1, -1, sizeof(::rainstorm::NewStageTaskRequest)},
+        {41, -1, -1, sizeof(::rainstorm::NewTgtTaskRequest)},
+        {52, -1, -1, sizeof(::rainstorm::UpdateTaskSndRequest)},
+        {63, -1, -1, sizeof(::rainstorm::UpdateTaskRcvRequest)},
+        {74, -1, -1, sizeof(::rainstorm::KV)},
+        {85, -1, -1, sizeof(::rainstorm::DataChunk)},
+        {97, -1, -1, sizeof(::rainstorm::StreamDataChunk)},
+        {106, -1, -1, sizeof(::rainstorm::AckDataChunk)},
 };
 static const ::_pb::Message* const file_default_instances[] = {
     &::rainstorm::_OperationStatus_default_instance_._instance,
     &::rainstorm::_NewSrcTaskRequest_default_instance_._instance,
     &::rainstorm::_NewStageTaskRequest_default_instance_._instance,
-    &::rainstorm::_UpdateSrcTaskSendRequest_default_instance_._instance,
-    &::rainstorm::_UpdateDstTaskRecieveRequest_default_instance_._instance,
+    &::rainstorm::_NewTgtTaskRequest_default_instance_._instance,
+    &::rainstorm::_UpdateTaskSndRequest_default_instance_._instance,
+    &::rainstorm::_UpdateTaskRcvRequest_default_instance_._instance,
     &::rainstorm::_KV_default_instance_._instance,
     &::rainstorm::_DataChunk_default_instance_._instance,
     &::rainstorm::_StreamDataChunk_default_instance_._instance,
@@ -368,49 +417,53 @@ const char descriptor_table_protodef_rainstorm_2eproto[] ABSL_ATTRIBUTE_SECTION_
     protodesc_cold) = {
     "\n\017rainstorm.proto\022\trainstorm\"I\n\017Operatio"
     "nStatus\022%\n\006status\030\001 \001(\0162\025.rainstorm.Stat"
-    "usCode\022\017\n\007message\030\002 \001(\t\"j\n\021NewSrcTaskReq"
-    "uest\022\n\n\002id\030\001 \001(\t\022\024\n\014src_filename\030\002 \001(\t\022\024"
-    "\n\014stage_number\030\003 \001(\005\022\035\n\025next_server_addr"
-    "esses\030\004 \003(\t\"\211\001\n\023NewStageTaskRequest\022\n\n\002i"
-    "d\030\001 \001(\t\022\022\n\nexecutable\030\002 \001(\t\022\024\n\014stage_num"
-    "ber\030\003 \001(\005\022\035\n\025next_server_addresses\030\004 \003(\t"
-    "\022\035\n\025prev_server_addresses\030\005 \003(\t\"h\n\030Updat"
-    "eSrcTaskSendRequest\022\n\n\002id\030\001 \001(\t\022\037\n\027old_n"
-    "ext_server_address\030\002 \001(\t\022\037\n\027new_next_ser"
-    "ver_address\030\003 \001(\t\"k\n\033UpdateDstTaskReciev"
-    "eRequest\022\n\n\002id\030\001 \001(\t\022\037\n\027old_prev_server_"
-    "address\030\002 \001(\t\022\037\n\027new_prev_server_address"
-    "\030\003 \001(\t\" \n\002KV\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t"
-    "\"X\n\tDataChunk\022\014\n\002id\030\001 \001(\tH\000\022\036\n\005pairs\030\002 \001"
-    "(\0132\r.rainstorm.KVH\000\022\022\n\010finished\030\003 \001(\010H\000B"
-    "\t\n\007request\"7\n\017StreamDataChunk\022$\n\006chunks\030"
-    "\001 \003(\0132\024.rainstorm.DataChunk\"4\n\014AckDataCh"
-    "unk\022$\n\006chunks\030\001 \003(\0132\024.rainstorm.DataChun"
-    "k*I\n\nStatusCode\022\013\n\007SUCCESS\020\000\022\013\n\007INVALID\020"
-    "\001\022\r\n\tNOT_FOUND\020\002\022\022\n\016ALREADY_EXISTS\020\0032\241\003\n"
-    "\020RainstormService\022F\n\nNewSrcTask\022\034.rainst"
-    "orm.NewSrcTaskRequest\032\032.rainstorm.Operat"
-    "ionStatus\022H\n\014NewStageTask\022\034.rainstorm.Ne"
-    "wSrcTaskRequest\032\032.rainstorm.OperationSta"
-    "tus\022T\n\021UpdateSrcTaskSend\022#.rainstorm.Upd"
-    "ateSrcTaskSendRequest\032\032.rainstorm.Operat"
-    "ionStatus\022Z\n\024UpdateDstTaskRecieve\022&.rain"
-    "storm.UpdateDstTaskRecieveRequest\032\032.rain"
-    "storm.OperationStatus\022I\n\016SendDataChunks\022"
-    "\032.rainstorm.StreamDataChunk\032\027.rainstorm."
-    "AckDataChunk(\0010\001b\006proto3"
+    "usCode\022\017\n\007message\030\002 \001(\t\"\207\001\n\021NewSrcTaskRe"
+    "quest\022\020\n\010query_id\030\001 \001(\t\022\017\n\007task_id\030\002 \001(\005"
+    "\022\022\n\ntask_count\030\003 \001(\005\022\024\n\014src_filename\030\004 \001"
+    "(\t\022\023\n\013snd_address\030\005 \001(\t\022\020\n\010snd_port\030\006 \001("
+    "\005\"\306\001\n\023NewStageTaskRequest\022\020\n\010query_id\030\001 "
+    "\001(\t\022\020\n\010stage_id\030\002 \001(\005\022\017\n\007task_id\030\003 \001(\005\022\022"
+    "\n\ntask_count\030\004 \001(\005\022\022\n\nexecutable\030\005 \001(\t\022\025"
+    "\n\rrcv_addresses\030\006 \003(\t\022\021\n\trcv_ports\030\007 \003(\005"
+    "\022\025\n\rsnd_addresses\030\010 \003(\t\022\021\n\tsnd_ports\030\t \003"
+    "(\005\"O\n\021NewTgtTaskRequest\022\020\n\010query_id\030\001 \001("
+    "\t\022\025\n\rrcv_addresses\030\002 \003(\t\022\021\n\trcv_ports\030\003 "
+    "\003(\005\"L\n\024UpdateTaskSndRequest\022\r\n\005index\030\001 \001"
+    "(\005\022\023\n\013snd_address\030\002 \001(\t\022\020\n\010snd_port\030\003 \001("
+    "\005\"L\n\024UpdateTaskRcvRequest\022\r\n\005index\030\001 \001(\005"
+    "\022\023\n\013rcv_address\030\002 \001(\t\022\020\n\010rcv_port\030\003 \001(\005\""
+    ",\n\002KV\022\n\n\002id\030\001 \001(\t\022\013\n\003key\030\002 \001(\t\022\r\n\005value\030"
+    "\003 \001(\t\"W\n\tDataChunk\022\014\n\002id\030\001 \001(\tH\000\022\035\n\004pair"
+    "\030\002 \001(\0132\r.rainstorm.KVH\000\022\022\n\010finished\030\003 \001("
+    "\010H\000B\t\n\007request\"7\n\017StreamDataChunk\022$\n\006chu"
+    "nks\030\001 \003(\0132\024.rainstorm.DataChunk\"4\n\014AckDa"
+    "taChunk\022$\n\006chunks\030\001 \003(\0132\024.rainstorm.Data"
+    "Chunk*I\n\nStatusCode\022\013\n\007SUCCESS\020\000\022\013\n\007INVA"
+    "LID\020\001\022\r\n\tNOT_FOUND\020\002\022\022\n\016ALREADY_EXISTS\020\003"
+    "2\325\003\n\020RainstormService\022F\n\nNewSrcTask\022\034.ra"
+    "instorm.NewSrcTaskRequest\032\032.rainstorm.Op"
+    "erationStatus\022J\n\014NewStageTask\022\036.rainstor"
+    "m.NewStageTaskRequest\032\032.rainstorm.Operat"
+    "ionStatus\022F\n\nNewTgtTask\022\034.rainstorm.NewT"
+    "gtTaskRequest\032\032.rainstorm.OperationStatu"
+    "s\022L\n\rUpdateTaskSnd\022\037.rainstorm.UpdateTas"
+    "kSndRequest\032\032.rainstorm.OperationStatus\022"
+    "L\n\rUpdateTaskRcv\022\037.rainstorm.UpdateTaskR"
+    "cvRequest\032\032.rainstorm.OperationStatus\022I\n"
+    "\016SendDataChunks\022\032.rainstorm.StreamDataCh"
+    "unk\032\027.rainstorm.AckDataChunk(\0010\001b\006proto3"
 };
 static ::absl::once_flag descriptor_table_rainstorm_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_rainstorm_2eproto = {
     false,
     false,
-    1304,
+    1480,
     descriptor_table_protodef_rainstorm_2eproto,
     "rainstorm.proto",
     &descriptor_table_rainstorm_2eproto_once,
     nullptr,
     0,
-    9,
+    10,
     schemas,
     file_default_instances,
     TableStruct_rainstorm_2eproto::offsets,
@@ -660,9 +713,9 @@ NewSrcTaskRequest::NewSrcTaskRequest(::google::protobuf::Arena* arena)
 inline PROTOBUF_NDEBUG_INLINE NewSrcTaskRequest::Impl_::Impl_(
     ::google::protobuf::internal::InternalVisibility visibility, ::google::protobuf::Arena* arena,
     const Impl_& from, const ::rainstorm::NewSrcTaskRequest& from_msg)
-      : next_server_addresses_{visibility, arena, from.next_server_addresses_},
-        id_(arena, from.id_),
+      : query_id_(arena, from.query_id_),
         src_filename_(arena, from.src_filename_),
+        snd_address_(arena, from.snd_address_),
         _cached_size_{0} {}
 
 NewSrcTaskRequest::NewSrcTaskRequest(
@@ -674,21 +727,32 @@ NewSrcTaskRequest::NewSrcTaskRequest(
   _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
       from._internal_metadata_);
   new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
-  _impl_.stage_number_ = from._impl_.stage_number_;
+  ::memcpy(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, task_id_),
+           reinterpret_cast<const char *>(&from._impl_) +
+               offsetof(Impl_, task_id_),
+           offsetof(Impl_, snd_port_) -
+               offsetof(Impl_, task_id_) +
+               sizeof(Impl_::snd_port_));
 
   // @@protoc_insertion_point(copy_constructor:rainstorm.NewSrcTaskRequest)
 }
 inline PROTOBUF_NDEBUG_INLINE NewSrcTaskRequest::Impl_::Impl_(
     ::google::protobuf::internal::InternalVisibility visibility,
     ::google::protobuf::Arena* arena)
-      : next_server_addresses_{visibility, arena},
-        id_(arena),
+      : query_id_(arena),
         src_filename_(arena),
+        snd_address_(arena),
         _cached_size_{0} {}
 
 inline void NewSrcTaskRequest::SharedCtor(::_pb::Arena* arena) {
   new (&_impl_) Impl_(internal_visibility(), arena);
-  _impl_.stage_number_ = {};
+  ::memset(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, task_id_),
+           0,
+           offsetof(Impl_, snd_port_) -
+               offsetof(Impl_, task_id_) +
+               sizeof(Impl_::snd_port_));
 }
 NewSrcTaskRequest::~NewSrcTaskRequest() {
   // @@protoc_insertion_point(destructor:rainstorm.NewSrcTaskRequest)
@@ -697,8 +761,9 @@ NewSrcTaskRequest::~NewSrcTaskRequest() {
 }
 inline void NewSrcTaskRequest::SharedDtor() {
   ABSL_DCHECK(GetArena() == nullptr);
-  _impl_.id_.Destroy();
+  _impl_.query_id_.Destroy();
   _impl_.src_filename_.Destroy();
+  _impl_.snd_address_.Destroy();
   _impl_.~Impl_();
 }
 
@@ -723,15 +788,15 @@ NewSrcTaskRequest::GetClassData() const {
   return _data_.base();
 }
 PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
-const ::_pbi::TcParseTable<2, 4, 0, 71, 2> NewSrcTaskRequest::_table_ = {
+const ::_pbi::TcParseTable<3, 6, 0, 67, 2> NewSrcTaskRequest::_table_ = {
   {
     0,  // no _has_bits_
     0, // no _extensions_
-    4, 24,  // max_field_number, fast_idx_mask
+    6, 56,  // max_field_number, fast_idx_mask
     offsetof(decltype(_table_), field_lookup_table),
-    4294967280,  // skipmap
+    4294967232,  // skipmap
     offsetof(decltype(_table_), field_entries),
-    4,  // num_field_entries
+    6,  // num_field_entries
     0,  // num_aux_entries
     offsetof(decltype(_table_), field_names),  // no aux_entries
     &_NewSrcTaskRequest_default_instance_._instance,
@@ -741,41 +806,55 @@ const ::_pbi::TcParseTable<2, 4, 0, 71, 2> NewSrcTaskRequest::_table_ = {
     ::_pbi::TcParser::GetTable<::rainstorm::NewSrcTaskRequest>(),  // to_prefetch
     #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
   }, {{
-    // repeated string next_server_addresses = 4;
-    {::_pbi::TcParser::FastUR1,
-     {34, 63, 0, PROTOBUF_FIELD_OFFSET(NewSrcTaskRequest, _impl_.next_server_addresses_)}},
-    // string id = 1;
+    {::_pbi::TcParser::MiniParse, {}},
+    // string query_id = 1;
     {::_pbi::TcParser::FastUS1,
-     {10, 63, 0, PROTOBUF_FIELD_OFFSET(NewSrcTaskRequest, _impl_.id_)}},
-    // string src_filename = 2;
+     {10, 63, 0, PROTOBUF_FIELD_OFFSET(NewSrcTaskRequest, _impl_.query_id_)}},
+    // int32 task_id = 2;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(NewSrcTaskRequest, _impl_.task_id_), 63>(),
+     {16, 63, 0, PROTOBUF_FIELD_OFFSET(NewSrcTaskRequest, _impl_.task_id_)}},
+    // int32 task_count = 3;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(NewSrcTaskRequest, _impl_.task_count_), 63>(),
+     {24, 63, 0, PROTOBUF_FIELD_OFFSET(NewSrcTaskRequest, _impl_.task_count_)}},
+    // string src_filename = 4;
     {::_pbi::TcParser::FastUS1,
-     {18, 63, 0, PROTOBUF_FIELD_OFFSET(NewSrcTaskRequest, _impl_.src_filename_)}},
-    // int32 stage_number = 3;
-    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(NewSrcTaskRequest, _impl_.stage_number_), 63>(),
-     {24, 63, 0, PROTOBUF_FIELD_OFFSET(NewSrcTaskRequest, _impl_.stage_number_)}},
+     {34, 63, 0, PROTOBUF_FIELD_OFFSET(NewSrcTaskRequest, _impl_.src_filename_)}},
+    // string snd_address = 5;
+    {::_pbi::TcParser::FastUS1,
+     {42, 63, 0, PROTOBUF_FIELD_OFFSET(NewSrcTaskRequest, _impl_.snd_address_)}},
+    // int32 snd_port = 6;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(NewSrcTaskRequest, _impl_.snd_port_), 63>(),
+     {48, 63, 0, PROTOBUF_FIELD_OFFSET(NewSrcTaskRequest, _impl_.snd_port_)}},
+    {::_pbi::TcParser::MiniParse, {}},
   }}, {{
     65535, 65535
   }}, {{
-    // string id = 1;
-    {PROTOBUF_FIELD_OFFSET(NewSrcTaskRequest, _impl_.id_), 0, 0,
+    // string query_id = 1;
+    {PROTOBUF_FIELD_OFFSET(NewSrcTaskRequest, _impl_.query_id_), 0, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
-    // string src_filename = 2;
+    // int32 task_id = 2;
+    {PROTOBUF_FIELD_OFFSET(NewSrcTaskRequest, _impl_.task_id_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kInt32)},
+    // int32 task_count = 3;
+    {PROTOBUF_FIELD_OFFSET(NewSrcTaskRequest, _impl_.task_count_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kInt32)},
+    // string src_filename = 4;
     {PROTOBUF_FIELD_OFFSET(NewSrcTaskRequest, _impl_.src_filename_), 0, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
-    // int32 stage_number = 3;
-    {PROTOBUF_FIELD_OFFSET(NewSrcTaskRequest, _impl_.stage_number_), 0, 0,
+    // string snd_address = 5;
+    {PROTOBUF_FIELD_OFFSET(NewSrcTaskRequest, _impl_.snd_address_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // int32 snd_port = 6;
+    {PROTOBUF_FIELD_OFFSET(NewSrcTaskRequest, _impl_.snd_port_), 0, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kInt32)},
-    // repeated string next_server_addresses = 4;
-    {PROTOBUF_FIELD_OFFSET(NewSrcTaskRequest, _impl_.next_server_addresses_), 0, 0,
-    (0 | ::_fl::kFcRepeated | ::_fl::kUtf8String | ::_fl::kRepSString)},
   }},
   // no aux_entries
   {{
-    "\33\2\14\0\25\0\0\0"
+    "\33\10\0\0\14\13\0\0"
     "rainstorm.NewSrcTaskRequest"
-    "id"
+    "query_id"
     "src_filename"
-    "next_server_addresses"
+    "snd_address"
   }},
 };
 
@@ -786,10 +865,12 @@ PROTOBUF_NOINLINE void NewSrcTaskRequest::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  _impl_.next_server_addresses_.Clear();
-  _impl_.id_.ClearToEmpty();
+  _impl_.query_id_.ClearToEmpty();
   _impl_.src_filename_.ClearToEmpty();
-  _impl_.stage_number_ = 0;
+  _impl_.snd_address_.ClearToEmpty();
+  ::memset(&_impl_.task_id_, 0, static_cast<::size_t>(
+      reinterpret_cast<char*>(&_impl_.snd_port_) -
+      reinterpret_cast<char*>(&_impl_.task_id_)) + sizeof(_impl_.snd_port_));
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
 
@@ -800,35 +881,49 @@ PROTOBUF_NOINLINE void NewSrcTaskRequest::Clear() {
   ::uint32_t cached_has_bits = 0;
   (void)cached_has_bits;
 
-  // string id = 1;
-  if (!this->_internal_id().empty()) {
-    const std::string& _s = this->_internal_id();
+  // string query_id = 1;
+  if (!this->_internal_query_id().empty()) {
+    const std::string& _s = this->_internal_query_id();
     ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "rainstorm.NewSrcTaskRequest.id");
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "rainstorm.NewSrcTaskRequest.query_id");
     target = stream->WriteStringMaybeAliased(1, _s, target);
   }
 
-  // string src_filename = 2;
+  // int32 task_id = 2;
+  if (this->_internal_task_id() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::
+        WriteInt32ToArrayWithField<2>(
+            stream, this->_internal_task_id(), target);
+  }
+
+  // int32 task_count = 3;
+  if (this->_internal_task_count() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::
+        WriteInt32ToArrayWithField<3>(
+            stream, this->_internal_task_count(), target);
+  }
+
+  // string src_filename = 4;
   if (!this->_internal_src_filename().empty()) {
     const std::string& _s = this->_internal_src_filename();
     ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
         _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "rainstorm.NewSrcTaskRequest.src_filename");
-    target = stream->WriteStringMaybeAliased(2, _s, target);
+    target = stream->WriteStringMaybeAliased(4, _s, target);
   }
 
-  // int32 stage_number = 3;
-  if (this->_internal_stage_number() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::
-        WriteInt32ToArrayWithField<3>(
-            stream, this->_internal_stage_number(), target);
-  }
-
-  // repeated string next_server_addresses = 4;
-  for (int i = 0, n = this->_internal_next_server_addresses_size(); i < n; ++i) {
-    const auto& s = this->_internal_next_server_addresses().Get(i);
+  // string snd_address = 5;
+  if (!this->_internal_snd_address().empty()) {
+    const std::string& _s = this->_internal_snd_address();
     ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-        s.data(), static_cast<int>(s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "rainstorm.NewSrcTaskRequest.next_server_addresses");
-    target = stream->WriteString(4, s, target);
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "rainstorm.NewSrcTaskRequest.snd_address");
+    target = stream->WriteStringMaybeAliased(5, _s, target);
+  }
+
+  // int32 snd_port = 6;
+  if (this->_internal_snd_port() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::
+        WriteInt32ToArrayWithField<6>(
+            stream, this->_internal_snd_port(), target);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -849,28 +944,40 @@ PROTOBUF_NOINLINE void NewSrcTaskRequest::Clear() {
   (void) cached_has_bits;
 
   ::_pbi::Prefetch5LinesFrom7Lines(reinterpret_cast<const void*>(this));
-  // repeated string next_server_addresses = 4;
-  total_size += 1 * ::google::protobuf::internal::FromIntSize(_internal_next_server_addresses().size());
-  for (int i = 0, n = _internal_next_server_addresses().size(); i < n; ++i) {
-    total_size += ::google::protobuf::internal::WireFormatLite::StringSize(
-        _internal_next_server_addresses().Get(i));
-  }
-  // string id = 1;
-  if (!this->_internal_id().empty()) {
+  // string query_id = 1;
+  if (!this->_internal_query_id().empty()) {
     total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
-                                    this->_internal_id());
+                                    this->_internal_query_id());
   }
 
-  // string src_filename = 2;
+  // string src_filename = 4;
   if (!this->_internal_src_filename().empty()) {
     total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
                                     this->_internal_src_filename());
   }
 
-  // int32 stage_number = 3;
-  if (this->_internal_stage_number() != 0) {
+  // string snd_address = 5;
+  if (!this->_internal_snd_address().empty()) {
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_snd_address());
+  }
+
+  // int32 task_id = 2;
+  if (this->_internal_task_id() != 0) {
     total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
-        this->_internal_stage_number());
+        this->_internal_task_id());
+  }
+
+  // int32 task_count = 3;
+  if (this->_internal_task_count() != 0) {
+    total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
+        this->_internal_task_count());
+  }
+
+  // int32 snd_port = 6;
+  if (this->_internal_snd_port() != 0) {
+    total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
+        this->_internal_snd_port());
   }
 
   return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
@@ -885,15 +992,23 @@ void NewSrcTaskRequest::MergeImpl(::google::protobuf::MessageLite& to_msg, const
   ::uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  _this->_internal_mutable_next_server_addresses()->MergeFrom(from._internal_next_server_addresses());
-  if (!from._internal_id().empty()) {
-    _this->_internal_set_id(from._internal_id());
+  if (!from._internal_query_id().empty()) {
+    _this->_internal_set_query_id(from._internal_query_id());
   }
   if (!from._internal_src_filename().empty()) {
     _this->_internal_set_src_filename(from._internal_src_filename());
   }
-  if (from._internal_stage_number() != 0) {
-    _this->_impl_.stage_number_ = from._impl_.stage_number_;
+  if (!from._internal_snd_address().empty()) {
+    _this->_internal_set_snd_address(from._internal_snd_address());
+  }
+  if (from._internal_task_id() != 0) {
+    _this->_impl_.task_id_ = from._impl_.task_id_;
+  }
+  if (from._internal_task_count() != 0) {
+    _this->_impl_.task_count_ = from._impl_.task_count_;
+  }
+  if (from._internal_snd_port() != 0) {
+    _this->_impl_.snd_port_ = from._impl_.snd_port_;
   }
   _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
 }
@@ -911,10 +1026,15 @@ void NewSrcTaskRequest::InternalSwap(NewSrcTaskRequest* PROTOBUF_RESTRICT other)
   auto* arena = GetArena();
   ABSL_DCHECK_EQ(arena, other->GetArena());
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
-  _impl_.next_server_addresses_.InternalSwap(&other->_impl_.next_server_addresses_);
-  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.id_, &other->_impl_.id_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.query_id_, &other->_impl_.query_id_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.src_filename_, &other->_impl_.src_filename_, arena);
-        swap(_impl_.stage_number_, other->_impl_.stage_number_);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.snd_address_, &other->_impl_.snd_address_, arena);
+  ::google::protobuf::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(NewSrcTaskRequest, _impl_.snd_port_)
+      + sizeof(NewSrcTaskRequest::_impl_.snd_port_)
+      - PROTOBUF_FIELD_OFFSET(NewSrcTaskRequest, _impl_.task_id_)>(
+          reinterpret_cast<char*>(&_impl_.task_id_),
+          reinterpret_cast<char*>(&other->_impl_.task_id_));
 }
 
 ::google::protobuf::Metadata NewSrcTaskRequest::GetMetadata() const {
@@ -934,9 +1054,13 @@ NewStageTaskRequest::NewStageTaskRequest(::google::protobuf::Arena* arena)
 inline PROTOBUF_NDEBUG_INLINE NewStageTaskRequest::Impl_::Impl_(
     ::google::protobuf::internal::InternalVisibility visibility, ::google::protobuf::Arena* arena,
     const Impl_& from, const ::rainstorm::NewStageTaskRequest& from_msg)
-      : next_server_addresses_{visibility, arena, from.next_server_addresses_},
-        prev_server_addresses_{visibility, arena, from.prev_server_addresses_},
-        id_(arena, from.id_),
+      : rcv_addresses_{visibility, arena, from.rcv_addresses_},
+        rcv_ports_{visibility, arena, from.rcv_ports_},
+        _rcv_ports_cached_byte_size_{0},
+        snd_addresses_{visibility, arena, from.snd_addresses_},
+        snd_ports_{visibility, arena, from.snd_ports_},
+        _snd_ports_cached_byte_size_{0},
+        query_id_(arena, from.query_id_),
         executable_(arena, from.executable_),
         _cached_size_{0} {}
 
@@ -949,22 +1073,37 @@ NewStageTaskRequest::NewStageTaskRequest(
   _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
       from._internal_metadata_);
   new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
-  _impl_.stage_number_ = from._impl_.stage_number_;
+  ::memcpy(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, stage_id_),
+           reinterpret_cast<const char *>(&from._impl_) +
+               offsetof(Impl_, stage_id_),
+           offsetof(Impl_, task_count_) -
+               offsetof(Impl_, stage_id_) +
+               sizeof(Impl_::task_count_));
 
   // @@protoc_insertion_point(copy_constructor:rainstorm.NewStageTaskRequest)
 }
 inline PROTOBUF_NDEBUG_INLINE NewStageTaskRequest::Impl_::Impl_(
     ::google::protobuf::internal::InternalVisibility visibility,
     ::google::protobuf::Arena* arena)
-      : next_server_addresses_{visibility, arena},
-        prev_server_addresses_{visibility, arena},
-        id_(arena),
+      : rcv_addresses_{visibility, arena},
+        rcv_ports_{visibility, arena},
+        _rcv_ports_cached_byte_size_{0},
+        snd_addresses_{visibility, arena},
+        snd_ports_{visibility, arena},
+        _snd_ports_cached_byte_size_{0},
+        query_id_(arena),
         executable_(arena),
         _cached_size_{0} {}
 
 inline void NewStageTaskRequest::SharedCtor(::_pb::Arena* arena) {
   new (&_impl_) Impl_(internal_visibility(), arena);
-  _impl_.stage_number_ = {};
+  ::memset(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, stage_id_),
+           0,
+           offsetof(Impl_, task_count_) -
+               offsetof(Impl_, stage_id_) +
+               sizeof(Impl_::task_count_));
 }
 NewStageTaskRequest::~NewStageTaskRequest() {
   // @@protoc_insertion_point(destructor:rainstorm.NewStageTaskRequest)
@@ -973,7 +1112,7 @@ NewStageTaskRequest::~NewStageTaskRequest() {
 }
 inline void NewStageTaskRequest::SharedDtor() {
   ABSL_DCHECK(GetArena() == nullptr);
-  _impl_.id_.Destroy();
+  _impl_.query_id_.Destroy();
   _impl_.executable_.Destroy();
   _impl_.~Impl_();
 }
@@ -999,15 +1138,15 @@ NewStageTaskRequest::GetClassData() const {
   return _data_.base();
 }
 PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
-const ::_pbi::TcParseTable<3, 5, 0, 92, 2> NewStageTaskRequest::_table_ = {
+const ::_pbi::TcParseTable<4, 9, 0, 90, 2> NewStageTaskRequest::_table_ = {
   {
     0,  // no _has_bits_
     0, // no _extensions_
-    5, 56,  // max_field_number, fast_idx_mask
+    9, 120,  // max_field_number, fast_idx_mask
     offsetof(decltype(_table_), field_lookup_table),
-    4294967264,  // skipmap
+    4294966784,  // skipmap
     offsetof(decltype(_table_), field_entries),
-    5,  // num_field_entries
+    9,  // num_field_entries
     0,  // num_aux_entries
     offsetof(decltype(_table_), field_names),  // no aux_entries
     &_NewStageTaskRequest_default_instance_._instance,
@@ -1018,50 +1157,78 @@ const ::_pbi::TcParseTable<3, 5, 0, 92, 2> NewStageTaskRequest::_table_ = {
     #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
   }, {{
     {::_pbi::TcParser::MiniParse, {}},
-    // string id = 1;
+    // string query_id = 1;
     {::_pbi::TcParser::FastUS1,
-     {10, 63, 0, PROTOBUF_FIELD_OFFSET(NewStageTaskRequest, _impl_.id_)}},
-    // string executable = 2;
+     {10, 63, 0, PROTOBUF_FIELD_OFFSET(NewStageTaskRequest, _impl_.query_id_)}},
+    // int32 stage_id = 2;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(NewStageTaskRequest, _impl_.stage_id_), 63>(),
+     {16, 63, 0, PROTOBUF_FIELD_OFFSET(NewStageTaskRequest, _impl_.stage_id_)}},
+    // int32 task_id = 3;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(NewStageTaskRequest, _impl_.task_id_), 63>(),
+     {24, 63, 0, PROTOBUF_FIELD_OFFSET(NewStageTaskRequest, _impl_.task_id_)}},
+    // int32 task_count = 4;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(NewStageTaskRequest, _impl_.task_count_), 63>(),
+     {32, 63, 0, PROTOBUF_FIELD_OFFSET(NewStageTaskRequest, _impl_.task_count_)}},
+    // string executable = 5;
     {::_pbi::TcParser::FastUS1,
-     {18, 63, 0, PROTOBUF_FIELD_OFFSET(NewStageTaskRequest, _impl_.executable_)}},
-    // int32 stage_number = 3;
-    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(NewStageTaskRequest, _impl_.stage_number_), 63>(),
-     {24, 63, 0, PROTOBUF_FIELD_OFFSET(NewStageTaskRequest, _impl_.stage_number_)}},
-    // repeated string next_server_addresses = 4;
+     {42, 63, 0, PROTOBUF_FIELD_OFFSET(NewStageTaskRequest, _impl_.executable_)}},
+    // repeated string rcv_addresses = 6;
     {::_pbi::TcParser::FastUR1,
-     {34, 63, 0, PROTOBUF_FIELD_OFFSET(NewStageTaskRequest, _impl_.next_server_addresses_)}},
-    // repeated string prev_server_addresses = 5;
+     {50, 63, 0, PROTOBUF_FIELD_OFFSET(NewStageTaskRequest, _impl_.rcv_addresses_)}},
+    // repeated int32 rcv_ports = 7;
+    {::_pbi::TcParser::FastV32P1,
+     {58, 63, 0, PROTOBUF_FIELD_OFFSET(NewStageTaskRequest, _impl_.rcv_ports_)}},
+    // repeated string snd_addresses = 8;
     {::_pbi::TcParser::FastUR1,
-     {42, 63, 0, PROTOBUF_FIELD_OFFSET(NewStageTaskRequest, _impl_.prev_server_addresses_)}},
+     {66, 63, 0, PROTOBUF_FIELD_OFFSET(NewStageTaskRequest, _impl_.snd_addresses_)}},
+    // repeated int32 snd_ports = 9;
+    {::_pbi::TcParser::FastV32P1,
+     {74, 63, 0, PROTOBUF_FIELD_OFFSET(NewStageTaskRequest, _impl_.snd_ports_)}},
+    {::_pbi::TcParser::MiniParse, {}},
+    {::_pbi::TcParser::MiniParse, {}},
+    {::_pbi::TcParser::MiniParse, {}},
+    {::_pbi::TcParser::MiniParse, {}},
     {::_pbi::TcParser::MiniParse, {}},
     {::_pbi::TcParser::MiniParse, {}},
   }}, {{
     65535, 65535
   }}, {{
-    // string id = 1;
-    {PROTOBUF_FIELD_OFFSET(NewStageTaskRequest, _impl_.id_), 0, 0,
+    // string query_id = 1;
+    {PROTOBUF_FIELD_OFFSET(NewStageTaskRequest, _impl_.query_id_), 0, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
-    // string executable = 2;
+    // int32 stage_id = 2;
+    {PROTOBUF_FIELD_OFFSET(NewStageTaskRequest, _impl_.stage_id_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kInt32)},
+    // int32 task_id = 3;
+    {PROTOBUF_FIELD_OFFSET(NewStageTaskRequest, _impl_.task_id_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kInt32)},
+    // int32 task_count = 4;
+    {PROTOBUF_FIELD_OFFSET(NewStageTaskRequest, _impl_.task_count_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kInt32)},
+    // string executable = 5;
     {PROTOBUF_FIELD_OFFSET(NewStageTaskRequest, _impl_.executable_), 0, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
-    // int32 stage_number = 3;
-    {PROTOBUF_FIELD_OFFSET(NewStageTaskRequest, _impl_.stage_number_), 0, 0,
-    (0 | ::_fl::kFcSingular | ::_fl::kInt32)},
-    // repeated string next_server_addresses = 4;
-    {PROTOBUF_FIELD_OFFSET(NewStageTaskRequest, _impl_.next_server_addresses_), 0, 0,
+    // repeated string rcv_addresses = 6;
+    {PROTOBUF_FIELD_OFFSET(NewStageTaskRequest, _impl_.rcv_addresses_), 0, 0,
     (0 | ::_fl::kFcRepeated | ::_fl::kUtf8String | ::_fl::kRepSString)},
-    // repeated string prev_server_addresses = 5;
-    {PROTOBUF_FIELD_OFFSET(NewStageTaskRequest, _impl_.prev_server_addresses_), 0, 0,
+    // repeated int32 rcv_ports = 7;
+    {PROTOBUF_FIELD_OFFSET(NewStageTaskRequest, _impl_.rcv_ports_), 0, 0,
+    (0 | ::_fl::kFcRepeated | ::_fl::kPackedInt32)},
+    // repeated string snd_addresses = 8;
+    {PROTOBUF_FIELD_OFFSET(NewStageTaskRequest, _impl_.snd_addresses_), 0, 0,
     (0 | ::_fl::kFcRepeated | ::_fl::kUtf8String | ::_fl::kRepSString)},
+    // repeated int32 snd_ports = 9;
+    {PROTOBUF_FIELD_OFFSET(NewStageTaskRequest, _impl_.snd_ports_), 0, 0,
+    (0 | ::_fl::kFcRepeated | ::_fl::kPackedInt32)},
   }},
   // no aux_entries
   {{
-    "\35\2\12\0\25\25\0\0"
+    "\35\10\0\0\0\12\15\0\15\0\0\0\0\0\0\0"
     "rainstorm.NewStageTaskRequest"
-    "id"
+    "query_id"
     "executable"
-    "next_server_addresses"
-    "prev_server_addresses"
+    "rcv_addresses"
+    "snd_addresses"
   }},
 };
 
@@ -1072,11 +1239,15 @@ PROTOBUF_NOINLINE void NewStageTaskRequest::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  _impl_.next_server_addresses_.Clear();
-  _impl_.prev_server_addresses_.Clear();
-  _impl_.id_.ClearToEmpty();
+  _impl_.rcv_addresses_.Clear();
+  _impl_.rcv_ports_.Clear();
+  _impl_.snd_addresses_.Clear();
+  _impl_.snd_ports_.Clear();
+  _impl_.query_id_.ClearToEmpty();
   _impl_.executable_.ClearToEmpty();
-  _impl_.stage_number_ = 0;
+  ::memset(&_impl_.stage_id_, 0, static_cast<::size_t>(
+      reinterpret_cast<char*>(&_impl_.task_count_) -
+      reinterpret_cast<char*>(&_impl_.stage_id_)) + sizeof(_impl_.task_count_));
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
 
@@ -1087,43 +1258,75 @@ PROTOBUF_NOINLINE void NewStageTaskRequest::Clear() {
   ::uint32_t cached_has_bits = 0;
   (void)cached_has_bits;
 
-  // string id = 1;
-  if (!this->_internal_id().empty()) {
-    const std::string& _s = this->_internal_id();
+  // string query_id = 1;
+  if (!this->_internal_query_id().empty()) {
+    const std::string& _s = this->_internal_query_id();
     ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "rainstorm.NewStageTaskRequest.id");
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "rainstorm.NewStageTaskRequest.query_id");
     target = stream->WriteStringMaybeAliased(1, _s, target);
   }
 
-  // string executable = 2;
+  // int32 stage_id = 2;
+  if (this->_internal_stage_id() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::
+        WriteInt32ToArrayWithField<2>(
+            stream, this->_internal_stage_id(), target);
+  }
+
+  // int32 task_id = 3;
+  if (this->_internal_task_id() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::
+        WriteInt32ToArrayWithField<3>(
+            stream, this->_internal_task_id(), target);
+  }
+
+  // int32 task_count = 4;
+  if (this->_internal_task_count() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::
+        WriteInt32ToArrayWithField<4>(
+            stream, this->_internal_task_count(), target);
+  }
+
+  // string executable = 5;
   if (!this->_internal_executable().empty()) {
     const std::string& _s = this->_internal_executable();
     ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
         _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "rainstorm.NewStageTaskRequest.executable");
-    target = stream->WriteStringMaybeAliased(2, _s, target);
+    target = stream->WriteStringMaybeAliased(5, _s, target);
   }
 
-  // int32 stage_number = 3;
-  if (this->_internal_stage_number() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::
-        WriteInt32ToArrayWithField<3>(
-            stream, this->_internal_stage_number(), target);
-  }
-
-  // repeated string next_server_addresses = 4;
-  for (int i = 0, n = this->_internal_next_server_addresses_size(); i < n; ++i) {
-    const auto& s = this->_internal_next_server_addresses().Get(i);
+  // repeated string rcv_addresses = 6;
+  for (int i = 0, n = this->_internal_rcv_addresses_size(); i < n; ++i) {
+    const auto& s = this->_internal_rcv_addresses().Get(i);
     ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-        s.data(), static_cast<int>(s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "rainstorm.NewStageTaskRequest.next_server_addresses");
-    target = stream->WriteString(4, s, target);
+        s.data(), static_cast<int>(s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "rainstorm.NewStageTaskRequest.rcv_addresses");
+    target = stream->WriteString(6, s, target);
   }
 
-  // repeated string prev_server_addresses = 5;
-  for (int i = 0, n = this->_internal_prev_server_addresses_size(); i < n; ++i) {
-    const auto& s = this->_internal_prev_server_addresses().Get(i);
+  // repeated int32 rcv_ports = 7;
+  {
+    int byte_size = _impl_._rcv_ports_cached_byte_size_.Get();
+    if (byte_size > 0) {
+      target = stream->WriteInt32Packed(
+          7, _internal_rcv_ports(), byte_size, target);
+    }
+  }
+
+  // repeated string snd_addresses = 8;
+  for (int i = 0, n = this->_internal_snd_addresses_size(); i < n; ++i) {
+    const auto& s = this->_internal_snd_addresses().Get(i);
     ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-        s.data(), static_cast<int>(s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "rainstorm.NewStageTaskRequest.prev_server_addresses");
-    target = stream->WriteString(5, s, target);
+        s.data(), static_cast<int>(s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "rainstorm.NewStageTaskRequest.snd_addresses");
+    target = stream->WriteString(8, s, target);
+  }
+
+  // repeated int32 snd_ports = 9;
+  {
+    int byte_size = _impl_._snd_ports_cached_byte_size_.Get();
+    if (byte_size > 0) {
+      target = stream->WriteInt32Packed(
+          9, _internal_snd_ports(), byte_size, target);
+    }
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -1144,34 +1347,72 @@ PROTOBUF_NOINLINE void NewStageTaskRequest::Clear() {
   (void) cached_has_bits;
 
   ::_pbi::Prefetch5LinesFrom7Lines(reinterpret_cast<const void*>(this));
-  // repeated string next_server_addresses = 4;
-  total_size += 1 * ::google::protobuf::internal::FromIntSize(_internal_next_server_addresses().size());
-  for (int i = 0, n = _internal_next_server_addresses().size(); i < n; ++i) {
+  // repeated string rcv_addresses = 6;
+  total_size += 1 * ::google::protobuf::internal::FromIntSize(_internal_rcv_addresses().size());
+  for (int i = 0, n = _internal_rcv_addresses().size(); i < n; ++i) {
     total_size += ::google::protobuf::internal::WireFormatLite::StringSize(
-        _internal_next_server_addresses().Get(i));
+        _internal_rcv_addresses().Get(i));
   }
-  // repeated string prev_server_addresses = 5;
-  total_size += 1 * ::google::protobuf::internal::FromIntSize(_internal_prev_server_addresses().size());
-  for (int i = 0, n = _internal_prev_server_addresses().size(); i < n; ++i) {
+  // repeated int32 rcv_ports = 7;
+  {
+    std::size_t data_size = ::_pbi::WireFormatLite::Int32Size(
+        this->_internal_rcv_ports())
+    ;
+    _impl_._rcv_ports_cached_byte_size_.Set(::_pbi::ToCachedSize(data_size));
+    std::size_t tag_size = data_size == 0
+        ? 0
+        : 1 + ::_pbi::WireFormatLite::Int32Size(
+                            static_cast<int32_t>(data_size))
+    ;
+    total_size += tag_size + data_size;
+  }
+  // repeated string snd_addresses = 8;
+  total_size += 1 * ::google::protobuf::internal::FromIntSize(_internal_snd_addresses().size());
+  for (int i = 0, n = _internal_snd_addresses().size(); i < n; ++i) {
     total_size += ::google::protobuf::internal::WireFormatLite::StringSize(
-        _internal_prev_server_addresses().Get(i));
+        _internal_snd_addresses().Get(i));
   }
-  // string id = 1;
-  if (!this->_internal_id().empty()) {
+  // repeated int32 snd_ports = 9;
+  {
+    std::size_t data_size = ::_pbi::WireFormatLite::Int32Size(
+        this->_internal_snd_ports())
+    ;
+    _impl_._snd_ports_cached_byte_size_.Set(::_pbi::ToCachedSize(data_size));
+    std::size_t tag_size = data_size == 0
+        ? 0
+        : 1 + ::_pbi::WireFormatLite::Int32Size(
+                            static_cast<int32_t>(data_size))
+    ;
+    total_size += tag_size + data_size;
+  }
+  // string query_id = 1;
+  if (!this->_internal_query_id().empty()) {
     total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
-                                    this->_internal_id());
+                                    this->_internal_query_id());
   }
 
-  // string executable = 2;
+  // string executable = 5;
   if (!this->_internal_executable().empty()) {
     total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
                                     this->_internal_executable());
   }
 
-  // int32 stage_number = 3;
-  if (this->_internal_stage_number() != 0) {
+  // int32 stage_id = 2;
+  if (this->_internal_stage_id() != 0) {
     total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
-        this->_internal_stage_number());
+        this->_internal_stage_id());
+  }
+
+  // int32 task_id = 3;
+  if (this->_internal_task_id() != 0) {
+    total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
+        this->_internal_task_id());
+  }
+
+  // int32 task_count = 4;
+  if (this->_internal_task_count() != 0) {
+    total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
+        this->_internal_task_count());
   }
 
   return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
@@ -1186,16 +1427,24 @@ void NewStageTaskRequest::MergeImpl(::google::protobuf::MessageLite& to_msg, con
   ::uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  _this->_internal_mutable_next_server_addresses()->MergeFrom(from._internal_next_server_addresses());
-  _this->_internal_mutable_prev_server_addresses()->MergeFrom(from._internal_prev_server_addresses());
-  if (!from._internal_id().empty()) {
-    _this->_internal_set_id(from._internal_id());
+  _this->_internal_mutable_rcv_addresses()->MergeFrom(from._internal_rcv_addresses());
+  _this->_internal_mutable_rcv_ports()->MergeFrom(from._internal_rcv_ports());
+  _this->_internal_mutable_snd_addresses()->MergeFrom(from._internal_snd_addresses());
+  _this->_internal_mutable_snd_ports()->MergeFrom(from._internal_snd_ports());
+  if (!from._internal_query_id().empty()) {
+    _this->_internal_set_query_id(from._internal_query_id());
   }
   if (!from._internal_executable().empty()) {
     _this->_internal_set_executable(from._internal_executable());
   }
-  if (from._internal_stage_number() != 0) {
-    _this->_impl_.stage_number_ = from._impl_.stage_number_;
+  if (from._internal_stage_id() != 0) {
+    _this->_impl_.stage_id_ = from._impl_.stage_id_;
+  }
+  if (from._internal_task_id() != 0) {
+    _this->_impl_.task_id_ = from._impl_.task_id_;
+  }
+  if (from._internal_task_count() != 0) {
+    _this->_impl_.task_count_ = from._impl_.task_count_;
   }
   _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
 }
@@ -1213,11 +1462,18 @@ void NewStageTaskRequest::InternalSwap(NewStageTaskRequest* PROTOBUF_RESTRICT ot
   auto* arena = GetArena();
   ABSL_DCHECK_EQ(arena, other->GetArena());
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
-  _impl_.next_server_addresses_.InternalSwap(&other->_impl_.next_server_addresses_);
-  _impl_.prev_server_addresses_.InternalSwap(&other->_impl_.prev_server_addresses_);
-  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.id_, &other->_impl_.id_, arena);
+  _impl_.rcv_addresses_.InternalSwap(&other->_impl_.rcv_addresses_);
+  _impl_.rcv_ports_.InternalSwap(&other->_impl_.rcv_ports_);
+  _impl_.snd_addresses_.InternalSwap(&other->_impl_.snd_addresses_);
+  _impl_.snd_ports_.InternalSwap(&other->_impl_.snd_ports_);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.query_id_, &other->_impl_.query_id_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.executable_, &other->_impl_.executable_, arena);
-        swap(_impl_.stage_number_, other->_impl_.stage_number_);
+  ::google::protobuf::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(NewStageTaskRequest, _impl_.task_count_)
+      + sizeof(NewStageTaskRequest::_impl_.task_count_)
+      - PROTOBUF_FIELD_OFFSET(NewStageTaskRequest, _impl_.stage_id_)>(
+          reinterpret_cast<char*>(&_impl_.stage_id_),
+          reinterpret_cast<char*>(&other->_impl_.stage_id_));
 }
 
 ::google::protobuf::Metadata NewStageTaskRequest::GetMetadata() const {
@@ -1225,72 +1481,72 @@ void NewStageTaskRequest::InternalSwap(NewStageTaskRequest* PROTOBUF_RESTRICT ot
 }
 // ===================================================================
 
-class UpdateSrcTaskSendRequest::_Internal {
+class NewTgtTaskRequest::_Internal {
  public:
 };
 
-UpdateSrcTaskSendRequest::UpdateSrcTaskSendRequest(::google::protobuf::Arena* arena)
+NewTgtTaskRequest::NewTgtTaskRequest(::google::protobuf::Arena* arena)
     : ::google::protobuf::Message(arena) {
   SharedCtor(arena);
-  // @@protoc_insertion_point(arena_constructor:rainstorm.UpdateSrcTaskSendRequest)
+  // @@protoc_insertion_point(arena_constructor:rainstorm.NewTgtTaskRequest)
 }
-inline PROTOBUF_NDEBUG_INLINE UpdateSrcTaskSendRequest::Impl_::Impl_(
+inline PROTOBUF_NDEBUG_INLINE NewTgtTaskRequest::Impl_::Impl_(
     ::google::protobuf::internal::InternalVisibility visibility, ::google::protobuf::Arena* arena,
-    const Impl_& from, const ::rainstorm::UpdateSrcTaskSendRequest& from_msg)
-      : id_(arena, from.id_),
-        old_next_server_address_(arena, from.old_next_server_address_),
-        new_next_server_address_(arena, from.new_next_server_address_),
+    const Impl_& from, const ::rainstorm::NewTgtTaskRequest& from_msg)
+      : rcv_addresses_{visibility, arena, from.rcv_addresses_},
+        rcv_ports_{visibility, arena, from.rcv_ports_},
+        _rcv_ports_cached_byte_size_{0},
+        query_id_(arena, from.query_id_),
         _cached_size_{0} {}
 
-UpdateSrcTaskSendRequest::UpdateSrcTaskSendRequest(
+NewTgtTaskRequest::NewTgtTaskRequest(
     ::google::protobuf::Arena* arena,
-    const UpdateSrcTaskSendRequest& from)
+    const NewTgtTaskRequest& from)
     : ::google::protobuf::Message(arena) {
-  UpdateSrcTaskSendRequest* const _this = this;
+  NewTgtTaskRequest* const _this = this;
   (void)_this;
   _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
       from._internal_metadata_);
   new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
 
-  // @@protoc_insertion_point(copy_constructor:rainstorm.UpdateSrcTaskSendRequest)
+  // @@protoc_insertion_point(copy_constructor:rainstorm.NewTgtTaskRequest)
 }
-inline PROTOBUF_NDEBUG_INLINE UpdateSrcTaskSendRequest::Impl_::Impl_(
+inline PROTOBUF_NDEBUG_INLINE NewTgtTaskRequest::Impl_::Impl_(
     ::google::protobuf::internal::InternalVisibility visibility,
     ::google::protobuf::Arena* arena)
-      : id_(arena),
-        old_next_server_address_(arena),
-        new_next_server_address_(arena),
+      : rcv_addresses_{visibility, arena},
+        rcv_ports_{visibility, arena},
+        _rcv_ports_cached_byte_size_{0},
+        query_id_(arena),
         _cached_size_{0} {}
 
-inline void UpdateSrcTaskSendRequest::SharedCtor(::_pb::Arena* arena) {
+inline void NewTgtTaskRequest::SharedCtor(::_pb::Arena* arena) {
   new (&_impl_) Impl_(internal_visibility(), arena);
 }
-UpdateSrcTaskSendRequest::~UpdateSrcTaskSendRequest() {
-  // @@protoc_insertion_point(destructor:rainstorm.UpdateSrcTaskSendRequest)
+NewTgtTaskRequest::~NewTgtTaskRequest() {
+  // @@protoc_insertion_point(destructor:rainstorm.NewTgtTaskRequest)
   _internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
   SharedDtor();
 }
-inline void UpdateSrcTaskSendRequest::SharedDtor() {
+inline void NewTgtTaskRequest::SharedDtor() {
   ABSL_DCHECK(GetArena() == nullptr);
-  _impl_.id_.Destroy();
-  _impl_.old_next_server_address_.Destroy();
-  _impl_.new_next_server_address_.Destroy();
+  _impl_.query_id_.Destroy();
   _impl_.~Impl_();
 }
 
 const ::google::protobuf::MessageLite::ClassData*
-UpdateSrcTaskSendRequest::GetClassData() const {
+NewTgtTaskRequest::GetClassData() const {
   PROTOBUF_CONSTINIT static const ::google::protobuf::MessageLite::
       ClassDataFull _data_ = {
           {
               &_table_.header,
               nullptr,  // OnDemandRegisterArenaDtor
               nullptr,  // IsInitialized
-              PROTOBUF_FIELD_OFFSET(UpdateSrcTaskSendRequest, _impl_._cached_size_),
+              PROTOBUF_FIELD_OFFSET(NewTgtTaskRequest, _impl_._cached_size_),
               false,
           },
-          &UpdateSrcTaskSendRequest::MergeImpl,
-          &UpdateSrcTaskSendRequest::kDescriptorMethods,
+          &NewTgtTaskRequest::MergeImpl,
+          &NewTgtTaskRequest::kDescriptorMethods,
           &descriptor_table_rainstorm_2eproto,
           nullptr,  // tracker
       };
@@ -1299,7 +1555,7 @@ UpdateSrcTaskSendRequest::GetClassData() const {
   return _data_.base();
 }
 PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
-const ::_pbi::TcParseTable<2, 3, 0, 91, 2> UpdateSrcTaskSendRequest::_table_ = {
+const ::_pbi::TcParseTable<2, 3, 0, 57, 2> NewTgtTaskRequest::_table_ = {
   {
     0,  // no _has_bits_
     0, // no _extensions_
@@ -1310,88 +1566,88 @@ const ::_pbi::TcParseTable<2, 3, 0, 91, 2> UpdateSrcTaskSendRequest::_table_ = {
     3,  // num_field_entries
     0,  // num_aux_entries
     offsetof(decltype(_table_), field_names),  // no aux_entries
-    &_UpdateSrcTaskSendRequest_default_instance_._instance,
+    &_NewTgtTaskRequest_default_instance_._instance,
     nullptr,  // post_loop_handler
     ::_pbi::TcParser::GenericFallback,  // fallback
     #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
-    ::_pbi::TcParser::GetTable<::rainstorm::UpdateSrcTaskSendRequest>(),  // to_prefetch
+    ::_pbi::TcParser::GetTable<::rainstorm::NewTgtTaskRequest>(),  // to_prefetch
     #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
   }, {{
     {::_pbi::TcParser::MiniParse, {}},
-    // string id = 1;
+    // string query_id = 1;
     {::_pbi::TcParser::FastUS1,
-     {10, 63, 0, PROTOBUF_FIELD_OFFSET(UpdateSrcTaskSendRequest, _impl_.id_)}},
-    // string old_next_server_address = 2;
-    {::_pbi::TcParser::FastUS1,
-     {18, 63, 0, PROTOBUF_FIELD_OFFSET(UpdateSrcTaskSendRequest, _impl_.old_next_server_address_)}},
-    // string new_next_server_address = 3;
-    {::_pbi::TcParser::FastUS1,
-     {26, 63, 0, PROTOBUF_FIELD_OFFSET(UpdateSrcTaskSendRequest, _impl_.new_next_server_address_)}},
+     {10, 63, 0, PROTOBUF_FIELD_OFFSET(NewTgtTaskRequest, _impl_.query_id_)}},
+    // repeated string rcv_addresses = 2;
+    {::_pbi::TcParser::FastUR1,
+     {18, 63, 0, PROTOBUF_FIELD_OFFSET(NewTgtTaskRequest, _impl_.rcv_addresses_)}},
+    // repeated int32 rcv_ports = 3;
+    {::_pbi::TcParser::FastV32P1,
+     {26, 63, 0, PROTOBUF_FIELD_OFFSET(NewTgtTaskRequest, _impl_.rcv_ports_)}},
   }}, {{
     65535, 65535
   }}, {{
-    // string id = 1;
-    {PROTOBUF_FIELD_OFFSET(UpdateSrcTaskSendRequest, _impl_.id_), 0, 0,
+    // string query_id = 1;
+    {PROTOBUF_FIELD_OFFSET(NewTgtTaskRequest, _impl_.query_id_), 0, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
-    // string old_next_server_address = 2;
-    {PROTOBUF_FIELD_OFFSET(UpdateSrcTaskSendRequest, _impl_.old_next_server_address_), 0, 0,
-    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
-    // string new_next_server_address = 3;
-    {PROTOBUF_FIELD_OFFSET(UpdateSrcTaskSendRequest, _impl_.new_next_server_address_), 0, 0,
-    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // repeated string rcv_addresses = 2;
+    {PROTOBUF_FIELD_OFFSET(NewTgtTaskRequest, _impl_.rcv_addresses_), 0, 0,
+    (0 | ::_fl::kFcRepeated | ::_fl::kUtf8String | ::_fl::kRepSString)},
+    // repeated int32 rcv_ports = 3;
+    {PROTOBUF_FIELD_OFFSET(NewTgtTaskRequest, _impl_.rcv_ports_), 0, 0,
+    (0 | ::_fl::kFcRepeated | ::_fl::kPackedInt32)},
   }},
   // no aux_entries
   {{
-    "\42\2\27\27\0\0\0\0"
-    "rainstorm.UpdateSrcTaskSendRequest"
-    "id"
-    "old_next_server_address"
-    "new_next_server_address"
+    "\33\10\15\0\0\0\0\0"
+    "rainstorm.NewTgtTaskRequest"
+    "query_id"
+    "rcv_addresses"
   }},
 };
 
-PROTOBUF_NOINLINE void UpdateSrcTaskSendRequest::Clear() {
-// @@protoc_insertion_point(message_clear_start:rainstorm.UpdateSrcTaskSendRequest)
+PROTOBUF_NOINLINE void NewTgtTaskRequest::Clear() {
+// @@protoc_insertion_point(message_clear_start:rainstorm.NewTgtTaskRequest)
   ::google::protobuf::internal::TSanWrite(&_impl_);
   ::uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  _impl_.id_.ClearToEmpty();
-  _impl_.old_next_server_address_.ClearToEmpty();
-  _impl_.new_next_server_address_.ClearToEmpty();
+  _impl_.rcv_addresses_.Clear();
+  _impl_.rcv_ports_.Clear();
+  _impl_.query_id_.ClearToEmpty();
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
 
-::uint8_t* UpdateSrcTaskSendRequest::_InternalSerialize(
+::uint8_t* NewTgtTaskRequest::_InternalSerialize(
     ::uint8_t* target,
     ::google::protobuf::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:rainstorm.UpdateSrcTaskSendRequest)
+  // @@protoc_insertion_point(serialize_to_array_start:rainstorm.NewTgtTaskRequest)
   ::uint32_t cached_has_bits = 0;
   (void)cached_has_bits;
 
-  // string id = 1;
-  if (!this->_internal_id().empty()) {
-    const std::string& _s = this->_internal_id();
+  // string query_id = 1;
+  if (!this->_internal_query_id().empty()) {
+    const std::string& _s = this->_internal_query_id();
     ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "rainstorm.UpdateSrcTaskSendRequest.id");
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "rainstorm.NewTgtTaskRequest.query_id");
     target = stream->WriteStringMaybeAliased(1, _s, target);
   }
 
-  // string old_next_server_address = 2;
-  if (!this->_internal_old_next_server_address().empty()) {
-    const std::string& _s = this->_internal_old_next_server_address();
+  // repeated string rcv_addresses = 2;
+  for (int i = 0, n = this->_internal_rcv_addresses_size(); i < n; ++i) {
+    const auto& s = this->_internal_rcv_addresses().Get(i);
     ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "rainstorm.UpdateSrcTaskSendRequest.old_next_server_address");
-    target = stream->WriteStringMaybeAliased(2, _s, target);
+        s.data(), static_cast<int>(s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "rainstorm.NewTgtTaskRequest.rcv_addresses");
+    target = stream->WriteString(2, s, target);
   }
 
-  // string new_next_server_address = 3;
-  if (!this->_internal_new_next_server_address().empty()) {
-    const std::string& _s = this->_internal_new_next_server_address();
-    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "rainstorm.UpdateSrcTaskSendRequest.new_next_server_address");
-    target = stream->WriteStringMaybeAliased(3, _s, target);
+  // repeated int32 rcv_ports = 3;
+  {
+    int byte_size = _impl_._rcv_ports_cached_byte_size_.Get();
+    if (byte_size > 0) {
+      target = stream->WriteInt32Packed(
+          3, _internal_rcv_ports(), byte_size, target);
+    }
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -1399,12 +1655,12 @@ PROTOBUF_NOINLINE void UpdateSrcTaskSendRequest::Clear() {
         ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
             _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:rainstorm.UpdateSrcTaskSendRequest)
+  // @@protoc_insertion_point(serialize_to_array_end:rainstorm.NewTgtTaskRequest)
   return target;
 }
 
-::size_t UpdateSrcTaskSendRequest::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:rainstorm.UpdateSrcTaskSendRequest)
+::size_t NewTgtTaskRequest::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:rainstorm.NewTgtTaskRequest)
   ::size_t total_size = 0;
 
   ::uint32_t cached_has_bits = 0;
@@ -1412,137 +1668,147 @@ PROTOBUF_NOINLINE void UpdateSrcTaskSendRequest::Clear() {
   (void) cached_has_bits;
 
   ::_pbi::Prefetch5LinesFrom7Lines(reinterpret_cast<const void*>(this));
-  // string id = 1;
-  if (!this->_internal_id().empty()) {
-    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
-                                    this->_internal_id());
+  // repeated string rcv_addresses = 2;
+  total_size += 1 * ::google::protobuf::internal::FromIntSize(_internal_rcv_addresses().size());
+  for (int i = 0, n = _internal_rcv_addresses().size(); i < n; ++i) {
+    total_size += ::google::protobuf::internal::WireFormatLite::StringSize(
+        _internal_rcv_addresses().Get(i));
   }
-
-  // string old_next_server_address = 2;
-  if (!this->_internal_old_next_server_address().empty()) {
-    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
-                                    this->_internal_old_next_server_address());
+  // repeated int32 rcv_ports = 3;
+  {
+    std::size_t data_size = ::_pbi::WireFormatLite::Int32Size(
+        this->_internal_rcv_ports())
+    ;
+    _impl_._rcv_ports_cached_byte_size_.Set(::_pbi::ToCachedSize(data_size));
+    std::size_t tag_size = data_size == 0
+        ? 0
+        : 1 + ::_pbi::WireFormatLite::Int32Size(
+                            static_cast<int32_t>(data_size))
+    ;
+    total_size += tag_size + data_size;
   }
-
-  // string new_next_server_address = 3;
-  if (!this->_internal_new_next_server_address().empty()) {
+  // string query_id = 1;
+  if (!this->_internal_query_id().empty()) {
     total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
-                                    this->_internal_new_next_server_address());
+                                    this->_internal_query_id());
   }
 
   return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
 }
 
 
-void UpdateSrcTaskSendRequest::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
-  auto* const _this = static_cast<UpdateSrcTaskSendRequest*>(&to_msg);
-  auto& from = static_cast<const UpdateSrcTaskSendRequest&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:rainstorm.UpdateSrcTaskSendRequest)
+void NewTgtTaskRequest::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
+  auto* const _this = static_cast<NewTgtTaskRequest*>(&to_msg);
+  auto& from = static_cast<const NewTgtTaskRequest&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:rainstorm.NewTgtTaskRequest)
   ABSL_DCHECK_NE(&from, _this);
   ::uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  if (!from._internal_id().empty()) {
-    _this->_internal_set_id(from._internal_id());
-  }
-  if (!from._internal_old_next_server_address().empty()) {
-    _this->_internal_set_old_next_server_address(from._internal_old_next_server_address());
-  }
-  if (!from._internal_new_next_server_address().empty()) {
-    _this->_internal_set_new_next_server_address(from._internal_new_next_server_address());
+  _this->_internal_mutable_rcv_addresses()->MergeFrom(from._internal_rcv_addresses());
+  _this->_internal_mutable_rcv_ports()->MergeFrom(from._internal_rcv_ports());
+  if (!from._internal_query_id().empty()) {
+    _this->_internal_set_query_id(from._internal_query_id());
   }
   _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
 }
 
-void UpdateSrcTaskSendRequest::CopyFrom(const UpdateSrcTaskSendRequest& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:rainstorm.UpdateSrcTaskSendRequest)
+void NewTgtTaskRequest::CopyFrom(const NewTgtTaskRequest& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:rainstorm.NewTgtTaskRequest)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
 
-void UpdateSrcTaskSendRequest::InternalSwap(UpdateSrcTaskSendRequest* PROTOBUF_RESTRICT other) {
+void NewTgtTaskRequest::InternalSwap(NewTgtTaskRequest* PROTOBUF_RESTRICT other) {
   using std::swap;
   auto* arena = GetArena();
   ABSL_DCHECK_EQ(arena, other->GetArena());
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
-  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.id_, &other->_impl_.id_, arena);
-  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.old_next_server_address_, &other->_impl_.old_next_server_address_, arena);
-  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.new_next_server_address_, &other->_impl_.new_next_server_address_, arena);
+  _impl_.rcv_addresses_.InternalSwap(&other->_impl_.rcv_addresses_);
+  _impl_.rcv_ports_.InternalSwap(&other->_impl_.rcv_ports_);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.query_id_, &other->_impl_.query_id_, arena);
 }
 
-::google::protobuf::Metadata UpdateSrcTaskSendRequest::GetMetadata() const {
+::google::protobuf::Metadata NewTgtTaskRequest::GetMetadata() const {
   return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
 }
 // ===================================================================
 
-class UpdateDstTaskRecieveRequest::_Internal {
+class UpdateTaskSndRequest::_Internal {
  public:
 };
 
-UpdateDstTaskRecieveRequest::UpdateDstTaskRecieveRequest(::google::protobuf::Arena* arena)
+UpdateTaskSndRequest::UpdateTaskSndRequest(::google::protobuf::Arena* arena)
     : ::google::protobuf::Message(arena) {
   SharedCtor(arena);
-  // @@protoc_insertion_point(arena_constructor:rainstorm.UpdateDstTaskRecieveRequest)
+  // @@protoc_insertion_point(arena_constructor:rainstorm.UpdateTaskSndRequest)
 }
-inline PROTOBUF_NDEBUG_INLINE UpdateDstTaskRecieveRequest::Impl_::Impl_(
+inline PROTOBUF_NDEBUG_INLINE UpdateTaskSndRequest::Impl_::Impl_(
     ::google::protobuf::internal::InternalVisibility visibility, ::google::protobuf::Arena* arena,
-    const Impl_& from, const ::rainstorm::UpdateDstTaskRecieveRequest& from_msg)
-      : id_(arena, from.id_),
-        old_prev_server_address_(arena, from.old_prev_server_address_),
-        new_prev_server_address_(arena, from.new_prev_server_address_),
+    const Impl_& from, const ::rainstorm::UpdateTaskSndRequest& from_msg)
+      : snd_address_(arena, from.snd_address_),
         _cached_size_{0} {}
 
-UpdateDstTaskRecieveRequest::UpdateDstTaskRecieveRequest(
+UpdateTaskSndRequest::UpdateTaskSndRequest(
     ::google::protobuf::Arena* arena,
-    const UpdateDstTaskRecieveRequest& from)
+    const UpdateTaskSndRequest& from)
     : ::google::protobuf::Message(arena) {
-  UpdateDstTaskRecieveRequest* const _this = this;
+  UpdateTaskSndRequest* const _this = this;
   (void)_this;
   _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
       from._internal_metadata_);
   new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+  ::memcpy(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, index_),
+           reinterpret_cast<const char *>(&from._impl_) +
+               offsetof(Impl_, index_),
+           offsetof(Impl_, snd_port_) -
+               offsetof(Impl_, index_) +
+               sizeof(Impl_::snd_port_));
 
-  // @@protoc_insertion_point(copy_constructor:rainstorm.UpdateDstTaskRecieveRequest)
+  // @@protoc_insertion_point(copy_constructor:rainstorm.UpdateTaskSndRequest)
 }
-inline PROTOBUF_NDEBUG_INLINE UpdateDstTaskRecieveRequest::Impl_::Impl_(
+inline PROTOBUF_NDEBUG_INLINE UpdateTaskSndRequest::Impl_::Impl_(
     ::google::protobuf::internal::InternalVisibility visibility,
     ::google::protobuf::Arena* arena)
-      : id_(arena),
-        old_prev_server_address_(arena),
-        new_prev_server_address_(arena),
+      : snd_address_(arena),
         _cached_size_{0} {}
 
-inline void UpdateDstTaskRecieveRequest::SharedCtor(::_pb::Arena* arena) {
+inline void UpdateTaskSndRequest::SharedCtor(::_pb::Arena* arena) {
   new (&_impl_) Impl_(internal_visibility(), arena);
+  ::memset(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, index_),
+           0,
+           offsetof(Impl_, snd_port_) -
+               offsetof(Impl_, index_) +
+               sizeof(Impl_::snd_port_));
 }
-UpdateDstTaskRecieveRequest::~UpdateDstTaskRecieveRequest() {
-  // @@protoc_insertion_point(destructor:rainstorm.UpdateDstTaskRecieveRequest)
+UpdateTaskSndRequest::~UpdateTaskSndRequest() {
+  // @@protoc_insertion_point(destructor:rainstorm.UpdateTaskSndRequest)
   _internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
   SharedDtor();
 }
-inline void UpdateDstTaskRecieveRequest::SharedDtor() {
+inline void UpdateTaskSndRequest::SharedDtor() {
   ABSL_DCHECK(GetArena() == nullptr);
-  _impl_.id_.Destroy();
-  _impl_.old_prev_server_address_.Destroy();
-  _impl_.new_prev_server_address_.Destroy();
+  _impl_.snd_address_.Destroy();
   _impl_.~Impl_();
 }
 
 const ::google::protobuf::MessageLite::ClassData*
-UpdateDstTaskRecieveRequest::GetClassData() const {
+UpdateTaskSndRequest::GetClassData() const {
   PROTOBUF_CONSTINIT static const ::google::protobuf::MessageLite::
       ClassDataFull _data_ = {
           {
               &_table_.header,
               nullptr,  // OnDemandRegisterArenaDtor
               nullptr,  // IsInitialized
-              PROTOBUF_FIELD_OFFSET(UpdateDstTaskRecieveRequest, _impl_._cached_size_),
+              PROTOBUF_FIELD_OFFSET(UpdateTaskSndRequest, _impl_._cached_size_),
               false,
           },
-          &UpdateDstTaskRecieveRequest::MergeImpl,
-          &UpdateDstTaskRecieveRequest::kDescriptorMethods,
+          &UpdateTaskSndRequest::MergeImpl,
+          &UpdateTaskSndRequest::kDescriptorMethods,
           &descriptor_table_rainstorm_2eproto,
           nullptr,  // tracker
       };
@@ -1551,7 +1817,7 @@ UpdateDstTaskRecieveRequest::GetClassData() const {
   return _data_.base();
 }
 PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
-const ::_pbi::TcParseTable<2, 3, 0, 94, 2> UpdateDstTaskRecieveRequest::_table_ = {
+const ::_pbi::TcParseTable<2, 3, 0, 50, 2> UpdateTaskSndRequest::_table_ = {
   {
     0,  // no _has_bits_
     0, // no _extensions_
@@ -1562,88 +1828,85 @@ const ::_pbi::TcParseTable<2, 3, 0, 94, 2> UpdateDstTaskRecieveRequest::_table_ 
     3,  // num_field_entries
     0,  // num_aux_entries
     offsetof(decltype(_table_), field_names),  // no aux_entries
-    &_UpdateDstTaskRecieveRequest_default_instance_._instance,
+    &_UpdateTaskSndRequest_default_instance_._instance,
     nullptr,  // post_loop_handler
     ::_pbi::TcParser::GenericFallback,  // fallback
     #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
-    ::_pbi::TcParser::GetTable<::rainstorm::UpdateDstTaskRecieveRequest>(),  // to_prefetch
+    ::_pbi::TcParser::GetTable<::rainstorm::UpdateTaskSndRequest>(),  // to_prefetch
     #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
   }, {{
     {::_pbi::TcParser::MiniParse, {}},
-    // string id = 1;
+    // int32 index = 1;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(UpdateTaskSndRequest, _impl_.index_), 63>(),
+     {8, 63, 0, PROTOBUF_FIELD_OFFSET(UpdateTaskSndRequest, _impl_.index_)}},
+    // string snd_address = 2;
     {::_pbi::TcParser::FastUS1,
-     {10, 63, 0, PROTOBUF_FIELD_OFFSET(UpdateDstTaskRecieveRequest, _impl_.id_)}},
-    // string old_prev_server_address = 2;
-    {::_pbi::TcParser::FastUS1,
-     {18, 63, 0, PROTOBUF_FIELD_OFFSET(UpdateDstTaskRecieveRequest, _impl_.old_prev_server_address_)}},
-    // string new_prev_server_address = 3;
-    {::_pbi::TcParser::FastUS1,
-     {26, 63, 0, PROTOBUF_FIELD_OFFSET(UpdateDstTaskRecieveRequest, _impl_.new_prev_server_address_)}},
+     {18, 63, 0, PROTOBUF_FIELD_OFFSET(UpdateTaskSndRequest, _impl_.snd_address_)}},
+    // int32 snd_port = 3;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(UpdateTaskSndRequest, _impl_.snd_port_), 63>(),
+     {24, 63, 0, PROTOBUF_FIELD_OFFSET(UpdateTaskSndRequest, _impl_.snd_port_)}},
   }}, {{
     65535, 65535
   }}, {{
-    // string id = 1;
-    {PROTOBUF_FIELD_OFFSET(UpdateDstTaskRecieveRequest, _impl_.id_), 0, 0,
+    // int32 index = 1;
+    {PROTOBUF_FIELD_OFFSET(UpdateTaskSndRequest, _impl_.index_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kInt32)},
+    // string snd_address = 2;
+    {PROTOBUF_FIELD_OFFSET(UpdateTaskSndRequest, _impl_.snd_address_), 0, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
-    // string old_prev_server_address = 2;
-    {PROTOBUF_FIELD_OFFSET(UpdateDstTaskRecieveRequest, _impl_.old_prev_server_address_), 0, 0,
-    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
-    // string new_prev_server_address = 3;
-    {PROTOBUF_FIELD_OFFSET(UpdateDstTaskRecieveRequest, _impl_.new_prev_server_address_), 0, 0,
-    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // int32 snd_port = 3;
+    {PROTOBUF_FIELD_OFFSET(UpdateTaskSndRequest, _impl_.snd_port_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kInt32)},
   }},
   // no aux_entries
   {{
-    "\45\2\27\27\0\0\0\0"
-    "rainstorm.UpdateDstTaskRecieveRequest"
-    "id"
-    "old_prev_server_address"
-    "new_prev_server_address"
+    "\36\0\13\0\0\0\0\0"
+    "rainstorm.UpdateTaskSndRequest"
+    "snd_address"
   }},
 };
 
-PROTOBUF_NOINLINE void UpdateDstTaskRecieveRequest::Clear() {
-// @@protoc_insertion_point(message_clear_start:rainstorm.UpdateDstTaskRecieveRequest)
+PROTOBUF_NOINLINE void UpdateTaskSndRequest::Clear() {
+// @@protoc_insertion_point(message_clear_start:rainstorm.UpdateTaskSndRequest)
   ::google::protobuf::internal::TSanWrite(&_impl_);
   ::uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  _impl_.id_.ClearToEmpty();
-  _impl_.old_prev_server_address_.ClearToEmpty();
-  _impl_.new_prev_server_address_.ClearToEmpty();
+  _impl_.snd_address_.ClearToEmpty();
+  ::memset(&_impl_.index_, 0, static_cast<::size_t>(
+      reinterpret_cast<char*>(&_impl_.snd_port_) -
+      reinterpret_cast<char*>(&_impl_.index_)) + sizeof(_impl_.snd_port_));
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
 
-::uint8_t* UpdateDstTaskRecieveRequest::_InternalSerialize(
+::uint8_t* UpdateTaskSndRequest::_InternalSerialize(
     ::uint8_t* target,
     ::google::protobuf::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:rainstorm.UpdateDstTaskRecieveRequest)
+  // @@protoc_insertion_point(serialize_to_array_start:rainstorm.UpdateTaskSndRequest)
   ::uint32_t cached_has_bits = 0;
   (void)cached_has_bits;
 
-  // string id = 1;
-  if (!this->_internal_id().empty()) {
-    const std::string& _s = this->_internal_id();
-    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "rainstorm.UpdateDstTaskRecieveRequest.id");
-    target = stream->WriteStringMaybeAliased(1, _s, target);
+  // int32 index = 1;
+  if (this->_internal_index() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::
+        WriteInt32ToArrayWithField<1>(
+            stream, this->_internal_index(), target);
   }
 
-  // string old_prev_server_address = 2;
-  if (!this->_internal_old_prev_server_address().empty()) {
-    const std::string& _s = this->_internal_old_prev_server_address();
+  // string snd_address = 2;
+  if (!this->_internal_snd_address().empty()) {
+    const std::string& _s = this->_internal_snd_address();
     ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "rainstorm.UpdateDstTaskRecieveRequest.old_prev_server_address");
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "rainstorm.UpdateTaskSndRequest.snd_address");
     target = stream->WriteStringMaybeAliased(2, _s, target);
   }
 
-  // string new_prev_server_address = 3;
-  if (!this->_internal_new_prev_server_address().empty()) {
-    const std::string& _s = this->_internal_new_prev_server_address();
-    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "rainstorm.UpdateDstTaskRecieveRequest.new_prev_server_address");
-    target = stream->WriteStringMaybeAliased(3, _s, target);
+  // int32 snd_port = 3;
+  if (this->_internal_snd_port() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::
+        WriteInt32ToArrayWithField<3>(
+            stream, this->_internal_snd_port(), target);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -1651,12 +1914,12 @@ PROTOBUF_NOINLINE void UpdateDstTaskRecieveRequest::Clear() {
         ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
             _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:rainstorm.UpdateDstTaskRecieveRequest)
+  // @@protoc_insertion_point(serialize_to_array_end:rainstorm.UpdateTaskSndRequest)
   return target;
 }
 
-::size_t UpdateDstTaskRecieveRequest::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:rainstorm.UpdateDstTaskRecieveRequest)
+::size_t UpdateTaskSndRequest::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:rainstorm.UpdateTaskSndRequest)
   ::size_t total_size = 0;
 
   ::uint32_t cached_has_bits = 0;
@@ -1664,67 +1927,331 @@ PROTOBUF_NOINLINE void UpdateDstTaskRecieveRequest::Clear() {
   (void) cached_has_bits;
 
   ::_pbi::Prefetch5LinesFrom7Lines(reinterpret_cast<const void*>(this));
-  // string id = 1;
-  if (!this->_internal_id().empty()) {
+  // string snd_address = 2;
+  if (!this->_internal_snd_address().empty()) {
     total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
-                                    this->_internal_id());
+                                    this->_internal_snd_address());
   }
 
-  // string old_prev_server_address = 2;
-  if (!this->_internal_old_prev_server_address().empty()) {
-    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
-                                    this->_internal_old_prev_server_address());
+  // int32 index = 1;
+  if (this->_internal_index() != 0) {
+    total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
+        this->_internal_index());
   }
 
-  // string new_prev_server_address = 3;
-  if (!this->_internal_new_prev_server_address().empty()) {
-    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
-                                    this->_internal_new_prev_server_address());
+  // int32 snd_port = 3;
+  if (this->_internal_snd_port() != 0) {
+    total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
+        this->_internal_snd_port());
   }
 
   return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
 }
 
 
-void UpdateDstTaskRecieveRequest::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
-  auto* const _this = static_cast<UpdateDstTaskRecieveRequest*>(&to_msg);
-  auto& from = static_cast<const UpdateDstTaskRecieveRequest&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:rainstorm.UpdateDstTaskRecieveRequest)
+void UpdateTaskSndRequest::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
+  auto* const _this = static_cast<UpdateTaskSndRequest*>(&to_msg);
+  auto& from = static_cast<const UpdateTaskSndRequest&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:rainstorm.UpdateTaskSndRequest)
   ABSL_DCHECK_NE(&from, _this);
   ::uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  if (!from._internal_id().empty()) {
-    _this->_internal_set_id(from._internal_id());
+  if (!from._internal_snd_address().empty()) {
+    _this->_internal_set_snd_address(from._internal_snd_address());
   }
-  if (!from._internal_old_prev_server_address().empty()) {
-    _this->_internal_set_old_prev_server_address(from._internal_old_prev_server_address());
+  if (from._internal_index() != 0) {
+    _this->_impl_.index_ = from._impl_.index_;
   }
-  if (!from._internal_new_prev_server_address().empty()) {
-    _this->_internal_set_new_prev_server_address(from._internal_new_prev_server_address());
+  if (from._internal_snd_port() != 0) {
+    _this->_impl_.snd_port_ = from._impl_.snd_port_;
   }
   _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
 }
 
-void UpdateDstTaskRecieveRequest::CopyFrom(const UpdateDstTaskRecieveRequest& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:rainstorm.UpdateDstTaskRecieveRequest)
+void UpdateTaskSndRequest::CopyFrom(const UpdateTaskSndRequest& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:rainstorm.UpdateTaskSndRequest)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
 
-void UpdateDstTaskRecieveRequest::InternalSwap(UpdateDstTaskRecieveRequest* PROTOBUF_RESTRICT other) {
+void UpdateTaskSndRequest::InternalSwap(UpdateTaskSndRequest* PROTOBUF_RESTRICT other) {
   using std::swap;
   auto* arena = GetArena();
   ABSL_DCHECK_EQ(arena, other->GetArena());
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
-  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.id_, &other->_impl_.id_, arena);
-  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.old_prev_server_address_, &other->_impl_.old_prev_server_address_, arena);
-  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.new_prev_server_address_, &other->_impl_.new_prev_server_address_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.snd_address_, &other->_impl_.snd_address_, arena);
+  ::google::protobuf::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(UpdateTaskSndRequest, _impl_.snd_port_)
+      + sizeof(UpdateTaskSndRequest::_impl_.snd_port_)
+      - PROTOBUF_FIELD_OFFSET(UpdateTaskSndRequest, _impl_.index_)>(
+          reinterpret_cast<char*>(&_impl_.index_),
+          reinterpret_cast<char*>(&other->_impl_.index_));
 }
 
-::google::protobuf::Metadata UpdateDstTaskRecieveRequest::GetMetadata() const {
+::google::protobuf::Metadata UpdateTaskSndRequest::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+class UpdateTaskRcvRequest::_Internal {
+ public:
+};
+
+UpdateTaskRcvRequest::UpdateTaskRcvRequest(::google::protobuf::Arena* arena)
+    : ::google::protobuf::Message(arena) {
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:rainstorm.UpdateTaskRcvRequest)
+}
+inline PROTOBUF_NDEBUG_INLINE UpdateTaskRcvRequest::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility, ::google::protobuf::Arena* arena,
+    const Impl_& from, const ::rainstorm::UpdateTaskRcvRequest& from_msg)
+      : rcv_address_(arena, from.rcv_address_),
+        _cached_size_{0} {}
+
+UpdateTaskRcvRequest::UpdateTaskRcvRequest(
+    ::google::protobuf::Arena* arena,
+    const UpdateTaskRcvRequest& from)
+    : ::google::protobuf::Message(arena) {
+  UpdateTaskRcvRequest* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+  ::memcpy(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, index_),
+           reinterpret_cast<const char *>(&from._impl_) +
+               offsetof(Impl_, index_),
+           offsetof(Impl_, rcv_port_) -
+               offsetof(Impl_, index_) +
+               sizeof(Impl_::rcv_port_));
+
+  // @@protoc_insertion_point(copy_constructor:rainstorm.UpdateTaskRcvRequest)
+}
+inline PROTOBUF_NDEBUG_INLINE UpdateTaskRcvRequest::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* arena)
+      : rcv_address_(arena),
+        _cached_size_{0} {}
+
+inline void UpdateTaskRcvRequest::SharedCtor(::_pb::Arena* arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  ::memset(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, index_),
+           0,
+           offsetof(Impl_, rcv_port_) -
+               offsetof(Impl_, index_) +
+               sizeof(Impl_::rcv_port_));
+}
+UpdateTaskRcvRequest::~UpdateTaskRcvRequest() {
+  // @@protoc_insertion_point(destructor:rainstorm.UpdateTaskRcvRequest)
+  _internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  SharedDtor();
+}
+inline void UpdateTaskRcvRequest::SharedDtor() {
+  ABSL_DCHECK(GetArena() == nullptr);
+  _impl_.rcv_address_.Destroy();
+  _impl_.~Impl_();
+}
+
+const ::google::protobuf::MessageLite::ClassData*
+UpdateTaskRcvRequest::GetClassData() const {
+  PROTOBUF_CONSTINIT static const ::google::protobuf::MessageLite::
+      ClassDataFull _data_ = {
+          {
+              &_table_.header,
+              nullptr,  // OnDemandRegisterArenaDtor
+              nullptr,  // IsInitialized
+              PROTOBUF_FIELD_OFFSET(UpdateTaskRcvRequest, _impl_._cached_size_),
+              false,
+          },
+          &UpdateTaskRcvRequest::MergeImpl,
+          &UpdateTaskRcvRequest::kDescriptorMethods,
+          &descriptor_table_rainstorm_2eproto,
+          nullptr,  // tracker
+      };
+  ::google::protobuf::internal::PrefetchToLocalCache(&_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(_data_.tc_table);
+  return _data_.base();
+}
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<2, 3, 0, 50, 2> UpdateTaskRcvRequest::_table_ = {
+  {
+    0,  // no _has_bits_
+    0, // no _extensions_
+    3, 24,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967288,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    3,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    &_UpdateTaskRcvRequest_default_instance_._instance,
+    nullptr,  // post_loop_handler
+    ::_pbi::TcParser::GenericFallback,  // fallback
+    #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+    ::_pbi::TcParser::GetTable<::rainstorm::UpdateTaskRcvRequest>(),  // to_prefetch
+    #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+  }, {{
+    {::_pbi::TcParser::MiniParse, {}},
+    // int32 index = 1;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(UpdateTaskRcvRequest, _impl_.index_), 63>(),
+     {8, 63, 0, PROTOBUF_FIELD_OFFSET(UpdateTaskRcvRequest, _impl_.index_)}},
+    // string rcv_address = 2;
+    {::_pbi::TcParser::FastUS1,
+     {18, 63, 0, PROTOBUF_FIELD_OFFSET(UpdateTaskRcvRequest, _impl_.rcv_address_)}},
+    // int32 rcv_port = 3;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(UpdateTaskRcvRequest, _impl_.rcv_port_), 63>(),
+     {24, 63, 0, PROTOBUF_FIELD_OFFSET(UpdateTaskRcvRequest, _impl_.rcv_port_)}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // int32 index = 1;
+    {PROTOBUF_FIELD_OFFSET(UpdateTaskRcvRequest, _impl_.index_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kInt32)},
+    // string rcv_address = 2;
+    {PROTOBUF_FIELD_OFFSET(UpdateTaskRcvRequest, _impl_.rcv_address_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // int32 rcv_port = 3;
+    {PROTOBUF_FIELD_OFFSET(UpdateTaskRcvRequest, _impl_.rcv_port_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kInt32)},
+  }},
+  // no aux_entries
+  {{
+    "\36\0\13\0\0\0\0\0"
+    "rainstorm.UpdateTaskRcvRequest"
+    "rcv_address"
+  }},
+};
+
+PROTOBUF_NOINLINE void UpdateTaskRcvRequest::Clear() {
+// @@protoc_insertion_point(message_clear_start:rainstorm.UpdateTaskRcvRequest)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  _impl_.rcv_address_.ClearToEmpty();
+  ::memset(&_impl_.index_, 0, static_cast<::size_t>(
+      reinterpret_cast<char*>(&_impl_.rcv_port_) -
+      reinterpret_cast<char*>(&_impl_.index_)) + sizeof(_impl_.rcv_port_));
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+::uint8_t* UpdateTaskRcvRequest::_InternalSerialize(
+    ::uint8_t* target,
+    ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:rainstorm.UpdateTaskRcvRequest)
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  // int32 index = 1;
+  if (this->_internal_index() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::
+        WriteInt32ToArrayWithField<1>(
+            stream, this->_internal_index(), target);
+  }
+
+  // string rcv_address = 2;
+  if (!this->_internal_rcv_address().empty()) {
+    const std::string& _s = this->_internal_rcv_address();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "rainstorm.UpdateTaskRcvRequest.rcv_address");
+    target = stream->WriteStringMaybeAliased(2, _s, target);
+  }
+
+  // int32 rcv_port = 3;
+  if (this->_internal_rcv_port() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::
+        WriteInt32ToArrayWithField<3>(
+            stream, this->_internal_rcv_port(), target);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:rainstorm.UpdateTaskRcvRequest)
+  return target;
+}
+
+::size_t UpdateTaskRcvRequest::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:rainstorm.UpdateTaskRcvRequest)
+  ::size_t total_size = 0;
+
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  ::_pbi::Prefetch5LinesFrom7Lines(reinterpret_cast<const void*>(this));
+  // string rcv_address = 2;
+  if (!this->_internal_rcv_address().empty()) {
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_rcv_address());
+  }
+
+  // int32 index = 1;
+  if (this->_internal_index() != 0) {
+    total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
+        this->_internal_index());
+  }
+
+  // int32 rcv_port = 3;
+  if (this->_internal_rcv_port() != 0) {
+    total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
+        this->_internal_rcv_port());
+  }
+
+  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
+}
+
+
+void UpdateTaskRcvRequest::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
+  auto* const _this = static_cast<UpdateTaskRcvRequest*>(&to_msg);
+  auto& from = static_cast<const UpdateTaskRcvRequest&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:rainstorm.UpdateTaskRcvRequest)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (!from._internal_rcv_address().empty()) {
+    _this->_internal_set_rcv_address(from._internal_rcv_address());
+  }
+  if (from._internal_index() != 0) {
+    _this->_impl_.index_ = from._impl_.index_;
+  }
+  if (from._internal_rcv_port() != 0) {
+    _this->_impl_.rcv_port_ = from._impl_.rcv_port_;
+  }
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void UpdateTaskRcvRequest::CopyFrom(const UpdateTaskRcvRequest& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:rainstorm.UpdateTaskRcvRequest)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void UpdateTaskRcvRequest::InternalSwap(UpdateTaskRcvRequest* PROTOBUF_RESTRICT other) {
+  using std::swap;
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.rcv_address_, &other->_impl_.rcv_address_, arena);
+  ::google::protobuf::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(UpdateTaskRcvRequest, _impl_.rcv_port_)
+      + sizeof(UpdateTaskRcvRequest::_impl_.rcv_port_)
+      - PROTOBUF_FIELD_OFFSET(UpdateTaskRcvRequest, _impl_.index_)>(
+          reinterpret_cast<char*>(&_impl_.index_),
+          reinterpret_cast<char*>(&other->_impl_.index_));
+}
+
+::google::protobuf::Metadata UpdateTaskRcvRequest::GetMetadata() const {
   return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
 }
 // ===================================================================
@@ -1741,7 +2268,8 @@ KV::KV(::google::protobuf::Arena* arena)
 inline PROTOBUF_NDEBUG_INLINE KV::Impl_::Impl_(
     ::google::protobuf::internal::InternalVisibility visibility, ::google::protobuf::Arena* arena,
     const Impl_& from, const ::rainstorm::KV& from_msg)
-      : key_(arena, from.key_),
+      : id_(arena, from.id_),
+        key_(arena, from.key_),
         value_(arena, from.value_),
         _cached_size_{0} {}
 
@@ -1760,7 +2288,8 @@ KV::KV(
 inline PROTOBUF_NDEBUG_INLINE KV::Impl_::Impl_(
     ::google::protobuf::internal::InternalVisibility visibility,
     ::google::protobuf::Arena* arena)
-      : key_(arena),
+      : id_(arena),
+        key_(arena),
         value_(arena),
         _cached_size_{0} {}
 
@@ -1774,6 +2303,7 @@ KV::~KV() {
 }
 inline void KV::SharedDtor() {
   ABSL_DCHECK(GetArena() == nullptr);
+  _impl_.id_.Destroy();
   _impl_.key_.Destroy();
   _impl_.value_.Destroy();
   _impl_.~Impl_();
@@ -1800,15 +2330,15 @@ KV::GetClassData() const {
   return _data_.base();
 }
 PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
-const ::_pbi::TcParseTable<1, 2, 0, 29, 2> KV::_table_ = {
+const ::_pbi::TcParseTable<2, 3, 0, 31, 2> KV::_table_ = {
   {
     0,  // no _has_bits_
     0, // no _extensions_
-    2, 8,  // max_field_number, fast_idx_mask
+    3, 24,  // max_field_number, fast_idx_mask
     offsetof(decltype(_table_), field_lookup_table),
-    4294967292,  // skipmap
+    4294967288,  // skipmap
     offsetof(decltype(_table_), field_entries),
-    2,  // num_field_entries
+    3,  // num_field_entries
     0,  // num_aux_entries
     offsetof(decltype(_table_), field_names),  // no aux_entries
     &_KV_default_instance_._instance,
@@ -1818,26 +2348,34 @@ const ::_pbi::TcParseTable<1, 2, 0, 29, 2> KV::_table_ = {
     ::_pbi::TcParser::GetTable<::rainstorm::KV>(),  // to_prefetch
     #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
   }, {{
-    // string value = 2;
+    {::_pbi::TcParser::MiniParse, {}},
+    // string id = 1;
     {::_pbi::TcParser::FastUS1,
-     {18, 63, 0, PROTOBUF_FIELD_OFFSET(KV, _impl_.value_)}},
-    // string key = 1;
+     {10, 63, 0, PROTOBUF_FIELD_OFFSET(KV, _impl_.id_)}},
+    // string key = 2;
     {::_pbi::TcParser::FastUS1,
-     {10, 63, 0, PROTOBUF_FIELD_OFFSET(KV, _impl_.key_)}},
+     {18, 63, 0, PROTOBUF_FIELD_OFFSET(KV, _impl_.key_)}},
+    // string value = 3;
+    {::_pbi::TcParser::FastUS1,
+     {26, 63, 0, PROTOBUF_FIELD_OFFSET(KV, _impl_.value_)}},
   }}, {{
     65535, 65535
   }}, {{
-    // string key = 1;
+    // string id = 1;
+    {PROTOBUF_FIELD_OFFSET(KV, _impl_.id_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string key = 2;
     {PROTOBUF_FIELD_OFFSET(KV, _impl_.key_), 0, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
-    // string value = 2;
+    // string value = 3;
     {PROTOBUF_FIELD_OFFSET(KV, _impl_.value_), 0, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
   }},
   // no aux_entries
   {{
-    "\14\3\5\0\0\0\0\0"
+    "\14\2\3\5\0\0\0\0"
     "rainstorm.KV"
+    "id"
     "key"
     "value"
   }},
@@ -1850,6 +2388,7 @@ PROTOBUF_NOINLINE void KV::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
+  _impl_.id_.ClearToEmpty();
   _impl_.key_.ClearToEmpty();
   _impl_.value_.ClearToEmpty();
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
@@ -1862,20 +2401,28 @@ PROTOBUF_NOINLINE void KV::Clear() {
   ::uint32_t cached_has_bits = 0;
   (void)cached_has_bits;
 
-  // string key = 1;
+  // string id = 1;
+  if (!this->_internal_id().empty()) {
+    const std::string& _s = this->_internal_id();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "rainstorm.KV.id");
+    target = stream->WriteStringMaybeAliased(1, _s, target);
+  }
+
+  // string key = 2;
   if (!this->_internal_key().empty()) {
     const std::string& _s = this->_internal_key();
     ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
         _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "rainstorm.KV.key");
-    target = stream->WriteStringMaybeAliased(1, _s, target);
+    target = stream->WriteStringMaybeAliased(2, _s, target);
   }
 
-  // string value = 2;
+  // string value = 3;
   if (!this->_internal_value().empty()) {
     const std::string& _s = this->_internal_value();
     ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
         _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "rainstorm.KV.value");
-    target = stream->WriteStringMaybeAliased(2, _s, target);
+    target = stream->WriteStringMaybeAliased(3, _s, target);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -1896,13 +2443,19 @@ PROTOBUF_NOINLINE void KV::Clear() {
   (void) cached_has_bits;
 
   ::_pbi::Prefetch5LinesFrom7Lines(reinterpret_cast<const void*>(this));
-  // string key = 1;
+  // string id = 1;
+  if (!this->_internal_id().empty()) {
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_id());
+  }
+
+  // string key = 2;
   if (!this->_internal_key().empty()) {
     total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
                                     this->_internal_key());
   }
 
-  // string value = 2;
+  // string value = 3;
   if (!this->_internal_value().empty()) {
     total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
                                     this->_internal_value());
@@ -1920,6 +2473,9 @@ void KV::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::prot
   ::uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
+  if (!from._internal_id().empty()) {
+    _this->_internal_set_id(from._internal_id());
+  }
   if (!from._internal_key().empty()) {
     _this->_internal_set_key(from._internal_key());
   }
@@ -1942,6 +2498,7 @@ void KV::InternalSwap(KV* PROTOBUF_RESTRICT other) {
   auto* arena = GetArena();
   ABSL_DCHECK_EQ(arena, other->GetArena());
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.id_, &other->_impl_.id_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.key_, &other->_impl_.key_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.value_, &other->_impl_.value_, arena);
 }
@@ -1957,18 +2514,18 @@ class DataChunk::_Internal {
       PROTOBUF_FIELD_OFFSET(::rainstorm::DataChunk, _impl_._oneof_case_);
 };
 
-void DataChunk::set_allocated_pairs(::rainstorm::KV* pairs) {
+void DataChunk::set_allocated_pair(::rainstorm::KV* pair) {
   ::google::protobuf::Arena* message_arena = GetArena();
   clear_request();
-  if (pairs) {
-    ::google::protobuf::Arena* submessage_arena = pairs->GetArena();
+  if (pair) {
+    ::google::protobuf::Arena* submessage_arena = pair->GetArena();
     if (message_arena != submessage_arena) {
-      pairs = ::google::protobuf::internal::GetOwnedMessage(message_arena, pairs, submessage_arena);
+      pair = ::google::protobuf::internal::GetOwnedMessage(message_arena, pair, submessage_arena);
     }
-    set_has_pairs();
-    _impl_.request_.pairs_ = pairs;
+    set_has_pair();
+    _impl_.request_.pair_ = pair;
   }
-  // @@protoc_insertion_point(field_set_allocated:rainstorm.DataChunk.pairs)
+  // @@protoc_insertion_point(field_set_allocated:rainstorm.DataChunk.pair)
 }
 DataChunk::DataChunk(::google::protobuf::Arena* arena)
     : ::google::protobuf::Message(arena) {
@@ -1997,8 +2554,8 @@ DataChunk::DataChunk(
       case kId:
         new (&_impl_.request_.id_) decltype(_impl_.request_.id_){arena, from._impl_.request_.id_};
         break;
-      case kPairs:
-        _impl_.request_.pairs_ = ::google::protobuf::Message::CopyConstruct<::rainstorm::KV>(arena, *from._impl_.request_.pairs_);
+      case kPair:
+        _impl_.request_.pair_ = ::google::protobuf::Message::CopyConstruct<::rainstorm::KV>(arena, *from._impl_.request_.pair_);
         break;
       case kFinished:
         _impl_.request_.finished_ = from._impl_.request_.finished_;
@@ -2038,11 +2595,11 @@ void DataChunk::clear_request() {
       _impl_.request_.id_.Destroy();
       break;
     }
-    case kPairs: {
+    case kPair: {
       if (GetArena() == nullptr) {
-        delete _impl_.request_.pairs_;
+        delete _impl_.request_.pair_;
       } else if (::google::protobuf::internal::DebugHardenClearOneofMessageOnArena()) {
-        ::google::protobuf::internal::MaybePoisonAfterClear(_impl_.request_.pairs_);
+        ::google::protobuf::internal::MaybePoisonAfterClear(_impl_.request_.pair_);
       }
       break;
     }
@@ -2104,8 +2661,8 @@ const ::_pbi::TcParseTable<0, 3, 1, 30, 2> DataChunk::_table_ = {
     // string id = 1;
     {PROTOBUF_FIELD_OFFSET(DataChunk, _impl_.request_.id_), _Internal::kOneofCaseOffset + 0, 0,
     (0 | ::_fl::kFcOneof | ::_fl::kUtf8String | ::_fl::kRepAString)},
-    // .rainstorm.KV pairs = 2;
-    {PROTOBUF_FIELD_OFFSET(DataChunk, _impl_.request_.pairs_), _Internal::kOneofCaseOffset + 0, 0,
+    // .rainstorm.KV pair = 2;
+    {PROTOBUF_FIELD_OFFSET(DataChunk, _impl_.request_.pair_), _Internal::kOneofCaseOffset + 0, 0,
     (0 | ::_fl::kFcOneof | ::_fl::kMessage | ::_fl::kTvTable)},
     // bool finished = 3;
     {PROTOBUF_FIELD_OFFSET(DataChunk, _impl_.request_.finished_), _Internal::kOneofCaseOffset + 0, 0,
@@ -2145,9 +2702,9 @@ PROTOBUF_NOINLINE void DataChunk::Clear() {
       target = stream->WriteStringMaybeAliased(1, _s, target);
       break;
     }
-    case kPairs: {
+    case kPair: {
       target = ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
-          2, *_impl_.request_.pairs_, _impl_.request_.pairs_->GetCachedSize(), target, stream);
+          2, *_impl_.request_.pair_, _impl_.request_.pair_->GetCachedSize(), target, stream);
       break;
     }
     case kFinished: {
@@ -2183,10 +2740,10 @@ PROTOBUF_NOINLINE void DataChunk::Clear() {
                                       this->_internal_id());
       break;
     }
-    // .rainstorm.KV pairs = 2;
-    case kPairs: {
+    // .rainstorm.KV pair = 2;
+    case kPair: {
       total_size +=
-          1 + ::google::protobuf::internal::WireFormatLite::MessageSize(*_impl_.request_.pairs_);
+          1 + ::google::protobuf::internal::WireFormatLite::MessageSize(*_impl_.request_.pair_);
       break;
     }
     // bool finished = 3;
@@ -2229,12 +2786,12 @@ void DataChunk::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::googl
         _this->_impl_.request_.id_.Set(from._internal_id(), arena);
         break;
       }
-      case kPairs: {
+      case kPair: {
         if (oneof_needs_init) {
-          _this->_impl_.request_.pairs_ =
-              ::google::protobuf::Message::CopyConstruct<::rainstorm::KV>(arena, *from._impl_.request_.pairs_);
+          _this->_impl_.request_.pair_ =
+              ::google::protobuf::Message::CopyConstruct<::rainstorm::KV>(arena, *from._impl_.request_.pair_);
         } else {
-          _this->_impl_.request_.pairs_->MergeFrom(from._internal_pairs());
+          _this->_impl_.request_.pair_->MergeFrom(from._internal_pair());
         }
         break;
       }

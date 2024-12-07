@@ -69,8 +69,8 @@ void RainStormLeader::AssignTasksToNodes(JobInfo &job) {
     int idx = 0;
     for (auto &stage : job.stages) {
         for (auto &task : stage) {
-            task.assigned_nodes.clear();
-            task.assigned_nodes.push_back(workers[idx % wcount]);
+            task.assigned_node.clear();
+            task.assigned_node = workers[idx % wcount];
             idx++;
         }
     }
@@ -89,11 +89,11 @@ void RainStormLeader::HandleNodeFailure(const std::string &failed_node_id) {
         JobInfo &job = kv.second;
         for (auto &stage : job.stages) {
             for (auto &task : stage) {
-                if (!task.assigned_nodes.empty() && task.assigned_nodes[0] == failed_node_id) {
+                if (task.assigned_node && task.assigned_node == failed_node_id) {
                     // pick a different worker
                     // In reality, you might avoid choosing failed_node_id again.
                     idx++; 
-                    task.assigned_nodes[0] = workers[idx % wcount];
+                    task.assigned_node = workers[idx % wcount];
                     // Also notify new node and possibly upstream/downstream tasks
                 }
             }

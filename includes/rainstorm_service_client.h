@@ -5,7 +5,6 @@
 #include <grpcpp/grpcpp.h>
 #include <vector>
 
-#include "rainstorm_node.h"
 #include "rainstorm.grpc.pb.h"
 #include "safequeue.hpp"
 
@@ -14,6 +13,7 @@ public:
     RainStormClient(std::shared_ptr<grpc::Channel> channel);
     bool NewSrcTask(const std::string &id, const std::string &src_filename);
     bool NewStageTask(const std::string &id, const std::string &next_server_address, const std::string &prev_server_address);
+    bool NewTgtTask(const std::string &id, const std::vector<std::string> &rcv_addresses, const std::vector<int32_t> &rcv_ports);
     bool UpdateSrcTaskSend(const std::string &id, const std::string &new_next_server_address);
     bool UpdateDstTaskRecieve(const std::string &id, const std::string &new_next_server_address, const std::string &new_prev_server_address);
     bool SendDataChunksSrc(const std::string &task_id, const string& srcfile);
@@ -21,5 +21,4 @@ public:
 
 private:
     std::unique_ptr<rainstorm::RainstormService::Stub> stub_;
-    RainStormNode rainstorm_node_;
 };

@@ -6,10 +6,10 @@
 #include "hydfs.h"
 
 struct TaskInfo {
-    std::string task_id;
-    int stage_number;
+    int stage_id;
+    int task_id;
     std::string operator_executable;
-    std::vector<std::string> assigned_nodes; // The node(s) responsible for this task
+    std::string assigned_node;
 };
 
 struct JobInfo {

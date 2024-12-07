@@ -66,18 +66,21 @@ extern NewSrcTaskRequestDefaultTypeInternal _NewSrcTaskRequest_default_instance_
 class NewStageTaskRequest;
 struct NewStageTaskRequestDefaultTypeInternal;
 extern NewStageTaskRequestDefaultTypeInternal _NewStageTaskRequest_default_instance_;
+class NewTgtTaskRequest;
+struct NewTgtTaskRequestDefaultTypeInternal;
+extern NewTgtTaskRequestDefaultTypeInternal _NewTgtTaskRequest_default_instance_;
 class OperationStatus;
 struct OperationStatusDefaultTypeInternal;
 extern OperationStatusDefaultTypeInternal _OperationStatus_default_instance_;
 class StreamDataChunk;
 struct StreamDataChunkDefaultTypeInternal;
 extern StreamDataChunkDefaultTypeInternal _StreamDataChunk_default_instance_;
-class UpdateDstTaskRecieveRequest;
-struct UpdateDstTaskRecieveRequestDefaultTypeInternal;
-extern UpdateDstTaskRecieveRequestDefaultTypeInternal _UpdateDstTaskRecieveRequest_default_instance_;
-class UpdateSrcTaskSendRequest;
-struct UpdateSrcTaskSendRequestDefaultTypeInternal;
-extern UpdateSrcTaskSendRequestDefaultTypeInternal _UpdateSrcTaskSendRequest_default_instance_;
+class UpdateTaskRcvRequest;
+struct UpdateTaskRcvRequestDefaultTypeInternal;
+extern UpdateTaskRcvRequestDefaultTypeInternal _UpdateTaskRcvRequest_default_instance_;
+class UpdateTaskSndRequest;
+struct UpdateTaskSndRequestDefaultTypeInternal;
+extern UpdateTaskSndRequestDefaultTypeInternal _UpdateTaskSndRequest_default_instance_;
 }  // namespace rainstorm
 namespace google {
 namespace protobuf {
@@ -126,23 +129,23 @@ inline bool StatusCode_Parse(absl::string_view name, StatusCode* value) {
 
 // -------------------------------------------------------------------
 
-class UpdateSrcTaskSendRequest final : public ::google::protobuf::Message
-/* @@protoc_insertion_point(class_definition:rainstorm.UpdateSrcTaskSendRequest) */ {
+class UpdateTaskSndRequest final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:rainstorm.UpdateTaskSndRequest) */ {
  public:
-  inline UpdateSrcTaskSendRequest() : UpdateSrcTaskSendRequest(nullptr) {}
-  ~UpdateSrcTaskSendRequest() override;
+  inline UpdateTaskSndRequest() : UpdateTaskSndRequest(nullptr) {}
+  ~UpdateTaskSndRequest() override;
   template <typename = void>
-  explicit PROTOBUF_CONSTEXPR UpdateSrcTaskSendRequest(
+  explicit PROTOBUF_CONSTEXPR UpdateTaskSndRequest(
       ::google::protobuf::internal::ConstantInitialized);
 
-  inline UpdateSrcTaskSendRequest(const UpdateSrcTaskSendRequest& from) : UpdateSrcTaskSendRequest(nullptr, from) {}
-  inline UpdateSrcTaskSendRequest(UpdateSrcTaskSendRequest&& from) noexcept
-      : UpdateSrcTaskSendRequest(nullptr, std::move(from)) {}
-  inline UpdateSrcTaskSendRequest& operator=(const UpdateSrcTaskSendRequest& from) {
+  inline UpdateTaskSndRequest(const UpdateTaskSndRequest& from) : UpdateTaskSndRequest(nullptr, from) {}
+  inline UpdateTaskSndRequest(UpdateTaskSndRequest&& from) noexcept
+      : UpdateTaskSndRequest(nullptr, std::move(from)) {}
+  inline UpdateTaskSndRequest& operator=(const UpdateTaskSndRequest& from) {
     CopyFrom(from);
     return *this;
   }
-  inline UpdateSrcTaskSendRequest& operator=(UpdateSrcTaskSendRequest&& from) noexcept {
+  inline UpdateTaskSndRequest& operator=(UpdateTaskSndRequest&& from) noexcept {
     if (this == &from) return *this;
     if (GetArena() == from.GetArena()
 #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
@@ -174,16 +177,16 @@ class UpdateSrcTaskSendRequest final : public ::google::protobuf::Message
   static const ::google::protobuf::Reflection* GetReflection() {
     return default_instance().GetMetadata().reflection;
   }
-  static const UpdateSrcTaskSendRequest& default_instance() {
+  static const UpdateTaskSndRequest& default_instance() {
     return *internal_default_instance();
   }
-  static inline const UpdateSrcTaskSendRequest* internal_default_instance() {
-    return reinterpret_cast<const UpdateSrcTaskSendRequest*>(
-        &_UpdateSrcTaskSendRequest_default_instance_);
+  static inline const UpdateTaskSndRequest* internal_default_instance() {
+    return reinterpret_cast<const UpdateTaskSndRequest*>(
+        &_UpdateTaskSndRequest_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 3;
-  friend void swap(UpdateSrcTaskSendRequest& a, UpdateSrcTaskSendRequest& b) { a.Swap(&b); }
-  inline void Swap(UpdateSrcTaskSendRequest* other) {
+  static constexpr int kIndexInFileMessages = 4;
+  friend void swap(UpdateTaskSndRequest& a, UpdateTaskSndRequest& b) { a.Swap(&b); }
+  inline void Swap(UpdateTaskSndRequest* other) {
     if (other == this) return;
 #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
     if (GetArena() != nullptr && GetArena() == other->GetArena()) {
@@ -195,7 +198,7 @@ class UpdateSrcTaskSendRequest final : public ::google::protobuf::Message
       ::google::protobuf::internal::GenericSwap(this, other);
     }
   }
-  void UnsafeArenaSwap(UpdateSrcTaskSendRequest* other) {
+  void UnsafeArenaSwap(UpdateTaskSndRequest* other) {
     if (other == this) return;
     ABSL_DCHECK(GetArena() == other->GetArena());
     InternalSwap(other);
@@ -203,13 +206,13 @@ class UpdateSrcTaskSendRequest final : public ::google::protobuf::Message
 
   // implements Message ----------------------------------------------
 
-  UpdateSrcTaskSendRequest* New(::google::protobuf::Arena* arena = nullptr) const final {
-    return ::google::protobuf::Message::DefaultConstruct<UpdateSrcTaskSendRequest>(arena);
+  UpdateTaskSndRequest* New(::google::protobuf::Arena* arena = nullptr) const final {
+    return ::google::protobuf::Message::DefaultConstruct<UpdateTaskSndRequest>(arena);
   }
   using ::google::protobuf::Message::CopyFrom;
-  void CopyFrom(const UpdateSrcTaskSendRequest& from);
+  void CopyFrom(const UpdateTaskSndRequest& from);
   using ::google::protobuf::Message::MergeFrom;
-  void MergeFrom(const UpdateSrcTaskSendRequest& from) { UpdateSrcTaskSendRequest::MergeImpl(*this, from); }
+  void MergeFrom(const UpdateTaskSndRequest& from) { UpdateTaskSndRequest::MergeImpl(*this, from); }
 
   private:
   static void MergeImpl(
@@ -230,16 +233,16 @@ class UpdateSrcTaskSendRequest final : public ::google::protobuf::Message
   private:
   void SharedCtor(::google::protobuf::Arena* arena);
   void SharedDtor();
-  void InternalSwap(UpdateSrcTaskSendRequest* other);
+  void InternalSwap(UpdateTaskSndRequest* other);
  private:
   friend class ::google::protobuf::internal::AnyMetadata;
-  static ::absl::string_view FullMessageName() { return "rainstorm.UpdateSrcTaskSendRequest"; }
+  static ::absl::string_view FullMessageName() { return "rainstorm.UpdateTaskSndRequest"; }
 
  protected:
-  explicit UpdateSrcTaskSendRequest(::google::protobuf::Arena* arena);
-  UpdateSrcTaskSendRequest(::google::protobuf::Arena* arena, const UpdateSrcTaskSendRequest& from);
-  UpdateSrcTaskSendRequest(::google::protobuf::Arena* arena, UpdateSrcTaskSendRequest&& from) noexcept
-      : UpdateSrcTaskSendRequest(arena) {
+  explicit UpdateTaskSndRequest(::google::protobuf::Arena* arena);
+  UpdateTaskSndRequest(::google::protobuf::Arena* arena, const UpdateTaskSndRequest& from);
+  UpdateTaskSndRequest(::google::protobuf::Arena* arena, UpdateTaskSndRequest&& from) noexcept
+      : UpdateTaskSndRequest(arena) {
     *this = ::std::move(from);
   }
   const ::google::protobuf::Message::ClassData* GetClassData() const final;
@@ -250,69 +253,57 @@ class UpdateSrcTaskSendRequest final : public ::google::protobuf::Message
 
   // accessors -------------------------------------------------------
   enum : int {
-    kIdFieldNumber = 1,
-    kOldNextServerAddressFieldNumber = 2,
-    kNewNextServerAddressFieldNumber = 3,
+    kSndAddressFieldNumber = 2,
+    kIndexFieldNumber = 1,
+    kSndPortFieldNumber = 3,
   };
-  // string id = 1;
-  void clear_id() ;
-  const std::string& id() const;
+  // string snd_address = 2;
+  void clear_snd_address() ;
+  const std::string& snd_address() const;
   template <typename Arg_ = const std::string&, typename... Args_>
-  void set_id(Arg_&& arg, Args_... args);
-  std::string* mutable_id();
-  PROTOBUF_NODISCARD std::string* release_id();
-  void set_allocated_id(std::string* value);
+  void set_snd_address(Arg_&& arg, Args_... args);
+  std::string* mutable_snd_address();
+  PROTOBUF_NODISCARD std::string* release_snd_address();
+  void set_allocated_snd_address(std::string* value);
 
   private:
-  const std::string& _internal_id() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_id(
+  const std::string& _internal_snd_address() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_snd_address(
       const std::string& value);
-  std::string* _internal_mutable_id();
+  std::string* _internal_mutable_snd_address();
 
   public:
-  // string old_next_server_address = 2;
-  void clear_old_next_server_address() ;
-  const std::string& old_next_server_address() const;
-  template <typename Arg_ = const std::string&, typename... Args_>
-  void set_old_next_server_address(Arg_&& arg, Args_... args);
-  std::string* mutable_old_next_server_address();
-  PROTOBUF_NODISCARD std::string* release_old_next_server_address();
-  void set_allocated_old_next_server_address(std::string* value);
+  // int32 index = 1;
+  void clear_index() ;
+  ::int32_t index() const;
+  void set_index(::int32_t value);
 
   private:
-  const std::string& _internal_old_next_server_address() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_old_next_server_address(
-      const std::string& value);
-  std::string* _internal_mutable_old_next_server_address();
+  ::int32_t _internal_index() const;
+  void _internal_set_index(::int32_t value);
 
   public:
-  // string new_next_server_address = 3;
-  void clear_new_next_server_address() ;
-  const std::string& new_next_server_address() const;
-  template <typename Arg_ = const std::string&, typename... Args_>
-  void set_new_next_server_address(Arg_&& arg, Args_... args);
-  std::string* mutable_new_next_server_address();
-  PROTOBUF_NODISCARD std::string* release_new_next_server_address();
-  void set_allocated_new_next_server_address(std::string* value);
+  // int32 snd_port = 3;
+  void clear_snd_port() ;
+  ::int32_t snd_port() const;
+  void set_snd_port(::int32_t value);
 
   private:
-  const std::string& _internal_new_next_server_address() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_new_next_server_address(
-      const std::string& value);
-  std::string* _internal_mutable_new_next_server_address();
+  ::int32_t _internal_snd_port() const;
+  void _internal_set_snd_port(::int32_t value);
 
   public:
-  // @@protoc_insertion_point(class_scope:rainstorm.UpdateSrcTaskSendRequest)
+  // @@protoc_insertion_point(class_scope:rainstorm.UpdateTaskSndRequest)
  private:
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
   static const ::google::protobuf::internal::TcParseTable<
       2, 3, 0,
-      91, 2>
+      50, 2>
       _table_;
 
   static constexpr const void* _raw_default_instance_ =
-      &_UpdateSrcTaskSendRequest_default_instance_;
+      &_UpdateTaskSndRequest_default_instance_;
 
   friend class ::google::protobuf::MessageLite;
   friend class ::google::protobuf::Arena;
@@ -327,10 +318,10 @@ class UpdateSrcTaskSendRequest final : public ::google::protobuf::Message
                           ::google::protobuf::Arena* arena);
     inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
                           ::google::protobuf::Arena* arena, const Impl_& from,
-                          const UpdateSrcTaskSendRequest& from_msg);
-    ::google::protobuf::internal::ArenaStringPtr id_;
-    ::google::protobuf::internal::ArenaStringPtr old_next_server_address_;
-    ::google::protobuf::internal::ArenaStringPtr new_next_server_address_;
+                          const UpdateTaskSndRequest& from_msg);
+    ::google::protobuf::internal::ArenaStringPtr snd_address_;
+    ::int32_t index_;
+    ::int32_t snd_port_;
     mutable ::google::protobuf::internal::CachedSize _cached_size_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
@@ -339,23 +330,23 @@ class UpdateSrcTaskSendRequest final : public ::google::protobuf::Message
 };
 // -------------------------------------------------------------------
 
-class UpdateDstTaskRecieveRequest final : public ::google::protobuf::Message
-/* @@protoc_insertion_point(class_definition:rainstorm.UpdateDstTaskRecieveRequest) */ {
+class UpdateTaskRcvRequest final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:rainstorm.UpdateTaskRcvRequest) */ {
  public:
-  inline UpdateDstTaskRecieveRequest() : UpdateDstTaskRecieveRequest(nullptr) {}
-  ~UpdateDstTaskRecieveRequest() override;
+  inline UpdateTaskRcvRequest() : UpdateTaskRcvRequest(nullptr) {}
+  ~UpdateTaskRcvRequest() override;
   template <typename = void>
-  explicit PROTOBUF_CONSTEXPR UpdateDstTaskRecieveRequest(
+  explicit PROTOBUF_CONSTEXPR UpdateTaskRcvRequest(
       ::google::protobuf::internal::ConstantInitialized);
 
-  inline UpdateDstTaskRecieveRequest(const UpdateDstTaskRecieveRequest& from) : UpdateDstTaskRecieveRequest(nullptr, from) {}
-  inline UpdateDstTaskRecieveRequest(UpdateDstTaskRecieveRequest&& from) noexcept
-      : UpdateDstTaskRecieveRequest(nullptr, std::move(from)) {}
-  inline UpdateDstTaskRecieveRequest& operator=(const UpdateDstTaskRecieveRequest& from) {
+  inline UpdateTaskRcvRequest(const UpdateTaskRcvRequest& from) : UpdateTaskRcvRequest(nullptr, from) {}
+  inline UpdateTaskRcvRequest(UpdateTaskRcvRequest&& from) noexcept
+      : UpdateTaskRcvRequest(nullptr, std::move(from)) {}
+  inline UpdateTaskRcvRequest& operator=(const UpdateTaskRcvRequest& from) {
     CopyFrom(from);
     return *this;
   }
-  inline UpdateDstTaskRecieveRequest& operator=(UpdateDstTaskRecieveRequest&& from) noexcept {
+  inline UpdateTaskRcvRequest& operator=(UpdateTaskRcvRequest&& from) noexcept {
     if (this == &from) return *this;
     if (GetArena() == from.GetArena()
 #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
@@ -387,16 +378,16 @@ class UpdateDstTaskRecieveRequest final : public ::google::protobuf::Message
   static const ::google::protobuf::Reflection* GetReflection() {
     return default_instance().GetMetadata().reflection;
   }
-  static const UpdateDstTaskRecieveRequest& default_instance() {
+  static const UpdateTaskRcvRequest& default_instance() {
     return *internal_default_instance();
   }
-  static inline const UpdateDstTaskRecieveRequest* internal_default_instance() {
-    return reinterpret_cast<const UpdateDstTaskRecieveRequest*>(
-        &_UpdateDstTaskRecieveRequest_default_instance_);
+  static inline const UpdateTaskRcvRequest* internal_default_instance() {
+    return reinterpret_cast<const UpdateTaskRcvRequest*>(
+        &_UpdateTaskRcvRequest_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 4;
-  friend void swap(UpdateDstTaskRecieveRequest& a, UpdateDstTaskRecieveRequest& b) { a.Swap(&b); }
-  inline void Swap(UpdateDstTaskRecieveRequest* other) {
+  static constexpr int kIndexInFileMessages = 5;
+  friend void swap(UpdateTaskRcvRequest& a, UpdateTaskRcvRequest& b) { a.Swap(&b); }
+  inline void Swap(UpdateTaskRcvRequest* other) {
     if (other == this) return;
 #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
     if (GetArena() != nullptr && GetArena() == other->GetArena()) {
@@ -408,7 +399,7 @@ class UpdateDstTaskRecieveRequest final : public ::google::protobuf::Message
       ::google::protobuf::internal::GenericSwap(this, other);
     }
   }
-  void UnsafeArenaSwap(UpdateDstTaskRecieveRequest* other) {
+  void UnsafeArenaSwap(UpdateTaskRcvRequest* other) {
     if (other == this) return;
     ABSL_DCHECK(GetArena() == other->GetArena());
     InternalSwap(other);
@@ -416,13 +407,13 @@ class UpdateDstTaskRecieveRequest final : public ::google::protobuf::Message
 
   // implements Message ----------------------------------------------
 
-  UpdateDstTaskRecieveRequest* New(::google::protobuf::Arena* arena = nullptr) const final {
-    return ::google::protobuf::Message::DefaultConstruct<UpdateDstTaskRecieveRequest>(arena);
+  UpdateTaskRcvRequest* New(::google::protobuf::Arena* arena = nullptr) const final {
+    return ::google::protobuf::Message::DefaultConstruct<UpdateTaskRcvRequest>(arena);
   }
   using ::google::protobuf::Message::CopyFrom;
-  void CopyFrom(const UpdateDstTaskRecieveRequest& from);
+  void CopyFrom(const UpdateTaskRcvRequest& from);
   using ::google::protobuf::Message::MergeFrom;
-  void MergeFrom(const UpdateDstTaskRecieveRequest& from) { UpdateDstTaskRecieveRequest::MergeImpl(*this, from); }
+  void MergeFrom(const UpdateTaskRcvRequest& from) { UpdateTaskRcvRequest::MergeImpl(*this, from); }
 
   private:
   static void MergeImpl(
@@ -443,16 +434,16 @@ class UpdateDstTaskRecieveRequest final : public ::google::protobuf::Message
   private:
   void SharedCtor(::google::protobuf::Arena* arena);
   void SharedDtor();
-  void InternalSwap(UpdateDstTaskRecieveRequest* other);
+  void InternalSwap(UpdateTaskRcvRequest* other);
  private:
   friend class ::google::protobuf::internal::AnyMetadata;
-  static ::absl::string_view FullMessageName() { return "rainstorm.UpdateDstTaskRecieveRequest"; }
+  static ::absl::string_view FullMessageName() { return "rainstorm.UpdateTaskRcvRequest"; }
 
  protected:
-  explicit UpdateDstTaskRecieveRequest(::google::protobuf::Arena* arena);
-  UpdateDstTaskRecieveRequest(::google::protobuf::Arena* arena, const UpdateDstTaskRecieveRequest& from);
-  UpdateDstTaskRecieveRequest(::google::protobuf::Arena* arena, UpdateDstTaskRecieveRequest&& from) noexcept
-      : UpdateDstTaskRecieveRequest(arena) {
+  explicit UpdateTaskRcvRequest(::google::protobuf::Arena* arena);
+  UpdateTaskRcvRequest(::google::protobuf::Arena* arena, const UpdateTaskRcvRequest& from);
+  UpdateTaskRcvRequest(::google::protobuf::Arena* arena, UpdateTaskRcvRequest&& from) noexcept
+      : UpdateTaskRcvRequest(arena) {
     *this = ::std::move(from);
   }
   const ::google::protobuf::Message::ClassData* GetClassData() const final;
@@ -463,69 +454,57 @@ class UpdateDstTaskRecieveRequest final : public ::google::protobuf::Message
 
   // accessors -------------------------------------------------------
   enum : int {
-    kIdFieldNumber = 1,
-    kOldPrevServerAddressFieldNumber = 2,
-    kNewPrevServerAddressFieldNumber = 3,
+    kRcvAddressFieldNumber = 2,
+    kIndexFieldNumber = 1,
+    kRcvPortFieldNumber = 3,
   };
-  // string id = 1;
-  void clear_id() ;
-  const std::string& id() const;
+  // string rcv_address = 2;
+  void clear_rcv_address() ;
+  const std::string& rcv_address() const;
   template <typename Arg_ = const std::string&, typename... Args_>
-  void set_id(Arg_&& arg, Args_... args);
-  std::string* mutable_id();
-  PROTOBUF_NODISCARD std::string* release_id();
-  void set_allocated_id(std::string* value);
+  void set_rcv_address(Arg_&& arg, Args_... args);
+  std::string* mutable_rcv_address();
+  PROTOBUF_NODISCARD std::string* release_rcv_address();
+  void set_allocated_rcv_address(std::string* value);
 
   private:
-  const std::string& _internal_id() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_id(
+  const std::string& _internal_rcv_address() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_rcv_address(
       const std::string& value);
-  std::string* _internal_mutable_id();
+  std::string* _internal_mutable_rcv_address();
 
   public:
-  // string old_prev_server_address = 2;
-  void clear_old_prev_server_address() ;
-  const std::string& old_prev_server_address() const;
-  template <typename Arg_ = const std::string&, typename... Args_>
-  void set_old_prev_server_address(Arg_&& arg, Args_... args);
-  std::string* mutable_old_prev_server_address();
-  PROTOBUF_NODISCARD std::string* release_old_prev_server_address();
-  void set_allocated_old_prev_server_address(std::string* value);
+  // int32 index = 1;
+  void clear_index() ;
+  ::int32_t index() const;
+  void set_index(::int32_t value);
 
   private:
-  const std::string& _internal_old_prev_server_address() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_old_prev_server_address(
-      const std::string& value);
-  std::string* _internal_mutable_old_prev_server_address();
+  ::int32_t _internal_index() const;
+  void _internal_set_index(::int32_t value);
 
   public:
-  // string new_prev_server_address = 3;
-  void clear_new_prev_server_address() ;
-  const std::string& new_prev_server_address() const;
-  template <typename Arg_ = const std::string&, typename... Args_>
-  void set_new_prev_server_address(Arg_&& arg, Args_... args);
-  std::string* mutable_new_prev_server_address();
-  PROTOBUF_NODISCARD std::string* release_new_prev_server_address();
-  void set_allocated_new_prev_server_address(std::string* value);
+  // int32 rcv_port = 3;
+  void clear_rcv_port() ;
+  ::int32_t rcv_port() const;
+  void set_rcv_port(::int32_t value);
 
   private:
-  const std::string& _internal_new_prev_server_address() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_new_prev_server_address(
-      const std::string& value);
-  std::string* _internal_mutable_new_prev_server_address();
+  ::int32_t _internal_rcv_port() const;
+  void _internal_set_rcv_port(::int32_t value);
 
   public:
-  // @@protoc_insertion_point(class_scope:rainstorm.UpdateDstTaskRecieveRequest)
+  // @@protoc_insertion_point(class_scope:rainstorm.UpdateTaskRcvRequest)
  private:
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
   static const ::google::protobuf::internal::TcParseTable<
       2, 3, 0,
-      94, 2>
+      50, 2>
       _table_;
 
   static constexpr const void* _raw_default_instance_ =
-      &_UpdateDstTaskRecieveRequest_default_instance_;
+      &_UpdateTaskRcvRequest_default_instance_;
 
   friend class ::google::protobuf::MessageLite;
   friend class ::google::protobuf::Arena;
@@ -540,10 +519,10 @@ class UpdateDstTaskRecieveRequest final : public ::google::protobuf::Message
                           ::google::protobuf::Arena* arena);
     inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
                           ::google::protobuf::Arena* arena, const Impl_& from,
-                          const UpdateDstTaskRecieveRequest& from_msg);
-    ::google::protobuf::internal::ArenaStringPtr id_;
-    ::google::protobuf::internal::ArenaStringPtr old_prev_server_address_;
-    ::google::protobuf::internal::ArenaStringPtr new_prev_server_address_;
+                          const UpdateTaskRcvRequest& from_msg);
+    ::google::protobuf::internal::ArenaStringPtr rcv_address_;
+    ::int32_t index_;
+    ::int32_t rcv_port_;
     mutable ::google::protobuf::internal::CachedSize _cached_size_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
@@ -741,6 +720,234 @@ class OperationStatus final : public ::google::protobuf::Message
 };
 // -------------------------------------------------------------------
 
+class NewTgtTaskRequest final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:rainstorm.NewTgtTaskRequest) */ {
+ public:
+  inline NewTgtTaskRequest() : NewTgtTaskRequest(nullptr) {}
+  ~NewTgtTaskRequest() override;
+  template <typename = void>
+  explicit PROTOBUF_CONSTEXPR NewTgtTaskRequest(
+      ::google::protobuf::internal::ConstantInitialized);
+
+  inline NewTgtTaskRequest(const NewTgtTaskRequest& from) : NewTgtTaskRequest(nullptr, from) {}
+  inline NewTgtTaskRequest(NewTgtTaskRequest&& from) noexcept
+      : NewTgtTaskRequest(nullptr, std::move(from)) {}
+  inline NewTgtTaskRequest& operator=(const NewTgtTaskRequest& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline NewTgtTaskRequest& operator=(NewTgtTaskRequest&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetArena() == from.GetArena()
+#ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetArena() != nullptr
+#endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::google::protobuf::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::google::protobuf::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const NewTgtTaskRequest& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const NewTgtTaskRequest* internal_default_instance() {
+    return reinterpret_cast<const NewTgtTaskRequest*>(
+        &_NewTgtTaskRequest_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages = 3;
+  friend void swap(NewTgtTaskRequest& a, NewTgtTaskRequest& b) { a.Swap(&b); }
+  inline void Swap(NewTgtTaskRequest* other) {
+    if (other == this) return;
+#ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetArena() != nullptr && GetArena() == other->GetArena()) {
+#else   // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetArena() == other->GetArena()) {
+#endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(NewTgtTaskRequest* other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  NewTgtTaskRequest* New(::google::protobuf::Arena* arena = nullptr) const final {
+    return ::google::protobuf::Message::DefaultConstruct<NewTgtTaskRequest>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const NewTgtTaskRequest& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const NewTgtTaskRequest& from) { NewTgtTaskRequest::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(
+      ::google::protobuf::MessageLite& to_msg,
+      const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() final;
+  ::size_t ByteSizeLong() const final;
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* arena);
+  void SharedDtor();
+  void InternalSwap(NewTgtTaskRequest* other);
+ private:
+  friend class ::google::protobuf::internal::AnyMetadata;
+  static ::absl::string_view FullMessageName() { return "rainstorm.NewTgtTaskRequest"; }
+
+ protected:
+  explicit NewTgtTaskRequest(::google::protobuf::Arena* arena);
+  NewTgtTaskRequest(::google::protobuf::Arena* arena, const NewTgtTaskRequest& from);
+  NewTgtTaskRequest(::google::protobuf::Arena* arena, NewTgtTaskRequest&& from) noexcept
+      : NewTgtTaskRequest(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::Message::ClassData* GetClassData() const final;
+
+ public:
+  ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kRcvAddressesFieldNumber = 2,
+    kRcvPortsFieldNumber = 3,
+    kQueryIdFieldNumber = 1,
+  };
+  // repeated string rcv_addresses = 2;
+  int rcv_addresses_size() const;
+  private:
+  int _internal_rcv_addresses_size() const;
+
+  public:
+  void clear_rcv_addresses() ;
+  const std::string& rcv_addresses(int index) const;
+  std::string* mutable_rcv_addresses(int index);
+  void set_rcv_addresses(int index, const std::string& value);
+  void set_rcv_addresses(int index, std::string&& value);
+  void set_rcv_addresses(int index, const char* value);
+  void set_rcv_addresses(int index, const char* value, std::size_t size);
+  void set_rcv_addresses(int index, absl::string_view value);
+  std::string* add_rcv_addresses();
+  void add_rcv_addresses(const std::string& value);
+  void add_rcv_addresses(std::string&& value);
+  void add_rcv_addresses(const char* value);
+  void add_rcv_addresses(const char* value, std::size_t size);
+  void add_rcv_addresses(absl::string_view value);
+  const ::google::protobuf::RepeatedPtrField<std::string>& rcv_addresses() const;
+  ::google::protobuf::RepeatedPtrField<std::string>* mutable_rcv_addresses();
+
+  private:
+  const ::google::protobuf::RepeatedPtrField<std::string>& _internal_rcv_addresses() const;
+  ::google::protobuf::RepeatedPtrField<std::string>* _internal_mutable_rcv_addresses();
+
+  public:
+  // repeated int32 rcv_ports = 3;
+  int rcv_ports_size() const;
+  private:
+  int _internal_rcv_ports_size() const;
+
+  public:
+  void clear_rcv_ports() ;
+  ::int32_t rcv_ports(int index) const;
+  void set_rcv_ports(int index, ::int32_t value);
+  void add_rcv_ports(::int32_t value);
+  const ::google::protobuf::RepeatedField<::int32_t>& rcv_ports() const;
+  ::google::protobuf::RepeatedField<::int32_t>* mutable_rcv_ports();
+
+  private:
+  const ::google::protobuf::RepeatedField<::int32_t>& _internal_rcv_ports() const;
+  ::google::protobuf::RepeatedField<::int32_t>* _internal_mutable_rcv_ports();
+
+  public:
+  // string query_id = 1;
+  void clear_query_id() ;
+  const std::string& query_id() const;
+  template <typename Arg_ = const std::string&, typename... Args_>
+  void set_query_id(Arg_&& arg, Args_... args);
+  std::string* mutable_query_id();
+  PROTOBUF_NODISCARD std::string* release_query_id();
+  void set_allocated_query_id(std::string* value);
+
+  private:
+  const std::string& _internal_query_id() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_query_id(
+      const std::string& value);
+  std::string* _internal_mutable_query_id();
+
+  public:
+  // @@protoc_insertion_point(class_scope:rainstorm.NewTgtTaskRequest)
+ private:
+  class _Internal;
+  friend class ::google::protobuf::internal::TcParser;
+  static const ::google::protobuf::internal::TcParseTable<
+      2, 3, 0,
+      57, 2>
+      _table_;
+
+  static constexpr const void* _raw_default_instance_ =
+      &_NewTgtTaskRequest_default_instance_;
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(
+        ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena);
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena, const Impl_& from,
+                          const NewTgtTaskRequest& from_msg);
+    ::google::protobuf::RepeatedPtrField<std::string> rcv_addresses_;
+    ::google::protobuf::RepeatedField<::int32_t> rcv_ports_;
+    mutable ::google::protobuf::internal::CachedSize _rcv_ports_cached_byte_size_;
+    ::google::protobuf::internal::ArenaStringPtr query_id_;
+    mutable ::google::protobuf::internal::CachedSize _cached_size_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_rainstorm_2eproto;
+};
+// -------------------------------------------------------------------
+
 class NewStageTaskRequest final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:rainstorm.NewStageTaskRequest) */ {
  public:
@@ -865,85 +1072,125 @@ class NewStageTaskRequest final : public ::google::protobuf::Message
 
   // accessors -------------------------------------------------------
   enum : int {
-    kNextServerAddressesFieldNumber = 4,
-    kPrevServerAddressesFieldNumber = 5,
-    kIdFieldNumber = 1,
-    kExecutableFieldNumber = 2,
-    kStageNumberFieldNumber = 3,
+    kRcvAddressesFieldNumber = 6,
+    kRcvPortsFieldNumber = 7,
+    kSndAddressesFieldNumber = 8,
+    kSndPortsFieldNumber = 9,
+    kQueryIdFieldNumber = 1,
+    kExecutableFieldNumber = 5,
+    kStageIdFieldNumber = 2,
+    kTaskIdFieldNumber = 3,
+    kTaskCountFieldNumber = 4,
   };
-  // repeated string next_server_addresses = 4;
-  int next_server_addresses_size() const;
+  // repeated string rcv_addresses = 6;
+  int rcv_addresses_size() const;
   private:
-  int _internal_next_server_addresses_size() const;
+  int _internal_rcv_addresses_size() const;
 
   public:
-  void clear_next_server_addresses() ;
-  const std::string& next_server_addresses(int index) const;
-  std::string* mutable_next_server_addresses(int index);
-  void set_next_server_addresses(int index, const std::string& value);
-  void set_next_server_addresses(int index, std::string&& value);
-  void set_next_server_addresses(int index, const char* value);
-  void set_next_server_addresses(int index, const char* value, std::size_t size);
-  void set_next_server_addresses(int index, absl::string_view value);
-  std::string* add_next_server_addresses();
-  void add_next_server_addresses(const std::string& value);
-  void add_next_server_addresses(std::string&& value);
-  void add_next_server_addresses(const char* value);
-  void add_next_server_addresses(const char* value, std::size_t size);
-  void add_next_server_addresses(absl::string_view value);
-  const ::google::protobuf::RepeatedPtrField<std::string>& next_server_addresses() const;
-  ::google::protobuf::RepeatedPtrField<std::string>* mutable_next_server_addresses();
+  void clear_rcv_addresses() ;
+  const std::string& rcv_addresses(int index) const;
+  std::string* mutable_rcv_addresses(int index);
+  void set_rcv_addresses(int index, const std::string& value);
+  void set_rcv_addresses(int index, std::string&& value);
+  void set_rcv_addresses(int index, const char* value);
+  void set_rcv_addresses(int index, const char* value, std::size_t size);
+  void set_rcv_addresses(int index, absl::string_view value);
+  std::string* add_rcv_addresses();
+  void add_rcv_addresses(const std::string& value);
+  void add_rcv_addresses(std::string&& value);
+  void add_rcv_addresses(const char* value);
+  void add_rcv_addresses(const char* value, std::size_t size);
+  void add_rcv_addresses(absl::string_view value);
+  const ::google::protobuf::RepeatedPtrField<std::string>& rcv_addresses() const;
+  ::google::protobuf::RepeatedPtrField<std::string>* mutable_rcv_addresses();
 
   private:
-  const ::google::protobuf::RepeatedPtrField<std::string>& _internal_next_server_addresses() const;
-  ::google::protobuf::RepeatedPtrField<std::string>* _internal_mutable_next_server_addresses();
+  const ::google::protobuf::RepeatedPtrField<std::string>& _internal_rcv_addresses() const;
+  ::google::protobuf::RepeatedPtrField<std::string>* _internal_mutable_rcv_addresses();
 
   public:
-  // repeated string prev_server_addresses = 5;
-  int prev_server_addresses_size() const;
+  // repeated int32 rcv_ports = 7;
+  int rcv_ports_size() const;
   private:
-  int _internal_prev_server_addresses_size() const;
+  int _internal_rcv_ports_size() const;
 
   public:
-  void clear_prev_server_addresses() ;
-  const std::string& prev_server_addresses(int index) const;
-  std::string* mutable_prev_server_addresses(int index);
-  void set_prev_server_addresses(int index, const std::string& value);
-  void set_prev_server_addresses(int index, std::string&& value);
-  void set_prev_server_addresses(int index, const char* value);
-  void set_prev_server_addresses(int index, const char* value, std::size_t size);
-  void set_prev_server_addresses(int index, absl::string_view value);
-  std::string* add_prev_server_addresses();
-  void add_prev_server_addresses(const std::string& value);
-  void add_prev_server_addresses(std::string&& value);
-  void add_prev_server_addresses(const char* value);
-  void add_prev_server_addresses(const char* value, std::size_t size);
-  void add_prev_server_addresses(absl::string_view value);
-  const ::google::protobuf::RepeatedPtrField<std::string>& prev_server_addresses() const;
-  ::google::protobuf::RepeatedPtrField<std::string>* mutable_prev_server_addresses();
+  void clear_rcv_ports() ;
+  ::int32_t rcv_ports(int index) const;
+  void set_rcv_ports(int index, ::int32_t value);
+  void add_rcv_ports(::int32_t value);
+  const ::google::protobuf::RepeatedField<::int32_t>& rcv_ports() const;
+  ::google::protobuf::RepeatedField<::int32_t>* mutable_rcv_ports();
 
   private:
-  const ::google::protobuf::RepeatedPtrField<std::string>& _internal_prev_server_addresses() const;
-  ::google::protobuf::RepeatedPtrField<std::string>* _internal_mutable_prev_server_addresses();
+  const ::google::protobuf::RepeatedField<::int32_t>& _internal_rcv_ports() const;
+  ::google::protobuf::RepeatedField<::int32_t>* _internal_mutable_rcv_ports();
 
   public:
-  // string id = 1;
-  void clear_id() ;
-  const std::string& id() const;
+  // repeated string snd_addresses = 8;
+  int snd_addresses_size() const;
+  private:
+  int _internal_snd_addresses_size() const;
+
+  public:
+  void clear_snd_addresses() ;
+  const std::string& snd_addresses(int index) const;
+  std::string* mutable_snd_addresses(int index);
+  void set_snd_addresses(int index, const std::string& value);
+  void set_snd_addresses(int index, std::string&& value);
+  void set_snd_addresses(int index, const char* value);
+  void set_snd_addresses(int index, const char* value, std::size_t size);
+  void set_snd_addresses(int index, absl::string_view value);
+  std::string* add_snd_addresses();
+  void add_snd_addresses(const std::string& value);
+  void add_snd_addresses(std::string&& value);
+  void add_snd_addresses(const char* value);
+  void add_snd_addresses(const char* value, std::size_t size);
+  void add_snd_addresses(absl::string_view value);
+  const ::google::protobuf::RepeatedPtrField<std::string>& snd_addresses() const;
+  ::google::protobuf::RepeatedPtrField<std::string>* mutable_snd_addresses();
+
+  private:
+  const ::google::protobuf::RepeatedPtrField<std::string>& _internal_snd_addresses() const;
+  ::google::protobuf::RepeatedPtrField<std::string>* _internal_mutable_snd_addresses();
+
+  public:
+  // repeated int32 snd_ports = 9;
+  int snd_ports_size() const;
+  private:
+  int _internal_snd_ports_size() const;
+
+  public:
+  void clear_snd_ports() ;
+  ::int32_t snd_ports(int index) const;
+  void set_snd_ports(int index, ::int32_t value);
+  void add_snd_ports(::int32_t value);
+  const ::google::protobuf::RepeatedField<::int32_t>& snd_ports() const;
+  ::google::protobuf::RepeatedField<::int32_t>* mutable_snd_ports();
+
+  private:
+  const ::google::protobuf::RepeatedField<::int32_t>& _internal_snd_ports() const;
+  ::google::protobuf::RepeatedField<::int32_t>* _internal_mutable_snd_ports();
+
+  public:
+  // string query_id = 1;
+  void clear_query_id() ;
+  const std::string& query_id() const;
   template <typename Arg_ = const std::string&, typename... Args_>
-  void set_id(Arg_&& arg, Args_... args);
-  std::string* mutable_id();
-  PROTOBUF_NODISCARD std::string* release_id();
-  void set_allocated_id(std::string* value);
+  void set_query_id(Arg_&& arg, Args_... args);
+  std::string* mutable_query_id();
+  PROTOBUF_NODISCARD std::string* release_query_id();
+  void set_allocated_query_id(std::string* value);
 
   private:
-  const std::string& _internal_id() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_id(
+  const std::string& _internal_query_id() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_query_id(
       const std::string& value);
-  std::string* _internal_mutable_id();
+  std::string* _internal_mutable_query_id();
 
   public:
-  // string executable = 2;
+  // string executable = 5;
   void clear_executable() ;
   const std::string& executable() const;
   template <typename Arg_ = const std::string&, typename... Args_>
@@ -959,14 +1206,34 @@ class NewStageTaskRequest final : public ::google::protobuf::Message
   std::string* _internal_mutable_executable();
 
   public:
-  // int32 stage_number = 3;
-  void clear_stage_number() ;
-  ::int32_t stage_number() const;
-  void set_stage_number(::int32_t value);
+  // int32 stage_id = 2;
+  void clear_stage_id() ;
+  ::int32_t stage_id() const;
+  void set_stage_id(::int32_t value);
 
   private:
-  ::int32_t _internal_stage_number() const;
-  void _internal_set_stage_number(::int32_t value);
+  ::int32_t _internal_stage_id() const;
+  void _internal_set_stage_id(::int32_t value);
+
+  public:
+  // int32 task_id = 3;
+  void clear_task_id() ;
+  ::int32_t task_id() const;
+  void set_task_id(::int32_t value);
+
+  private:
+  ::int32_t _internal_task_id() const;
+  void _internal_set_task_id(::int32_t value);
+
+  public:
+  // int32 task_count = 4;
+  void clear_task_count() ;
+  ::int32_t task_count() const;
+  void set_task_count(::int32_t value);
+
+  private:
+  ::int32_t _internal_task_count() const;
+  void _internal_set_task_count(::int32_t value);
 
   public:
   // @@protoc_insertion_point(class_scope:rainstorm.NewStageTaskRequest)
@@ -974,8 +1241,8 @@ class NewStageTaskRequest final : public ::google::protobuf::Message
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
   static const ::google::protobuf::internal::TcParseTable<
-      3, 5, 0,
-      92, 2>
+      4, 9, 0,
+      90, 2>
       _table_;
 
   static constexpr const void* _raw_default_instance_ =
@@ -995,11 +1262,17 @@ class NewStageTaskRequest final : public ::google::protobuf::Message
     inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
                           ::google::protobuf::Arena* arena, const Impl_& from,
                           const NewStageTaskRequest& from_msg);
-    ::google::protobuf::RepeatedPtrField<std::string> next_server_addresses_;
-    ::google::protobuf::RepeatedPtrField<std::string> prev_server_addresses_;
-    ::google::protobuf::internal::ArenaStringPtr id_;
+    ::google::protobuf::RepeatedPtrField<std::string> rcv_addresses_;
+    ::google::protobuf::RepeatedField<::int32_t> rcv_ports_;
+    mutable ::google::protobuf::internal::CachedSize _rcv_ports_cached_byte_size_;
+    ::google::protobuf::RepeatedPtrField<std::string> snd_addresses_;
+    ::google::protobuf::RepeatedField<::int32_t> snd_ports_;
+    mutable ::google::protobuf::internal::CachedSize _snd_ports_cached_byte_size_;
+    ::google::protobuf::internal::ArenaStringPtr query_id_;
     ::google::protobuf::internal::ArenaStringPtr executable_;
-    ::int32_t stage_number_;
+    ::int32_t stage_id_;
+    ::int32_t task_id_;
+    ::int32_t task_count_;
     mutable ::google::protobuf::internal::CachedSize _cached_size_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
@@ -1132,56 +1405,30 @@ class NewSrcTaskRequest final : public ::google::protobuf::Message
 
   // accessors -------------------------------------------------------
   enum : int {
-    kNextServerAddressesFieldNumber = 4,
-    kIdFieldNumber = 1,
-    kSrcFilenameFieldNumber = 2,
-    kStageNumberFieldNumber = 3,
+    kQueryIdFieldNumber = 1,
+    kSrcFilenameFieldNumber = 4,
+    kSndAddressFieldNumber = 5,
+    kTaskIdFieldNumber = 2,
+    kTaskCountFieldNumber = 3,
+    kSndPortFieldNumber = 6,
   };
-  // repeated string next_server_addresses = 4;
-  int next_server_addresses_size() const;
-  private:
-  int _internal_next_server_addresses_size() const;
-
-  public:
-  void clear_next_server_addresses() ;
-  const std::string& next_server_addresses(int index) const;
-  std::string* mutable_next_server_addresses(int index);
-  void set_next_server_addresses(int index, const std::string& value);
-  void set_next_server_addresses(int index, std::string&& value);
-  void set_next_server_addresses(int index, const char* value);
-  void set_next_server_addresses(int index, const char* value, std::size_t size);
-  void set_next_server_addresses(int index, absl::string_view value);
-  std::string* add_next_server_addresses();
-  void add_next_server_addresses(const std::string& value);
-  void add_next_server_addresses(std::string&& value);
-  void add_next_server_addresses(const char* value);
-  void add_next_server_addresses(const char* value, std::size_t size);
-  void add_next_server_addresses(absl::string_view value);
-  const ::google::protobuf::RepeatedPtrField<std::string>& next_server_addresses() const;
-  ::google::protobuf::RepeatedPtrField<std::string>* mutable_next_server_addresses();
-
-  private:
-  const ::google::protobuf::RepeatedPtrField<std::string>& _internal_next_server_addresses() const;
-  ::google::protobuf::RepeatedPtrField<std::string>* _internal_mutable_next_server_addresses();
-
-  public:
-  // string id = 1;
-  void clear_id() ;
-  const std::string& id() const;
+  // string query_id = 1;
+  void clear_query_id() ;
+  const std::string& query_id() const;
   template <typename Arg_ = const std::string&, typename... Args_>
-  void set_id(Arg_&& arg, Args_... args);
-  std::string* mutable_id();
-  PROTOBUF_NODISCARD std::string* release_id();
-  void set_allocated_id(std::string* value);
+  void set_query_id(Arg_&& arg, Args_... args);
+  std::string* mutable_query_id();
+  PROTOBUF_NODISCARD std::string* release_query_id();
+  void set_allocated_query_id(std::string* value);
 
   private:
-  const std::string& _internal_id() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_id(
+  const std::string& _internal_query_id() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_query_id(
       const std::string& value);
-  std::string* _internal_mutable_id();
+  std::string* _internal_mutable_query_id();
 
   public:
-  // string src_filename = 2;
+  // string src_filename = 4;
   void clear_src_filename() ;
   const std::string& src_filename() const;
   template <typename Arg_ = const std::string&, typename... Args_>
@@ -1197,14 +1444,50 @@ class NewSrcTaskRequest final : public ::google::protobuf::Message
   std::string* _internal_mutable_src_filename();
 
   public:
-  // int32 stage_number = 3;
-  void clear_stage_number() ;
-  ::int32_t stage_number() const;
-  void set_stage_number(::int32_t value);
+  // string snd_address = 5;
+  void clear_snd_address() ;
+  const std::string& snd_address() const;
+  template <typename Arg_ = const std::string&, typename... Args_>
+  void set_snd_address(Arg_&& arg, Args_... args);
+  std::string* mutable_snd_address();
+  PROTOBUF_NODISCARD std::string* release_snd_address();
+  void set_allocated_snd_address(std::string* value);
 
   private:
-  ::int32_t _internal_stage_number() const;
-  void _internal_set_stage_number(::int32_t value);
+  const std::string& _internal_snd_address() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_snd_address(
+      const std::string& value);
+  std::string* _internal_mutable_snd_address();
+
+  public:
+  // int32 task_id = 2;
+  void clear_task_id() ;
+  ::int32_t task_id() const;
+  void set_task_id(::int32_t value);
+
+  private:
+  ::int32_t _internal_task_id() const;
+  void _internal_set_task_id(::int32_t value);
+
+  public:
+  // int32 task_count = 3;
+  void clear_task_count() ;
+  ::int32_t task_count() const;
+  void set_task_count(::int32_t value);
+
+  private:
+  ::int32_t _internal_task_count() const;
+  void _internal_set_task_count(::int32_t value);
+
+  public:
+  // int32 snd_port = 6;
+  void clear_snd_port() ;
+  ::int32_t snd_port() const;
+  void set_snd_port(::int32_t value);
+
+  private:
+  ::int32_t _internal_snd_port() const;
+  void _internal_set_snd_port(::int32_t value);
 
   public:
   // @@protoc_insertion_point(class_scope:rainstorm.NewSrcTaskRequest)
@@ -1212,8 +1495,8 @@ class NewSrcTaskRequest final : public ::google::protobuf::Message
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
   static const ::google::protobuf::internal::TcParseTable<
-      2, 4, 0,
-      71, 2>
+      3, 6, 0,
+      67, 2>
       _table_;
 
   static constexpr const void* _raw_default_instance_ =
@@ -1233,10 +1516,12 @@ class NewSrcTaskRequest final : public ::google::protobuf::Message
     inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
                           ::google::protobuf::Arena* arena, const Impl_& from,
                           const NewSrcTaskRequest& from_msg);
-    ::google::protobuf::RepeatedPtrField<std::string> next_server_addresses_;
-    ::google::protobuf::internal::ArenaStringPtr id_;
+    ::google::protobuf::internal::ArenaStringPtr query_id_;
     ::google::protobuf::internal::ArenaStringPtr src_filename_;
-    ::int32_t stage_number_;
+    ::google::protobuf::internal::ArenaStringPtr snd_address_;
+    ::int32_t task_id_;
+    ::int32_t task_count_;
+    ::int32_t snd_port_;
     mutable ::google::protobuf::internal::CachedSize _cached_size_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
@@ -1300,7 +1585,7 @@ class KV final : public ::google::protobuf::Message
     return reinterpret_cast<const KV*>(
         &_KV_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 5;
+  static constexpr int kIndexInFileMessages = 6;
   friend void swap(KV& a, KV& b) { a.Swap(&b); }
   inline void Swap(KV* other) {
     if (other == this) return;
@@ -1369,10 +1654,27 @@ class KV final : public ::google::protobuf::Message
 
   // accessors -------------------------------------------------------
   enum : int {
-    kKeyFieldNumber = 1,
-    kValueFieldNumber = 2,
+    kIdFieldNumber = 1,
+    kKeyFieldNumber = 2,
+    kValueFieldNumber = 3,
   };
-  // string key = 1;
+  // string id = 1;
+  void clear_id() ;
+  const std::string& id() const;
+  template <typename Arg_ = const std::string&, typename... Args_>
+  void set_id(Arg_&& arg, Args_... args);
+  std::string* mutable_id();
+  PROTOBUF_NODISCARD std::string* release_id();
+  void set_allocated_id(std::string* value);
+
+  private:
+  const std::string& _internal_id() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_id(
+      const std::string& value);
+  std::string* _internal_mutable_id();
+
+  public:
+  // string key = 2;
   void clear_key() ;
   const std::string& key() const;
   template <typename Arg_ = const std::string&, typename... Args_>
@@ -1388,7 +1690,7 @@ class KV final : public ::google::protobuf::Message
   std::string* _internal_mutable_key();
 
   public:
-  // string value = 2;
+  // string value = 3;
   void clear_value() ;
   const std::string& value() const;
   template <typename Arg_ = const std::string&, typename... Args_>
@@ -1409,8 +1711,8 @@ class KV final : public ::google::protobuf::Message
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
   static const ::google::protobuf::internal::TcParseTable<
-      1, 2, 0,
-      29, 2>
+      2, 3, 0,
+      31, 2>
       _table_;
 
   static constexpr const void* _raw_default_instance_ =
@@ -1430,6 +1732,7 @@ class KV final : public ::google::protobuf::Message
     inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
                           ::google::protobuf::Arena* arena, const Impl_& from,
                           const KV& from_msg);
+    ::google::protobuf::internal::ArenaStringPtr id_;
     ::google::protobuf::internal::ArenaStringPtr key_;
     ::google::protobuf::internal::ArenaStringPtr value_;
     mutable ::google::protobuf::internal::CachedSize _cached_size_;
@@ -1493,7 +1796,7 @@ class DataChunk final : public ::google::protobuf::Message
   }
   enum RequestCase {
     kId = 1,
-    kPairs = 2,
+    kPair = 2,
     kFinished = 3,
     REQUEST_NOT_SET = 0,
   };
@@ -1501,7 +1804,7 @@ class DataChunk final : public ::google::protobuf::Message
     return reinterpret_cast<const DataChunk*>(
         &_DataChunk_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 6;
+  static constexpr int kIndexInFileMessages = 7;
   friend void swap(DataChunk& a, DataChunk& b) { a.Swap(&b); }
   inline void Swap(DataChunk* other) {
     if (other == this) return;
@@ -1571,7 +1874,7 @@ class DataChunk final : public ::google::protobuf::Message
   // accessors -------------------------------------------------------
   enum : int {
     kIdFieldNumber = 1,
-    kPairsFieldNumber = 2,
+    kPairFieldNumber = 2,
     kFinishedFieldNumber = 3,
   };
   // string id = 1;
@@ -1591,23 +1894,23 @@ class DataChunk final : public ::google::protobuf::Message
   std::string* _internal_mutable_id();
 
   public:
-  // .rainstorm.KV pairs = 2;
-  bool has_pairs() const;
+  // .rainstorm.KV pair = 2;
+  bool has_pair() const;
   private:
-  bool _internal_has_pairs() const;
+  bool _internal_has_pair() const;
 
   public:
-  void clear_pairs() ;
-  const ::rainstorm::KV& pairs() const;
-  PROTOBUF_NODISCARD ::rainstorm::KV* release_pairs();
-  ::rainstorm::KV* mutable_pairs();
-  void set_allocated_pairs(::rainstorm::KV* value);
-  void unsafe_arena_set_allocated_pairs(::rainstorm::KV* value);
-  ::rainstorm::KV* unsafe_arena_release_pairs();
+  void clear_pair() ;
+  const ::rainstorm::KV& pair() const;
+  PROTOBUF_NODISCARD ::rainstorm::KV* release_pair();
+  ::rainstorm::KV* mutable_pair();
+  void set_allocated_pair(::rainstorm::KV* value);
+  void unsafe_arena_set_allocated_pair(::rainstorm::KV* value);
+  ::rainstorm::KV* unsafe_arena_release_pair();
 
   private:
-  const ::rainstorm::KV& _internal_pairs() const;
-  ::rainstorm::KV* _internal_mutable_pairs();
+  const ::rainstorm::KV& _internal_pair() const;
+  ::rainstorm::KV* _internal_mutable_pair();
 
   public:
   // bool finished = 3;
@@ -1627,7 +1930,7 @@ class DataChunk final : public ::google::protobuf::Message
  private:
   class _Internal;
   void set_has_id();
-  void set_has_pairs();
+  void set_has_pair();
   void set_has_finished();
   inline bool has_request() const;
   inline void clear_has_request();
@@ -1658,7 +1961,7 @@ class DataChunk final : public ::google::protobuf::Message
       constexpr RequestUnion() : _constinit_{} {}
       ::google::protobuf::internal::ConstantInitialized _constinit_;
       ::google::protobuf::internal::ArenaStringPtr id_;
-      ::rainstorm::KV* pairs_;
+      ::rainstorm::KV* pair_;
       bool finished_;
     } request_;
     mutable ::google::protobuf::internal::CachedSize _cached_size_;
@@ -1725,7 +2028,7 @@ class StreamDataChunk final : public ::google::protobuf::Message
     return reinterpret_cast<const StreamDataChunk*>(
         &_StreamDataChunk_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 7;
+  static constexpr int kIndexInFileMessages = 8;
   friend void swap(StreamDataChunk& a, StreamDataChunk& b) { a.Swap(&b); }
   inline void Swap(StreamDataChunk* other) {
     if (other == this) return;
@@ -1903,7 +2206,7 @@ class AckDataChunk final : public ::google::protobuf::Message
     return reinterpret_cast<const AckDataChunk*>(
         &_AckDataChunk_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 8;
+  static constexpr int kIndexInFileMessages = 9;
   friend void swap(AckDataChunk& a, AckDataChunk& b) { a.Swap(&b); }
   inline void Swap(AckDataChunk* other) {
     if (other == this) return;
@@ -2117,57 +2420,101 @@ inline void OperationStatus::set_allocated_message(std::string* value) {
 
 // NewSrcTaskRequest
 
-// string id = 1;
-inline void NewSrcTaskRequest::clear_id() {
+// string query_id = 1;
+inline void NewSrcTaskRequest::clear_query_id() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.id_.ClearToEmpty();
+  _impl_.query_id_.ClearToEmpty();
 }
-inline const std::string& NewSrcTaskRequest::id() const
+inline const std::string& NewSrcTaskRequest::query_id() const
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_get:rainstorm.NewSrcTaskRequest.id)
-  return _internal_id();
+  // @@protoc_insertion_point(field_get:rainstorm.NewSrcTaskRequest.query_id)
+  return _internal_query_id();
 }
 template <typename Arg_, typename... Args_>
-inline PROTOBUF_ALWAYS_INLINE void NewSrcTaskRequest::set_id(Arg_&& arg,
+inline PROTOBUF_ALWAYS_INLINE void NewSrcTaskRequest::set_query_id(Arg_&& arg,
                                                      Args_... args) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
-  // @@protoc_insertion_point(field_set:rainstorm.NewSrcTaskRequest.id)
+  _impl_.query_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:rainstorm.NewSrcTaskRequest.query_id)
 }
-inline std::string* NewSrcTaskRequest::mutable_id() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  std::string* _s = _internal_mutable_id();
-  // @@protoc_insertion_point(field_mutable:rainstorm.NewSrcTaskRequest.id)
+inline std::string* NewSrcTaskRequest::mutable_query_id() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  std::string* _s = _internal_mutable_query_id();
+  // @@protoc_insertion_point(field_mutable:rainstorm.NewSrcTaskRequest.query_id)
   return _s;
 }
-inline const std::string& NewSrcTaskRequest::_internal_id() const {
+inline const std::string& NewSrcTaskRequest::_internal_query_id() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
-  return _impl_.id_.Get();
+  return _impl_.query_id_.Get();
 }
-inline void NewSrcTaskRequest::_internal_set_id(const std::string& value) {
+inline void NewSrcTaskRequest::_internal_set_query_id(const std::string& value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.id_.Set(value, GetArena());
+  _impl_.query_id_.Set(value, GetArena());
 }
-inline std::string* NewSrcTaskRequest::_internal_mutable_id() {
+inline std::string* NewSrcTaskRequest::_internal_mutable_query_id() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  return _impl_.id_.Mutable( GetArena());
+  return _impl_.query_id_.Mutable( GetArena());
 }
-inline std::string* NewSrcTaskRequest::release_id() {
+inline std::string* NewSrcTaskRequest::release_query_id() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  // @@protoc_insertion_point(field_release:rainstorm.NewSrcTaskRequest.id)
-  return _impl_.id_.Release();
+  // @@protoc_insertion_point(field_release:rainstorm.NewSrcTaskRequest.query_id)
+  return _impl_.query_id_.Release();
 }
-inline void NewSrcTaskRequest::set_allocated_id(std::string* value) {
+inline void NewSrcTaskRequest::set_allocated_query_id(std::string* value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.id_.SetAllocated(value, GetArena());
+  _impl_.query_id_.SetAllocated(value, GetArena());
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-        if (_impl_.id_.IsDefault()) {
-          _impl_.id_.Set("", GetArena());
+        if (_impl_.query_id_.IsDefault()) {
+          _impl_.query_id_.Set("", GetArena());
         }
   #endif  // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:rainstorm.NewSrcTaskRequest.id)
+  // @@protoc_insertion_point(field_set_allocated:rainstorm.NewSrcTaskRequest.query_id)
 }
 
-// string src_filename = 2;
+// int32 task_id = 2;
+inline void NewSrcTaskRequest::clear_task_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.task_id_ = 0;
+}
+inline ::int32_t NewSrcTaskRequest::task_id() const {
+  // @@protoc_insertion_point(field_get:rainstorm.NewSrcTaskRequest.task_id)
+  return _internal_task_id();
+}
+inline void NewSrcTaskRequest::set_task_id(::int32_t value) {
+  _internal_set_task_id(value);
+  // @@protoc_insertion_point(field_set:rainstorm.NewSrcTaskRequest.task_id)
+}
+inline ::int32_t NewSrcTaskRequest::_internal_task_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.task_id_;
+}
+inline void NewSrcTaskRequest::_internal_set_task_id(::int32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.task_id_ = value;
+}
+
+// int32 task_count = 3;
+inline void NewSrcTaskRequest::clear_task_count() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.task_count_ = 0;
+}
+inline ::int32_t NewSrcTaskRequest::task_count() const {
+  // @@protoc_insertion_point(field_get:rainstorm.NewSrcTaskRequest.task_count)
+  return _internal_task_count();
+}
+inline void NewSrcTaskRequest::set_task_count(::int32_t value) {
+  _internal_set_task_count(value);
+  // @@protoc_insertion_point(field_set:rainstorm.NewSrcTaskRequest.task_count)
+}
+inline ::int32_t NewSrcTaskRequest::_internal_task_count() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.task_count_;
+}
+inline void NewSrcTaskRequest::_internal_set_task_count(::int32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.task_count_ = value;
+}
+
+// string src_filename = 4;
 inline void NewSrcTaskRequest::clear_src_filename() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.src_filename_.ClearToEmpty();
@@ -2217,185 +2564,199 @@ inline void NewSrcTaskRequest::set_allocated_src_filename(std::string* value) {
   // @@protoc_insertion_point(field_set_allocated:rainstorm.NewSrcTaskRequest.src_filename)
 }
 
-// int32 stage_number = 3;
-inline void NewSrcTaskRequest::clear_stage_number() {
+// string snd_address = 5;
+inline void NewSrcTaskRequest::clear_snd_address() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.stage_number_ = 0;
+  _impl_.snd_address_.ClearToEmpty();
 }
-inline ::int32_t NewSrcTaskRequest::stage_number() const {
-  // @@protoc_insertion_point(field_get:rainstorm.NewSrcTaskRequest.stage_number)
-  return _internal_stage_number();
-}
-inline void NewSrcTaskRequest::set_stage_number(::int32_t value) {
-  _internal_set_stage_number(value);
-  // @@protoc_insertion_point(field_set:rainstorm.NewSrcTaskRequest.stage_number)
-}
-inline ::int32_t NewSrcTaskRequest::_internal_stage_number() const {
-  ::google::protobuf::internal::TSanRead(&_impl_);
-  return _impl_.stage_number_;
-}
-inline void NewSrcTaskRequest::_internal_set_stage_number(::int32_t value) {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.stage_number_ = value;
-}
-
-// repeated string next_server_addresses = 4;
-inline int NewSrcTaskRequest::_internal_next_server_addresses_size() const {
-  return _internal_next_server_addresses().size();
-}
-inline int NewSrcTaskRequest::next_server_addresses_size() const {
-  return _internal_next_server_addresses_size();
-}
-inline void NewSrcTaskRequest::clear_next_server_addresses() {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.next_server_addresses_.Clear();
-}
-inline std::string* NewSrcTaskRequest::add_next_server_addresses()
+inline const std::string& NewSrcTaskRequest::snd_address() const
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:rainstorm.NewSrcTaskRequest.snd_address)
+  return _internal_snd_address();
+}
+template <typename Arg_, typename... Args_>
+inline PROTOBUF_ALWAYS_INLINE void NewSrcTaskRequest::set_snd_address(Arg_&& arg,
+                                                     Args_... args) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  std::string* _s = _internal_mutable_next_server_addresses()->Add();
-  // @@protoc_insertion_point(field_add_mutable:rainstorm.NewSrcTaskRequest.next_server_addresses)
+  _impl_.snd_address_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:rainstorm.NewSrcTaskRequest.snd_address)
+}
+inline std::string* NewSrcTaskRequest::mutable_snd_address() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  std::string* _s = _internal_mutable_snd_address();
+  // @@protoc_insertion_point(field_mutable:rainstorm.NewSrcTaskRequest.snd_address)
   return _s;
 }
-inline const std::string& NewSrcTaskRequest::next_server_addresses(int index) const
-    ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_get:rainstorm.NewSrcTaskRequest.next_server_addresses)
-  return _internal_next_server_addresses().Get(index);
-}
-inline std::string* NewSrcTaskRequest::mutable_next_server_addresses(int index)
-    ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_mutable:rainstorm.NewSrcTaskRequest.next_server_addresses)
-  return _internal_mutable_next_server_addresses()->Mutable(index);
-}
-inline void NewSrcTaskRequest::set_next_server_addresses(int index, const std::string& value) {
-  _internal_mutable_next_server_addresses()->Mutable(index)->assign(value);
-  // @@protoc_insertion_point(field_set:rainstorm.NewSrcTaskRequest.next_server_addresses)
-}
-inline void NewSrcTaskRequest::set_next_server_addresses(int index, std::string&& value) {
-  _internal_mutable_next_server_addresses()->Mutable(index)->assign(std::move(value));
-  // @@protoc_insertion_point(field_set:rainstorm.NewSrcTaskRequest.next_server_addresses)
-}
-inline void NewSrcTaskRequest::set_next_server_addresses(int index, const char* value) {
-  ABSL_DCHECK(value != nullptr);
-  _internal_mutable_next_server_addresses()->Mutable(index)->assign(value);
-  // @@protoc_insertion_point(field_set_char:rainstorm.NewSrcTaskRequest.next_server_addresses)
-}
-inline void NewSrcTaskRequest::set_next_server_addresses(int index, const char* value,
-                              std::size_t size) {
-  _internal_mutable_next_server_addresses()->Mutable(index)->assign(
-      reinterpret_cast<const char*>(value), size);
-  // @@protoc_insertion_point(field_set_pointer:rainstorm.NewSrcTaskRequest.next_server_addresses)
-}
-inline void NewSrcTaskRequest::set_next_server_addresses(int index, absl::string_view value) {
-  _internal_mutable_next_server_addresses()->Mutable(index)->assign(
-      value.data(), value.size());
-  // @@protoc_insertion_point(field_set_string_piece:rainstorm.NewSrcTaskRequest.next_server_addresses)
-}
-inline void NewSrcTaskRequest::add_next_server_addresses(const std::string& value) {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  _internal_mutable_next_server_addresses()->Add()->assign(value);
-  // @@protoc_insertion_point(field_add:rainstorm.NewSrcTaskRequest.next_server_addresses)
-}
-inline void NewSrcTaskRequest::add_next_server_addresses(std::string&& value) {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  _internal_mutable_next_server_addresses()->Add(std::move(value));
-  // @@protoc_insertion_point(field_add:rainstorm.NewSrcTaskRequest.next_server_addresses)
-}
-inline void NewSrcTaskRequest::add_next_server_addresses(const char* value) {
-  ABSL_DCHECK(value != nullptr);
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  _internal_mutable_next_server_addresses()->Add()->assign(value);
-  // @@protoc_insertion_point(field_add_char:rainstorm.NewSrcTaskRequest.next_server_addresses)
-}
-inline void NewSrcTaskRequest::add_next_server_addresses(const char* value, std::size_t size) {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  _internal_mutable_next_server_addresses()->Add()->assign(
-      reinterpret_cast<const char*>(value), size);
-  // @@protoc_insertion_point(field_add_pointer:rainstorm.NewSrcTaskRequest.next_server_addresses)
-}
-inline void NewSrcTaskRequest::add_next_server_addresses(absl::string_view value) {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  _internal_mutable_next_server_addresses()->Add()->assign(value.data(),
-                                                     value.size());
-  // @@protoc_insertion_point(field_add_string_piece:rainstorm.NewSrcTaskRequest.next_server_addresses)
-}
-inline const ::google::protobuf::RepeatedPtrField<std::string>&
-NewSrcTaskRequest::next_server_addresses() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_list:rainstorm.NewSrcTaskRequest.next_server_addresses)
-  return _internal_next_server_addresses();
-}
-inline ::google::protobuf::RepeatedPtrField<std::string>*
-NewSrcTaskRequest::mutable_next_server_addresses() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_mutable_list:rainstorm.NewSrcTaskRequest.next_server_addresses)
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  return _internal_mutable_next_server_addresses();
-}
-inline const ::google::protobuf::RepeatedPtrField<std::string>&
-NewSrcTaskRequest::_internal_next_server_addresses() const {
+inline const std::string& NewSrcTaskRequest::_internal_snd_address() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
-  return _impl_.next_server_addresses_;
+  return _impl_.snd_address_.Get();
 }
-inline ::google::protobuf::RepeatedPtrField<std::string>*
-NewSrcTaskRequest::_internal_mutable_next_server_addresses() {
+inline void NewSrcTaskRequest::_internal_set_snd_address(const std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.snd_address_.Set(value, GetArena());
+}
+inline std::string* NewSrcTaskRequest::_internal_mutable_snd_address() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.snd_address_.Mutable( GetArena());
+}
+inline std::string* NewSrcTaskRequest::release_snd_address() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:rainstorm.NewSrcTaskRequest.snd_address)
+  return _impl_.snd_address_.Release();
+}
+inline void NewSrcTaskRequest::set_allocated_snd_address(std::string* value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.snd_address_.SetAllocated(value, GetArena());
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+        if (_impl_.snd_address_.IsDefault()) {
+          _impl_.snd_address_.Set("", GetArena());
+        }
+  #endif  // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:rainstorm.NewSrcTaskRequest.snd_address)
+}
+
+// int32 snd_port = 6;
+inline void NewSrcTaskRequest::clear_snd_port() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.snd_port_ = 0;
+}
+inline ::int32_t NewSrcTaskRequest::snd_port() const {
+  // @@protoc_insertion_point(field_get:rainstorm.NewSrcTaskRequest.snd_port)
+  return _internal_snd_port();
+}
+inline void NewSrcTaskRequest::set_snd_port(::int32_t value) {
+  _internal_set_snd_port(value);
+  // @@protoc_insertion_point(field_set:rainstorm.NewSrcTaskRequest.snd_port)
+}
+inline ::int32_t NewSrcTaskRequest::_internal_snd_port() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
-  return &_impl_.next_server_addresses_;
+  return _impl_.snd_port_;
+}
+inline void NewSrcTaskRequest::_internal_set_snd_port(::int32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.snd_port_ = value;
 }
 
 // -------------------------------------------------------------------
 
 // NewStageTaskRequest
 
-// string id = 1;
-inline void NewStageTaskRequest::clear_id() {
+// string query_id = 1;
+inline void NewStageTaskRequest::clear_query_id() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.id_.ClearToEmpty();
+  _impl_.query_id_.ClearToEmpty();
 }
-inline const std::string& NewStageTaskRequest::id() const
+inline const std::string& NewStageTaskRequest::query_id() const
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_get:rainstorm.NewStageTaskRequest.id)
-  return _internal_id();
+  // @@protoc_insertion_point(field_get:rainstorm.NewStageTaskRequest.query_id)
+  return _internal_query_id();
 }
 template <typename Arg_, typename... Args_>
-inline PROTOBUF_ALWAYS_INLINE void NewStageTaskRequest::set_id(Arg_&& arg,
+inline PROTOBUF_ALWAYS_INLINE void NewStageTaskRequest::set_query_id(Arg_&& arg,
                                                      Args_... args) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
-  // @@protoc_insertion_point(field_set:rainstorm.NewStageTaskRequest.id)
+  _impl_.query_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:rainstorm.NewStageTaskRequest.query_id)
 }
-inline std::string* NewStageTaskRequest::mutable_id() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  std::string* _s = _internal_mutable_id();
-  // @@protoc_insertion_point(field_mutable:rainstorm.NewStageTaskRequest.id)
+inline std::string* NewStageTaskRequest::mutable_query_id() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  std::string* _s = _internal_mutable_query_id();
+  // @@protoc_insertion_point(field_mutable:rainstorm.NewStageTaskRequest.query_id)
   return _s;
 }
-inline const std::string& NewStageTaskRequest::_internal_id() const {
+inline const std::string& NewStageTaskRequest::_internal_query_id() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
-  return _impl_.id_.Get();
+  return _impl_.query_id_.Get();
 }
-inline void NewStageTaskRequest::_internal_set_id(const std::string& value) {
+inline void NewStageTaskRequest::_internal_set_query_id(const std::string& value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.id_.Set(value, GetArena());
+  _impl_.query_id_.Set(value, GetArena());
 }
-inline std::string* NewStageTaskRequest::_internal_mutable_id() {
+inline std::string* NewStageTaskRequest::_internal_mutable_query_id() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  return _impl_.id_.Mutable( GetArena());
+  return _impl_.query_id_.Mutable( GetArena());
 }
-inline std::string* NewStageTaskRequest::release_id() {
+inline std::string* NewStageTaskRequest::release_query_id() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  // @@protoc_insertion_point(field_release:rainstorm.NewStageTaskRequest.id)
-  return _impl_.id_.Release();
+  // @@protoc_insertion_point(field_release:rainstorm.NewStageTaskRequest.query_id)
+  return _impl_.query_id_.Release();
 }
-inline void NewStageTaskRequest::set_allocated_id(std::string* value) {
+inline void NewStageTaskRequest::set_allocated_query_id(std::string* value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.id_.SetAllocated(value, GetArena());
+  _impl_.query_id_.SetAllocated(value, GetArena());
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-        if (_impl_.id_.IsDefault()) {
-          _impl_.id_.Set("", GetArena());
+        if (_impl_.query_id_.IsDefault()) {
+          _impl_.query_id_.Set("", GetArena());
         }
   #endif  // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:rainstorm.NewStageTaskRequest.id)
+  // @@protoc_insertion_point(field_set_allocated:rainstorm.NewStageTaskRequest.query_id)
 }
 
-// string executable = 2;
+// int32 stage_id = 2;
+inline void NewStageTaskRequest::clear_stage_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.stage_id_ = 0;
+}
+inline ::int32_t NewStageTaskRequest::stage_id() const {
+  // @@protoc_insertion_point(field_get:rainstorm.NewStageTaskRequest.stage_id)
+  return _internal_stage_id();
+}
+inline void NewStageTaskRequest::set_stage_id(::int32_t value) {
+  _internal_set_stage_id(value);
+  // @@protoc_insertion_point(field_set:rainstorm.NewStageTaskRequest.stage_id)
+}
+inline ::int32_t NewStageTaskRequest::_internal_stage_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.stage_id_;
+}
+inline void NewStageTaskRequest::_internal_set_stage_id(::int32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.stage_id_ = value;
+}
+
+// int32 task_id = 3;
+inline void NewStageTaskRequest::clear_task_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.task_id_ = 0;
+}
+inline ::int32_t NewStageTaskRequest::task_id() const {
+  // @@protoc_insertion_point(field_get:rainstorm.NewStageTaskRequest.task_id)
+  return _internal_task_id();
+}
+inline void NewStageTaskRequest::set_task_id(::int32_t value) {
+  _internal_set_task_id(value);
+  // @@protoc_insertion_point(field_set:rainstorm.NewStageTaskRequest.task_id)
+}
+inline ::int32_t NewStageTaskRequest::_internal_task_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.task_id_;
+}
+inline void NewStageTaskRequest::_internal_set_task_id(::int32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.task_id_ = value;
+}
+
+// int32 task_count = 4;
+inline void NewStageTaskRequest::clear_task_count() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.task_count_ = 0;
+}
+inline ::int32_t NewStageTaskRequest::task_count() const {
+  // @@protoc_insertion_point(field_get:rainstorm.NewStageTaskRequest.task_count)
+  return _internal_task_count();
+}
+inline void NewStageTaskRequest::set_task_count(::int32_t value) {
+  _internal_set_task_count(value);
+  // @@protoc_insertion_point(field_set:rainstorm.NewStageTaskRequest.task_count)
+}
+inline ::int32_t NewStageTaskRequest::_internal_task_count() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.task_count_;
+}
+inline void NewStageTaskRequest::_internal_set_task_count(::int32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.task_count_ = value;
+}
+
+// string executable = 5;
 inline void NewStageTaskRequest::clear_executable() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.executable_.ClearToEmpty();
@@ -2445,545 +2806,752 @@ inline void NewStageTaskRequest::set_allocated_executable(std::string* value) {
   // @@protoc_insertion_point(field_set_allocated:rainstorm.NewStageTaskRequest.executable)
 }
 
-// int32 stage_number = 3;
-inline void NewStageTaskRequest::clear_stage_number() {
+// repeated string rcv_addresses = 6;
+inline int NewStageTaskRequest::_internal_rcv_addresses_size() const {
+  return _internal_rcv_addresses().size();
+}
+inline int NewStageTaskRequest::rcv_addresses_size() const {
+  return _internal_rcv_addresses_size();
+}
+inline void NewStageTaskRequest::clear_rcv_addresses() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.stage_number_ = 0;
+  _impl_.rcv_addresses_.Clear();
 }
-inline ::int32_t NewStageTaskRequest::stage_number() const {
-  // @@protoc_insertion_point(field_get:rainstorm.NewStageTaskRequest.stage_number)
-  return _internal_stage_number();
-}
-inline void NewStageTaskRequest::set_stage_number(::int32_t value) {
-  _internal_set_stage_number(value);
-  // @@protoc_insertion_point(field_set:rainstorm.NewStageTaskRequest.stage_number)
-}
-inline ::int32_t NewStageTaskRequest::_internal_stage_number() const {
-  ::google::protobuf::internal::TSanRead(&_impl_);
-  return _impl_.stage_number_;
-}
-inline void NewStageTaskRequest::_internal_set_stage_number(::int32_t value) {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.stage_number_ = value;
-}
-
-// repeated string next_server_addresses = 4;
-inline int NewStageTaskRequest::_internal_next_server_addresses_size() const {
-  return _internal_next_server_addresses().size();
-}
-inline int NewStageTaskRequest::next_server_addresses_size() const {
-  return _internal_next_server_addresses_size();
-}
-inline void NewStageTaskRequest::clear_next_server_addresses() {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.next_server_addresses_.Clear();
-}
-inline std::string* NewStageTaskRequest::add_next_server_addresses()
+inline std::string* NewStageTaskRequest::add_rcv_addresses()
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  std::string* _s = _internal_mutable_next_server_addresses()->Add();
-  // @@protoc_insertion_point(field_add_mutable:rainstorm.NewStageTaskRequest.next_server_addresses)
+  std::string* _s = _internal_mutable_rcv_addresses()->Add();
+  // @@protoc_insertion_point(field_add_mutable:rainstorm.NewStageTaskRequest.rcv_addresses)
   return _s;
 }
-inline const std::string& NewStageTaskRequest::next_server_addresses(int index) const
+inline const std::string& NewStageTaskRequest::rcv_addresses(int index) const
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_get:rainstorm.NewStageTaskRequest.next_server_addresses)
-  return _internal_next_server_addresses().Get(index);
+  // @@protoc_insertion_point(field_get:rainstorm.NewStageTaskRequest.rcv_addresses)
+  return _internal_rcv_addresses().Get(index);
 }
-inline std::string* NewStageTaskRequest::mutable_next_server_addresses(int index)
+inline std::string* NewStageTaskRequest::mutable_rcv_addresses(int index)
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_mutable:rainstorm.NewStageTaskRequest.next_server_addresses)
-  return _internal_mutable_next_server_addresses()->Mutable(index);
+  // @@protoc_insertion_point(field_mutable:rainstorm.NewStageTaskRequest.rcv_addresses)
+  return _internal_mutable_rcv_addresses()->Mutable(index);
 }
-inline void NewStageTaskRequest::set_next_server_addresses(int index, const std::string& value) {
-  _internal_mutable_next_server_addresses()->Mutable(index)->assign(value);
-  // @@protoc_insertion_point(field_set:rainstorm.NewStageTaskRequest.next_server_addresses)
+inline void NewStageTaskRequest::set_rcv_addresses(int index, const std::string& value) {
+  _internal_mutable_rcv_addresses()->Mutable(index)->assign(value);
+  // @@protoc_insertion_point(field_set:rainstorm.NewStageTaskRequest.rcv_addresses)
 }
-inline void NewStageTaskRequest::set_next_server_addresses(int index, std::string&& value) {
-  _internal_mutable_next_server_addresses()->Mutable(index)->assign(std::move(value));
-  // @@protoc_insertion_point(field_set:rainstorm.NewStageTaskRequest.next_server_addresses)
+inline void NewStageTaskRequest::set_rcv_addresses(int index, std::string&& value) {
+  _internal_mutable_rcv_addresses()->Mutable(index)->assign(std::move(value));
+  // @@protoc_insertion_point(field_set:rainstorm.NewStageTaskRequest.rcv_addresses)
 }
-inline void NewStageTaskRequest::set_next_server_addresses(int index, const char* value) {
+inline void NewStageTaskRequest::set_rcv_addresses(int index, const char* value) {
   ABSL_DCHECK(value != nullptr);
-  _internal_mutable_next_server_addresses()->Mutable(index)->assign(value);
-  // @@protoc_insertion_point(field_set_char:rainstorm.NewStageTaskRequest.next_server_addresses)
+  _internal_mutable_rcv_addresses()->Mutable(index)->assign(value);
+  // @@protoc_insertion_point(field_set_char:rainstorm.NewStageTaskRequest.rcv_addresses)
 }
-inline void NewStageTaskRequest::set_next_server_addresses(int index, const char* value,
+inline void NewStageTaskRequest::set_rcv_addresses(int index, const char* value,
                               std::size_t size) {
-  _internal_mutable_next_server_addresses()->Mutable(index)->assign(
+  _internal_mutable_rcv_addresses()->Mutable(index)->assign(
       reinterpret_cast<const char*>(value), size);
-  // @@protoc_insertion_point(field_set_pointer:rainstorm.NewStageTaskRequest.next_server_addresses)
+  // @@protoc_insertion_point(field_set_pointer:rainstorm.NewStageTaskRequest.rcv_addresses)
 }
-inline void NewStageTaskRequest::set_next_server_addresses(int index, absl::string_view value) {
-  _internal_mutable_next_server_addresses()->Mutable(index)->assign(
+inline void NewStageTaskRequest::set_rcv_addresses(int index, absl::string_view value) {
+  _internal_mutable_rcv_addresses()->Mutable(index)->assign(
       value.data(), value.size());
-  // @@protoc_insertion_point(field_set_string_piece:rainstorm.NewStageTaskRequest.next_server_addresses)
+  // @@protoc_insertion_point(field_set_string_piece:rainstorm.NewStageTaskRequest.rcv_addresses)
 }
-inline void NewStageTaskRequest::add_next_server_addresses(const std::string& value) {
+inline void NewStageTaskRequest::add_rcv_addresses(const std::string& value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _internal_mutable_next_server_addresses()->Add()->assign(value);
-  // @@protoc_insertion_point(field_add:rainstorm.NewStageTaskRequest.next_server_addresses)
+  _internal_mutable_rcv_addresses()->Add()->assign(value);
+  // @@protoc_insertion_point(field_add:rainstorm.NewStageTaskRequest.rcv_addresses)
 }
-inline void NewStageTaskRequest::add_next_server_addresses(std::string&& value) {
+inline void NewStageTaskRequest::add_rcv_addresses(std::string&& value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _internal_mutable_next_server_addresses()->Add(std::move(value));
-  // @@protoc_insertion_point(field_add:rainstorm.NewStageTaskRequest.next_server_addresses)
+  _internal_mutable_rcv_addresses()->Add(std::move(value));
+  // @@protoc_insertion_point(field_add:rainstorm.NewStageTaskRequest.rcv_addresses)
 }
-inline void NewStageTaskRequest::add_next_server_addresses(const char* value) {
+inline void NewStageTaskRequest::add_rcv_addresses(const char* value) {
   ABSL_DCHECK(value != nullptr);
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _internal_mutable_next_server_addresses()->Add()->assign(value);
-  // @@protoc_insertion_point(field_add_char:rainstorm.NewStageTaskRequest.next_server_addresses)
+  _internal_mutable_rcv_addresses()->Add()->assign(value);
+  // @@protoc_insertion_point(field_add_char:rainstorm.NewStageTaskRequest.rcv_addresses)
 }
-inline void NewStageTaskRequest::add_next_server_addresses(const char* value, std::size_t size) {
+inline void NewStageTaskRequest::add_rcv_addresses(const char* value, std::size_t size) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _internal_mutable_next_server_addresses()->Add()->assign(
+  _internal_mutable_rcv_addresses()->Add()->assign(
       reinterpret_cast<const char*>(value), size);
-  // @@protoc_insertion_point(field_add_pointer:rainstorm.NewStageTaskRequest.next_server_addresses)
+  // @@protoc_insertion_point(field_add_pointer:rainstorm.NewStageTaskRequest.rcv_addresses)
 }
-inline void NewStageTaskRequest::add_next_server_addresses(absl::string_view value) {
+inline void NewStageTaskRequest::add_rcv_addresses(absl::string_view value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _internal_mutable_next_server_addresses()->Add()->assign(value.data(),
+  _internal_mutable_rcv_addresses()->Add()->assign(value.data(),
                                                      value.size());
-  // @@protoc_insertion_point(field_add_string_piece:rainstorm.NewStageTaskRequest.next_server_addresses)
+  // @@protoc_insertion_point(field_add_string_piece:rainstorm.NewStageTaskRequest.rcv_addresses)
 }
 inline const ::google::protobuf::RepeatedPtrField<std::string>&
-NewStageTaskRequest::next_server_addresses() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_list:rainstorm.NewStageTaskRequest.next_server_addresses)
-  return _internal_next_server_addresses();
+NewStageTaskRequest::rcv_addresses() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_list:rainstorm.NewStageTaskRequest.rcv_addresses)
+  return _internal_rcv_addresses();
 }
 inline ::google::protobuf::RepeatedPtrField<std::string>*
-NewStageTaskRequest::mutable_next_server_addresses() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_mutable_list:rainstorm.NewStageTaskRequest.next_server_addresses)
+NewStageTaskRequest::mutable_rcv_addresses() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_mutable_list:rainstorm.NewStageTaskRequest.rcv_addresses)
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  return _internal_mutable_next_server_addresses();
+  return _internal_mutable_rcv_addresses();
 }
 inline const ::google::protobuf::RepeatedPtrField<std::string>&
-NewStageTaskRequest::_internal_next_server_addresses() const {
+NewStageTaskRequest::_internal_rcv_addresses() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
-  return _impl_.next_server_addresses_;
+  return _impl_.rcv_addresses_;
 }
 inline ::google::protobuf::RepeatedPtrField<std::string>*
-NewStageTaskRequest::_internal_mutable_next_server_addresses() {
+NewStageTaskRequest::_internal_mutable_rcv_addresses() {
   ::google::protobuf::internal::TSanRead(&_impl_);
-  return &_impl_.next_server_addresses_;
+  return &_impl_.rcv_addresses_;
 }
 
-// repeated string prev_server_addresses = 5;
-inline int NewStageTaskRequest::_internal_prev_server_addresses_size() const {
-  return _internal_prev_server_addresses().size();
+// repeated int32 rcv_ports = 7;
+inline int NewStageTaskRequest::_internal_rcv_ports_size() const {
+  return _internal_rcv_ports().size();
 }
-inline int NewStageTaskRequest::prev_server_addresses_size() const {
-  return _internal_prev_server_addresses_size();
+inline int NewStageTaskRequest::rcv_ports_size() const {
+  return _internal_rcv_ports_size();
 }
-inline void NewStageTaskRequest::clear_prev_server_addresses() {
+inline void NewStageTaskRequest::clear_rcv_ports() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.prev_server_addresses_.Clear();
+  _impl_.rcv_ports_.Clear();
 }
-inline std::string* NewStageTaskRequest::add_prev_server_addresses()
+inline ::int32_t NewStageTaskRequest::rcv_ports(int index) const {
+  // @@protoc_insertion_point(field_get:rainstorm.NewStageTaskRequest.rcv_ports)
+  return _internal_rcv_ports().Get(index);
+}
+inline void NewStageTaskRequest::set_rcv_ports(int index, ::int32_t value) {
+  _internal_mutable_rcv_ports()->Set(index, value);
+  // @@protoc_insertion_point(field_set:rainstorm.NewStageTaskRequest.rcv_ports)
+}
+inline void NewStageTaskRequest::add_rcv_ports(::int32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _internal_mutable_rcv_ports()->Add(value);
+  // @@protoc_insertion_point(field_add:rainstorm.NewStageTaskRequest.rcv_ports)
+}
+inline const ::google::protobuf::RepeatedField<::int32_t>& NewStageTaskRequest::rcv_ports() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_list:rainstorm.NewStageTaskRequest.rcv_ports)
+  return _internal_rcv_ports();
+}
+inline ::google::protobuf::RepeatedField<::int32_t>* NewStageTaskRequest::mutable_rcv_ports()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_mutable_list:rainstorm.NewStageTaskRequest.rcv_ports)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _internal_mutable_rcv_ports();
+}
+inline const ::google::protobuf::RepeatedField<::int32_t>&
+NewStageTaskRequest::_internal_rcv_ports() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.rcv_ports_;
+}
+inline ::google::protobuf::RepeatedField<::int32_t>* NewStageTaskRequest::_internal_mutable_rcv_ports() {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return &_impl_.rcv_ports_;
+}
+
+// repeated string snd_addresses = 8;
+inline int NewStageTaskRequest::_internal_snd_addresses_size() const {
+  return _internal_snd_addresses().size();
+}
+inline int NewStageTaskRequest::snd_addresses_size() const {
+  return _internal_snd_addresses_size();
+}
+inline void NewStageTaskRequest::clear_snd_addresses() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.snd_addresses_.Clear();
+}
+inline std::string* NewStageTaskRequest::add_snd_addresses()
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  std::string* _s = _internal_mutable_prev_server_addresses()->Add();
-  // @@protoc_insertion_point(field_add_mutable:rainstorm.NewStageTaskRequest.prev_server_addresses)
+  std::string* _s = _internal_mutable_snd_addresses()->Add();
+  // @@protoc_insertion_point(field_add_mutable:rainstorm.NewStageTaskRequest.snd_addresses)
   return _s;
 }
-inline const std::string& NewStageTaskRequest::prev_server_addresses(int index) const
+inline const std::string& NewStageTaskRequest::snd_addresses(int index) const
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_get:rainstorm.NewStageTaskRequest.prev_server_addresses)
-  return _internal_prev_server_addresses().Get(index);
+  // @@protoc_insertion_point(field_get:rainstorm.NewStageTaskRequest.snd_addresses)
+  return _internal_snd_addresses().Get(index);
 }
-inline std::string* NewStageTaskRequest::mutable_prev_server_addresses(int index)
+inline std::string* NewStageTaskRequest::mutable_snd_addresses(int index)
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_mutable:rainstorm.NewStageTaskRequest.prev_server_addresses)
-  return _internal_mutable_prev_server_addresses()->Mutable(index);
+  // @@protoc_insertion_point(field_mutable:rainstorm.NewStageTaskRequest.snd_addresses)
+  return _internal_mutable_snd_addresses()->Mutable(index);
 }
-inline void NewStageTaskRequest::set_prev_server_addresses(int index, const std::string& value) {
-  _internal_mutable_prev_server_addresses()->Mutable(index)->assign(value);
-  // @@protoc_insertion_point(field_set:rainstorm.NewStageTaskRequest.prev_server_addresses)
+inline void NewStageTaskRequest::set_snd_addresses(int index, const std::string& value) {
+  _internal_mutable_snd_addresses()->Mutable(index)->assign(value);
+  // @@protoc_insertion_point(field_set:rainstorm.NewStageTaskRequest.snd_addresses)
 }
-inline void NewStageTaskRequest::set_prev_server_addresses(int index, std::string&& value) {
-  _internal_mutable_prev_server_addresses()->Mutable(index)->assign(std::move(value));
-  // @@protoc_insertion_point(field_set:rainstorm.NewStageTaskRequest.prev_server_addresses)
+inline void NewStageTaskRequest::set_snd_addresses(int index, std::string&& value) {
+  _internal_mutable_snd_addresses()->Mutable(index)->assign(std::move(value));
+  // @@protoc_insertion_point(field_set:rainstorm.NewStageTaskRequest.snd_addresses)
 }
-inline void NewStageTaskRequest::set_prev_server_addresses(int index, const char* value) {
+inline void NewStageTaskRequest::set_snd_addresses(int index, const char* value) {
   ABSL_DCHECK(value != nullptr);
-  _internal_mutable_prev_server_addresses()->Mutable(index)->assign(value);
-  // @@protoc_insertion_point(field_set_char:rainstorm.NewStageTaskRequest.prev_server_addresses)
+  _internal_mutable_snd_addresses()->Mutable(index)->assign(value);
+  // @@protoc_insertion_point(field_set_char:rainstorm.NewStageTaskRequest.snd_addresses)
 }
-inline void NewStageTaskRequest::set_prev_server_addresses(int index, const char* value,
+inline void NewStageTaskRequest::set_snd_addresses(int index, const char* value,
                               std::size_t size) {
-  _internal_mutable_prev_server_addresses()->Mutable(index)->assign(
+  _internal_mutable_snd_addresses()->Mutable(index)->assign(
       reinterpret_cast<const char*>(value), size);
-  // @@protoc_insertion_point(field_set_pointer:rainstorm.NewStageTaskRequest.prev_server_addresses)
+  // @@protoc_insertion_point(field_set_pointer:rainstorm.NewStageTaskRequest.snd_addresses)
 }
-inline void NewStageTaskRequest::set_prev_server_addresses(int index, absl::string_view value) {
-  _internal_mutable_prev_server_addresses()->Mutable(index)->assign(
+inline void NewStageTaskRequest::set_snd_addresses(int index, absl::string_view value) {
+  _internal_mutable_snd_addresses()->Mutable(index)->assign(
       value.data(), value.size());
-  // @@protoc_insertion_point(field_set_string_piece:rainstorm.NewStageTaskRequest.prev_server_addresses)
+  // @@protoc_insertion_point(field_set_string_piece:rainstorm.NewStageTaskRequest.snd_addresses)
 }
-inline void NewStageTaskRequest::add_prev_server_addresses(const std::string& value) {
+inline void NewStageTaskRequest::add_snd_addresses(const std::string& value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _internal_mutable_prev_server_addresses()->Add()->assign(value);
-  // @@protoc_insertion_point(field_add:rainstorm.NewStageTaskRequest.prev_server_addresses)
+  _internal_mutable_snd_addresses()->Add()->assign(value);
+  // @@protoc_insertion_point(field_add:rainstorm.NewStageTaskRequest.snd_addresses)
 }
-inline void NewStageTaskRequest::add_prev_server_addresses(std::string&& value) {
+inline void NewStageTaskRequest::add_snd_addresses(std::string&& value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _internal_mutable_prev_server_addresses()->Add(std::move(value));
-  // @@protoc_insertion_point(field_add:rainstorm.NewStageTaskRequest.prev_server_addresses)
+  _internal_mutable_snd_addresses()->Add(std::move(value));
+  // @@protoc_insertion_point(field_add:rainstorm.NewStageTaskRequest.snd_addresses)
 }
-inline void NewStageTaskRequest::add_prev_server_addresses(const char* value) {
+inline void NewStageTaskRequest::add_snd_addresses(const char* value) {
   ABSL_DCHECK(value != nullptr);
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _internal_mutable_prev_server_addresses()->Add()->assign(value);
-  // @@protoc_insertion_point(field_add_char:rainstorm.NewStageTaskRequest.prev_server_addresses)
+  _internal_mutable_snd_addresses()->Add()->assign(value);
+  // @@protoc_insertion_point(field_add_char:rainstorm.NewStageTaskRequest.snd_addresses)
 }
-inline void NewStageTaskRequest::add_prev_server_addresses(const char* value, std::size_t size) {
+inline void NewStageTaskRequest::add_snd_addresses(const char* value, std::size_t size) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _internal_mutable_prev_server_addresses()->Add()->assign(
+  _internal_mutable_snd_addresses()->Add()->assign(
       reinterpret_cast<const char*>(value), size);
-  // @@protoc_insertion_point(field_add_pointer:rainstorm.NewStageTaskRequest.prev_server_addresses)
+  // @@protoc_insertion_point(field_add_pointer:rainstorm.NewStageTaskRequest.snd_addresses)
 }
-inline void NewStageTaskRequest::add_prev_server_addresses(absl::string_view value) {
+inline void NewStageTaskRequest::add_snd_addresses(absl::string_view value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _internal_mutable_prev_server_addresses()->Add()->assign(value.data(),
+  _internal_mutable_snd_addresses()->Add()->assign(value.data(),
                                                      value.size());
-  // @@protoc_insertion_point(field_add_string_piece:rainstorm.NewStageTaskRequest.prev_server_addresses)
+  // @@protoc_insertion_point(field_add_string_piece:rainstorm.NewStageTaskRequest.snd_addresses)
 }
 inline const ::google::protobuf::RepeatedPtrField<std::string>&
-NewStageTaskRequest::prev_server_addresses() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_list:rainstorm.NewStageTaskRequest.prev_server_addresses)
-  return _internal_prev_server_addresses();
+NewStageTaskRequest::snd_addresses() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_list:rainstorm.NewStageTaskRequest.snd_addresses)
+  return _internal_snd_addresses();
 }
 inline ::google::protobuf::RepeatedPtrField<std::string>*
-NewStageTaskRequest::mutable_prev_server_addresses() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_mutable_list:rainstorm.NewStageTaskRequest.prev_server_addresses)
+NewStageTaskRequest::mutable_snd_addresses() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_mutable_list:rainstorm.NewStageTaskRequest.snd_addresses)
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  return _internal_mutable_prev_server_addresses();
+  return _internal_mutable_snd_addresses();
 }
 inline const ::google::protobuf::RepeatedPtrField<std::string>&
-NewStageTaskRequest::_internal_prev_server_addresses() const {
+NewStageTaskRequest::_internal_snd_addresses() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
-  return _impl_.prev_server_addresses_;
+  return _impl_.snd_addresses_;
 }
 inline ::google::protobuf::RepeatedPtrField<std::string>*
-NewStageTaskRequest::_internal_mutable_prev_server_addresses() {
+NewStageTaskRequest::_internal_mutable_snd_addresses() {
   ::google::protobuf::internal::TSanRead(&_impl_);
-  return &_impl_.prev_server_addresses_;
+  return &_impl_.snd_addresses_;
+}
+
+// repeated int32 snd_ports = 9;
+inline int NewStageTaskRequest::_internal_snd_ports_size() const {
+  return _internal_snd_ports().size();
+}
+inline int NewStageTaskRequest::snd_ports_size() const {
+  return _internal_snd_ports_size();
+}
+inline void NewStageTaskRequest::clear_snd_ports() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.snd_ports_.Clear();
+}
+inline ::int32_t NewStageTaskRequest::snd_ports(int index) const {
+  // @@protoc_insertion_point(field_get:rainstorm.NewStageTaskRequest.snd_ports)
+  return _internal_snd_ports().Get(index);
+}
+inline void NewStageTaskRequest::set_snd_ports(int index, ::int32_t value) {
+  _internal_mutable_snd_ports()->Set(index, value);
+  // @@protoc_insertion_point(field_set:rainstorm.NewStageTaskRequest.snd_ports)
+}
+inline void NewStageTaskRequest::add_snd_ports(::int32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _internal_mutable_snd_ports()->Add(value);
+  // @@protoc_insertion_point(field_add:rainstorm.NewStageTaskRequest.snd_ports)
+}
+inline const ::google::protobuf::RepeatedField<::int32_t>& NewStageTaskRequest::snd_ports() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_list:rainstorm.NewStageTaskRequest.snd_ports)
+  return _internal_snd_ports();
+}
+inline ::google::protobuf::RepeatedField<::int32_t>* NewStageTaskRequest::mutable_snd_ports()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_mutable_list:rainstorm.NewStageTaskRequest.snd_ports)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _internal_mutable_snd_ports();
+}
+inline const ::google::protobuf::RepeatedField<::int32_t>&
+NewStageTaskRequest::_internal_snd_ports() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.snd_ports_;
+}
+inline ::google::protobuf::RepeatedField<::int32_t>* NewStageTaskRequest::_internal_mutable_snd_ports() {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return &_impl_.snd_ports_;
 }
 
 // -------------------------------------------------------------------
 
-// UpdateSrcTaskSendRequest
+// NewTgtTaskRequest
 
-// string id = 1;
-inline void UpdateSrcTaskSendRequest::clear_id() {
+// string query_id = 1;
+inline void NewTgtTaskRequest::clear_query_id() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.id_.ClearToEmpty();
+  _impl_.query_id_.ClearToEmpty();
 }
-inline const std::string& UpdateSrcTaskSendRequest::id() const
+inline const std::string& NewTgtTaskRequest::query_id() const
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_get:rainstorm.UpdateSrcTaskSendRequest.id)
-  return _internal_id();
+  // @@protoc_insertion_point(field_get:rainstorm.NewTgtTaskRequest.query_id)
+  return _internal_query_id();
 }
 template <typename Arg_, typename... Args_>
-inline PROTOBUF_ALWAYS_INLINE void UpdateSrcTaskSendRequest::set_id(Arg_&& arg,
+inline PROTOBUF_ALWAYS_INLINE void NewTgtTaskRequest::set_query_id(Arg_&& arg,
                                                      Args_... args) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
-  // @@protoc_insertion_point(field_set:rainstorm.UpdateSrcTaskSendRequest.id)
+  _impl_.query_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:rainstorm.NewTgtTaskRequest.query_id)
 }
-inline std::string* UpdateSrcTaskSendRequest::mutable_id() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  std::string* _s = _internal_mutable_id();
-  // @@protoc_insertion_point(field_mutable:rainstorm.UpdateSrcTaskSendRequest.id)
+inline std::string* NewTgtTaskRequest::mutable_query_id() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  std::string* _s = _internal_mutable_query_id();
+  // @@protoc_insertion_point(field_mutable:rainstorm.NewTgtTaskRequest.query_id)
   return _s;
 }
-inline const std::string& UpdateSrcTaskSendRequest::_internal_id() const {
+inline const std::string& NewTgtTaskRequest::_internal_query_id() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
-  return _impl_.id_.Get();
+  return _impl_.query_id_.Get();
 }
-inline void UpdateSrcTaskSendRequest::_internal_set_id(const std::string& value) {
+inline void NewTgtTaskRequest::_internal_set_query_id(const std::string& value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.id_.Set(value, GetArena());
+  _impl_.query_id_.Set(value, GetArena());
 }
-inline std::string* UpdateSrcTaskSendRequest::_internal_mutable_id() {
+inline std::string* NewTgtTaskRequest::_internal_mutable_query_id() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  return _impl_.id_.Mutable( GetArena());
+  return _impl_.query_id_.Mutable( GetArena());
 }
-inline std::string* UpdateSrcTaskSendRequest::release_id() {
+inline std::string* NewTgtTaskRequest::release_query_id() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  // @@protoc_insertion_point(field_release:rainstorm.UpdateSrcTaskSendRequest.id)
-  return _impl_.id_.Release();
+  // @@protoc_insertion_point(field_release:rainstorm.NewTgtTaskRequest.query_id)
+  return _impl_.query_id_.Release();
 }
-inline void UpdateSrcTaskSendRequest::set_allocated_id(std::string* value) {
+inline void NewTgtTaskRequest::set_allocated_query_id(std::string* value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.id_.SetAllocated(value, GetArena());
+  _impl_.query_id_.SetAllocated(value, GetArena());
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-        if (_impl_.id_.IsDefault()) {
-          _impl_.id_.Set("", GetArena());
+        if (_impl_.query_id_.IsDefault()) {
+          _impl_.query_id_.Set("", GetArena());
         }
   #endif  // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:rainstorm.UpdateSrcTaskSendRequest.id)
+  // @@protoc_insertion_point(field_set_allocated:rainstorm.NewTgtTaskRequest.query_id)
 }
 
-// string old_next_server_address = 2;
-inline void UpdateSrcTaskSendRequest::clear_old_next_server_address() {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.old_next_server_address_.ClearToEmpty();
+// repeated string rcv_addresses = 2;
+inline int NewTgtTaskRequest::_internal_rcv_addresses_size() const {
+  return _internal_rcv_addresses().size();
 }
-inline const std::string& UpdateSrcTaskSendRequest::old_next_server_address() const
+inline int NewTgtTaskRequest::rcv_addresses_size() const {
+  return _internal_rcv_addresses_size();
+}
+inline void NewTgtTaskRequest::clear_rcv_addresses() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.rcv_addresses_.Clear();
+}
+inline std::string* NewTgtTaskRequest::add_rcv_addresses()
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_get:rainstorm.UpdateSrcTaskSendRequest.old_next_server_address)
-  return _internal_old_next_server_address();
-}
-template <typename Arg_, typename... Args_>
-inline PROTOBUF_ALWAYS_INLINE void UpdateSrcTaskSendRequest::set_old_next_server_address(Arg_&& arg,
-                                                     Args_... args) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.old_next_server_address_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
-  // @@protoc_insertion_point(field_set:rainstorm.UpdateSrcTaskSendRequest.old_next_server_address)
-}
-inline std::string* UpdateSrcTaskSendRequest::mutable_old_next_server_address() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  std::string* _s = _internal_mutable_old_next_server_address();
-  // @@protoc_insertion_point(field_mutable:rainstorm.UpdateSrcTaskSendRequest.old_next_server_address)
+  std::string* _s = _internal_mutable_rcv_addresses()->Add();
+  // @@protoc_insertion_point(field_add_mutable:rainstorm.NewTgtTaskRequest.rcv_addresses)
   return _s;
 }
-inline const std::string& UpdateSrcTaskSendRequest::_internal_old_next_server_address() const {
+inline const std::string& NewTgtTaskRequest::rcv_addresses(int index) const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:rainstorm.NewTgtTaskRequest.rcv_addresses)
+  return _internal_rcv_addresses().Get(index);
+}
+inline std::string* NewTgtTaskRequest::mutable_rcv_addresses(int index)
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_mutable:rainstorm.NewTgtTaskRequest.rcv_addresses)
+  return _internal_mutable_rcv_addresses()->Mutable(index);
+}
+inline void NewTgtTaskRequest::set_rcv_addresses(int index, const std::string& value) {
+  _internal_mutable_rcv_addresses()->Mutable(index)->assign(value);
+  // @@protoc_insertion_point(field_set:rainstorm.NewTgtTaskRequest.rcv_addresses)
+}
+inline void NewTgtTaskRequest::set_rcv_addresses(int index, std::string&& value) {
+  _internal_mutable_rcv_addresses()->Mutable(index)->assign(std::move(value));
+  // @@protoc_insertion_point(field_set:rainstorm.NewTgtTaskRequest.rcv_addresses)
+}
+inline void NewTgtTaskRequest::set_rcv_addresses(int index, const char* value) {
+  ABSL_DCHECK(value != nullptr);
+  _internal_mutable_rcv_addresses()->Mutable(index)->assign(value);
+  // @@protoc_insertion_point(field_set_char:rainstorm.NewTgtTaskRequest.rcv_addresses)
+}
+inline void NewTgtTaskRequest::set_rcv_addresses(int index, const char* value,
+                              std::size_t size) {
+  _internal_mutable_rcv_addresses()->Mutable(index)->assign(
+      reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:rainstorm.NewTgtTaskRequest.rcv_addresses)
+}
+inline void NewTgtTaskRequest::set_rcv_addresses(int index, absl::string_view value) {
+  _internal_mutable_rcv_addresses()->Mutable(index)->assign(
+      value.data(), value.size());
+  // @@protoc_insertion_point(field_set_string_piece:rainstorm.NewTgtTaskRequest.rcv_addresses)
+}
+inline void NewTgtTaskRequest::add_rcv_addresses(const std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _internal_mutable_rcv_addresses()->Add()->assign(value);
+  // @@protoc_insertion_point(field_add:rainstorm.NewTgtTaskRequest.rcv_addresses)
+}
+inline void NewTgtTaskRequest::add_rcv_addresses(std::string&& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _internal_mutable_rcv_addresses()->Add(std::move(value));
+  // @@protoc_insertion_point(field_add:rainstorm.NewTgtTaskRequest.rcv_addresses)
+}
+inline void NewTgtTaskRequest::add_rcv_addresses(const char* value) {
+  ABSL_DCHECK(value != nullptr);
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _internal_mutable_rcv_addresses()->Add()->assign(value);
+  // @@protoc_insertion_point(field_add_char:rainstorm.NewTgtTaskRequest.rcv_addresses)
+}
+inline void NewTgtTaskRequest::add_rcv_addresses(const char* value, std::size_t size) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _internal_mutable_rcv_addresses()->Add()->assign(
+      reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_add_pointer:rainstorm.NewTgtTaskRequest.rcv_addresses)
+}
+inline void NewTgtTaskRequest::add_rcv_addresses(absl::string_view value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _internal_mutable_rcv_addresses()->Add()->assign(value.data(),
+                                                     value.size());
+  // @@protoc_insertion_point(field_add_string_piece:rainstorm.NewTgtTaskRequest.rcv_addresses)
+}
+inline const ::google::protobuf::RepeatedPtrField<std::string>&
+NewTgtTaskRequest::rcv_addresses() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_list:rainstorm.NewTgtTaskRequest.rcv_addresses)
+  return _internal_rcv_addresses();
+}
+inline ::google::protobuf::RepeatedPtrField<std::string>*
+NewTgtTaskRequest::mutable_rcv_addresses() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_mutable_list:rainstorm.NewTgtTaskRequest.rcv_addresses)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _internal_mutable_rcv_addresses();
+}
+inline const ::google::protobuf::RepeatedPtrField<std::string>&
+NewTgtTaskRequest::_internal_rcv_addresses() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
-  return _impl_.old_next_server_address_.Get();
+  return _impl_.rcv_addresses_;
 }
-inline void UpdateSrcTaskSendRequest::_internal_set_old_next_server_address(const std::string& value) {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.old_next_server_address_.Set(value, GetArena());
-}
-inline std::string* UpdateSrcTaskSendRequest::_internal_mutable_old_next_server_address() {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  return _impl_.old_next_server_address_.Mutable( GetArena());
-}
-inline std::string* UpdateSrcTaskSendRequest::release_old_next_server_address() {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  // @@protoc_insertion_point(field_release:rainstorm.UpdateSrcTaskSendRequest.old_next_server_address)
-  return _impl_.old_next_server_address_.Release();
-}
-inline void UpdateSrcTaskSendRequest::set_allocated_old_next_server_address(std::string* value) {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.old_next_server_address_.SetAllocated(value, GetArena());
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-        if (_impl_.old_next_server_address_.IsDefault()) {
-          _impl_.old_next_server_address_.Set("", GetArena());
-        }
-  #endif  // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:rainstorm.UpdateSrcTaskSendRequest.old_next_server_address)
+inline ::google::protobuf::RepeatedPtrField<std::string>*
+NewTgtTaskRequest::_internal_mutable_rcv_addresses() {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return &_impl_.rcv_addresses_;
 }
 
-// string new_next_server_address = 3;
-inline void UpdateSrcTaskSendRequest::clear_new_next_server_address() {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.new_next_server_address_.ClearToEmpty();
+// repeated int32 rcv_ports = 3;
+inline int NewTgtTaskRequest::_internal_rcv_ports_size() const {
+  return _internal_rcv_ports().size();
 }
-inline const std::string& UpdateSrcTaskSendRequest::new_next_server_address() const
+inline int NewTgtTaskRequest::rcv_ports_size() const {
+  return _internal_rcv_ports_size();
+}
+inline void NewTgtTaskRequest::clear_rcv_ports() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.rcv_ports_.Clear();
+}
+inline ::int32_t NewTgtTaskRequest::rcv_ports(int index) const {
+  // @@protoc_insertion_point(field_get:rainstorm.NewTgtTaskRequest.rcv_ports)
+  return _internal_rcv_ports().Get(index);
+}
+inline void NewTgtTaskRequest::set_rcv_ports(int index, ::int32_t value) {
+  _internal_mutable_rcv_ports()->Set(index, value);
+  // @@protoc_insertion_point(field_set:rainstorm.NewTgtTaskRequest.rcv_ports)
+}
+inline void NewTgtTaskRequest::add_rcv_ports(::int32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _internal_mutable_rcv_ports()->Add(value);
+  // @@protoc_insertion_point(field_add:rainstorm.NewTgtTaskRequest.rcv_ports)
+}
+inline const ::google::protobuf::RepeatedField<::int32_t>& NewTgtTaskRequest::rcv_ports() const
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_get:rainstorm.UpdateSrcTaskSendRequest.new_next_server_address)
-  return _internal_new_next_server_address();
+  // @@protoc_insertion_point(field_list:rainstorm.NewTgtTaskRequest.rcv_ports)
+  return _internal_rcv_ports();
 }
-template <typename Arg_, typename... Args_>
-inline PROTOBUF_ALWAYS_INLINE void UpdateSrcTaskSendRequest::set_new_next_server_address(Arg_&& arg,
-                                                     Args_... args) {
+inline ::google::protobuf::RepeatedField<::int32_t>* NewTgtTaskRequest::mutable_rcv_ports()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_mutable_list:rainstorm.NewTgtTaskRequest.rcv_ports)
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.new_next_server_address_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
-  // @@protoc_insertion_point(field_set:rainstorm.UpdateSrcTaskSendRequest.new_next_server_address)
+  return _internal_mutable_rcv_ports();
 }
-inline std::string* UpdateSrcTaskSendRequest::mutable_new_next_server_address() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  std::string* _s = _internal_mutable_new_next_server_address();
-  // @@protoc_insertion_point(field_mutable:rainstorm.UpdateSrcTaskSendRequest.new_next_server_address)
-  return _s;
-}
-inline const std::string& UpdateSrcTaskSendRequest::_internal_new_next_server_address() const {
+inline const ::google::protobuf::RepeatedField<::int32_t>&
+NewTgtTaskRequest::_internal_rcv_ports() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
-  return _impl_.new_next_server_address_.Get();
+  return _impl_.rcv_ports_;
 }
-inline void UpdateSrcTaskSendRequest::_internal_set_new_next_server_address(const std::string& value) {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.new_next_server_address_.Set(value, GetArena());
-}
-inline std::string* UpdateSrcTaskSendRequest::_internal_mutable_new_next_server_address() {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  return _impl_.new_next_server_address_.Mutable( GetArena());
-}
-inline std::string* UpdateSrcTaskSendRequest::release_new_next_server_address() {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  // @@protoc_insertion_point(field_release:rainstorm.UpdateSrcTaskSendRequest.new_next_server_address)
-  return _impl_.new_next_server_address_.Release();
-}
-inline void UpdateSrcTaskSendRequest::set_allocated_new_next_server_address(std::string* value) {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.new_next_server_address_.SetAllocated(value, GetArena());
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-        if (_impl_.new_next_server_address_.IsDefault()) {
-          _impl_.new_next_server_address_.Set("", GetArena());
-        }
-  #endif  // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:rainstorm.UpdateSrcTaskSendRequest.new_next_server_address)
+inline ::google::protobuf::RepeatedField<::int32_t>* NewTgtTaskRequest::_internal_mutable_rcv_ports() {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return &_impl_.rcv_ports_;
 }
 
 // -------------------------------------------------------------------
 
-// UpdateDstTaskRecieveRequest
+// UpdateTaskSndRequest
 
-// string id = 1;
-inline void UpdateDstTaskRecieveRequest::clear_id() {
+// int32 index = 1;
+inline void UpdateTaskSndRequest::clear_index() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.id_.ClearToEmpty();
+  _impl_.index_ = 0;
 }
-inline const std::string& UpdateDstTaskRecieveRequest::id() const
-    ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_get:rainstorm.UpdateDstTaskRecieveRequest.id)
-  return _internal_id();
+inline ::int32_t UpdateTaskSndRequest::index() const {
+  // @@protoc_insertion_point(field_get:rainstorm.UpdateTaskSndRequest.index)
+  return _internal_index();
 }
-template <typename Arg_, typename... Args_>
-inline PROTOBUF_ALWAYS_INLINE void UpdateDstTaskRecieveRequest::set_id(Arg_&& arg,
-                                                     Args_... args) {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
-  // @@protoc_insertion_point(field_set:rainstorm.UpdateDstTaskRecieveRequest.id)
+inline void UpdateTaskSndRequest::set_index(::int32_t value) {
+  _internal_set_index(value);
+  // @@protoc_insertion_point(field_set:rainstorm.UpdateTaskSndRequest.index)
 }
-inline std::string* UpdateDstTaskRecieveRequest::mutable_id() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  std::string* _s = _internal_mutable_id();
-  // @@protoc_insertion_point(field_mutable:rainstorm.UpdateDstTaskRecieveRequest.id)
-  return _s;
-}
-inline const std::string& UpdateDstTaskRecieveRequest::_internal_id() const {
+inline ::int32_t UpdateTaskSndRequest::_internal_index() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
-  return _impl_.id_.Get();
+  return _impl_.index_;
 }
-inline void UpdateDstTaskRecieveRequest::_internal_set_id(const std::string& value) {
+inline void UpdateTaskSndRequest::_internal_set_index(::int32_t value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.id_.Set(value, GetArena());
-}
-inline std::string* UpdateDstTaskRecieveRequest::_internal_mutable_id() {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  return _impl_.id_.Mutable( GetArena());
-}
-inline std::string* UpdateDstTaskRecieveRequest::release_id() {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  // @@protoc_insertion_point(field_release:rainstorm.UpdateDstTaskRecieveRequest.id)
-  return _impl_.id_.Release();
-}
-inline void UpdateDstTaskRecieveRequest::set_allocated_id(std::string* value) {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.id_.SetAllocated(value, GetArena());
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-        if (_impl_.id_.IsDefault()) {
-          _impl_.id_.Set("", GetArena());
-        }
-  #endif  // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:rainstorm.UpdateDstTaskRecieveRequest.id)
+  _impl_.index_ = value;
 }
 
-// string old_prev_server_address = 2;
-inline void UpdateDstTaskRecieveRequest::clear_old_prev_server_address() {
+// string snd_address = 2;
+inline void UpdateTaskSndRequest::clear_snd_address() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.old_prev_server_address_.ClearToEmpty();
+  _impl_.snd_address_.ClearToEmpty();
 }
-inline const std::string& UpdateDstTaskRecieveRequest::old_prev_server_address() const
+inline const std::string& UpdateTaskSndRequest::snd_address() const
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_get:rainstorm.UpdateDstTaskRecieveRequest.old_prev_server_address)
-  return _internal_old_prev_server_address();
+  // @@protoc_insertion_point(field_get:rainstorm.UpdateTaskSndRequest.snd_address)
+  return _internal_snd_address();
 }
 template <typename Arg_, typename... Args_>
-inline PROTOBUF_ALWAYS_INLINE void UpdateDstTaskRecieveRequest::set_old_prev_server_address(Arg_&& arg,
+inline PROTOBUF_ALWAYS_INLINE void UpdateTaskSndRequest::set_snd_address(Arg_&& arg,
                                                      Args_... args) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.old_prev_server_address_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
-  // @@protoc_insertion_point(field_set:rainstorm.UpdateDstTaskRecieveRequest.old_prev_server_address)
+  _impl_.snd_address_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:rainstorm.UpdateTaskSndRequest.snd_address)
 }
-inline std::string* UpdateDstTaskRecieveRequest::mutable_old_prev_server_address() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  std::string* _s = _internal_mutable_old_prev_server_address();
-  // @@protoc_insertion_point(field_mutable:rainstorm.UpdateDstTaskRecieveRequest.old_prev_server_address)
+inline std::string* UpdateTaskSndRequest::mutable_snd_address() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  std::string* _s = _internal_mutable_snd_address();
+  // @@protoc_insertion_point(field_mutable:rainstorm.UpdateTaskSndRequest.snd_address)
   return _s;
 }
-inline const std::string& UpdateDstTaskRecieveRequest::_internal_old_prev_server_address() const {
+inline const std::string& UpdateTaskSndRequest::_internal_snd_address() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
-  return _impl_.old_prev_server_address_.Get();
+  return _impl_.snd_address_.Get();
 }
-inline void UpdateDstTaskRecieveRequest::_internal_set_old_prev_server_address(const std::string& value) {
+inline void UpdateTaskSndRequest::_internal_set_snd_address(const std::string& value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.old_prev_server_address_.Set(value, GetArena());
+  _impl_.snd_address_.Set(value, GetArena());
 }
-inline std::string* UpdateDstTaskRecieveRequest::_internal_mutable_old_prev_server_address() {
+inline std::string* UpdateTaskSndRequest::_internal_mutable_snd_address() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  return _impl_.old_prev_server_address_.Mutable( GetArena());
+  return _impl_.snd_address_.Mutable( GetArena());
 }
-inline std::string* UpdateDstTaskRecieveRequest::release_old_prev_server_address() {
+inline std::string* UpdateTaskSndRequest::release_snd_address() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  // @@protoc_insertion_point(field_release:rainstorm.UpdateDstTaskRecieveRequest.old_prev_server_address)
-  return _impl_.old_prev_server_address_.Release();
+  // @@protoc_insertion_point(field_release:rainstorm.UpdateTaskSndRequest.snd_address)
+  return _impl_.snd_address_.Release();
 }
-inline void UpdateDstTaskRecieveRequest::set_allocated_old_prev_server_address(std::string* value) {
+inline void UpdateTaskSndRequest::set_allocated_snd_address(std::string* value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.old_prev_server_address_.SetAllocated(value, GetArena());
+  _impl_.snd_address_.SetAllocated(value, GetArena());
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-        if (_impl_.old_prev_server_address_.IsDefault()) {
-          _impl_.old_prev_server_address_.Set("", GetArena());
+        if (_impl_.snd_address_.IsDefault()) {
+          _impl_.snd_address_.Set("", GetArena());
         }
   #endif  // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:rainstorm.UpdateDstTaskRecieveRequest.old_prev_server_address)
+  // @@protoc_insertion_point(field_set_allocated:rainstorm.UpdateTaskSndRequest.snd_address)
 }
 
-// string new_prev_server_address = 3;
-inline void UpdateDstTaskRecieveRequest::clear_new_prev_server_address() {
+// int32 snd_port = 3;
+inline void UpdateTaskSndRequest::clear_snd_port() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.new_prev_server_address_.ClearToEmpty();
+  _impl_.snd_port_ = 0;
 }
-inline const std::string& UpdateDstTaskRecieveRequest::new_prev_server_address() const
+inline ::int32_t UpdateTaskSndRequest::snd_port() const {
+  // @@protoc_insertion_point(field_get:rainstorm.UpdateTaskSndRequest.snd_port)
+  return _internal_snd_port();
+}
+inline void UpdateTaskSndRequest::set_snd_port(::int32_t value) {
+  _internal_set_snd_port(value);
+  // @@protoc_insertion_point(field_set:rainstorm.UpdateTaskSndRequest.snd_port)
+}
+inline ::int32_t UpdateTaskSndRequest::_internal_snd_port() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.snd_port_;
+}
+inline void UpdateTaskSndRequest::_internal_set_snd_port(::int32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.snd_port_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// UpdateTaskRcvRequest
+
+// int32 index = 1;
+inline void UpdateTaskRcvRequest::clear_index() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.index_ = 0;
+}
+inline ::int32_t UpdateTaskRcvRequest::index() const {
+  // @@protoc_insertion_point(field_get:rainstorm.UpdateTaskRcvRequest.index)
+  return _internal_index();
+}
+inline void UpdateTaskRcvRequest::set_index(::int32_t value) {
+  _internal_set_index(value);
+  // @@protoc_insertion_point(field_set:rainstorm.UpdateTaskRcvRequest.index)
+}
+inline ::int32_t UpdateTaskRcvRequest::_internal_index() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.index_;
+}
+inline void UpdateTaskRcvRequest::_internal_set_index(::int32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.index_ = value;
+}
+
+// string rcv_address = 2;
+inline void UpdateTaskRcvRequest::clear_rcv_address() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.rcv_address_.ClearToEmpty();
+}
+inline const std::string& UpdateTaskRcvRequest::rcv_address() const
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_get:rainstorm.UpdateDstTaskRecieveRequest.new_prev_server_address)
-  return _internal_new_prev_server_address();
+  // @@protoc_insertion_point(field_get:rainstorm.UpdateTaskRcvRequest.rcv_address)
+  return _internal_rcv_address();
 }
 template <typename Arg_, typename... Args_>
-inline PROTOBUF_ALWAYS_INLINE void UpdateDstTaskRecieveRequest::set_new_prev_server_address(Arg_&& arg,
+inline PROTOBUF_ALWAYS_INLINE void UpdateTaskRcvRequest::set_rcv_address(Arg_&& arg,
                                                      Args_... args) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.new_prev_server_address_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
-  // @@protoc_insertion_point(field_set:rainstorm.UpdateDstTaskRecieveRequest.new_prev_server_address)
+  _impl_.rcv_address_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:rainstorm.UpdateTaskRcvRequest.rcv_address)
 }
-inline std::string* UpdateDstTaskRecieveRequest::mutable_new_prev_server_address() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  std::string* _s = _internal_mutable_new_prev_server_address();
-  // @@protoc_insertion_point(field_mutable:rainstorm.UpdateDstTaskRecieveRequest.new_prev_server_address)
+inline std::string* UpdateTaskRcvRequest::mutable_rcv_address() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  std::string* _s = _internal_mutable_rcv_address();
+  // @@protoc_insertion_point(field_mutable:rainstorm.UpdateTaskRcvRequest.rcv_address)
   return _s;
 }
-inline const std::string& UpdateDstTaskRecieveRequest::_internal_new_prev_server_address() const {
+inline const std::string& UpdateTaskRcvRequest::_internal_rcv_address() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
-  return _impl_.new_prev_server_address_.Get();
+  return _impl_.rcv_address_.Get();
 }
-inline void UpdateDstTaskRecieveRequest::_internal_set_new_prev_server_address(const std::string& value) {
+inline void UpdateTaskRcvRequest::_internal_set_rcv_address(const std::string& value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.new_prev_server_address_.Set(value, GetArena());
+  _impl_.rcv_address_.Set(value, GetArena());
 }
-inline std::string* UpdateDstTaskRecieveRequest::_internal_mutable_new_prev_server_address() {
+inline std::string* UpdateTaskRcvRequest::_internal_mutable_rcv_address() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  return _impl_.new_prev_server_address_.Mutable( GetArena());
+  return _impl_.rcv_address_.Mutable( GetArena());
 }
-inline std::string* UpdateDstTaskRecieveRequest::release_new_prev_server_address() {
+inline std::string* UpdateTaskRcvRequest::release_rcv_address() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  // @@protoc_insertion_point(field_release:rainstorm.UpdateDstTaskRecieveRequest.new_prev_server_address)
-  return _impl_.new_prev_server_address_.Release();
+  // @@protoc_insertion_point(field_release:rainstorm.UpdateTaskRcvRequest.rcv_address)
+  return _impl_.rcv_address_.Release();
 }
-inline void UpdateDstTaskRecieveRequest::set_allocated_new_prev_server_address(std::string* value) {
+inline void UpdateTaskRcvRequest::set_allocated_rcv_address(std::string* value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.new_prev_server_address_.SetAllocated(value, GetArena());
+  _impl_.rcv_address_.SetAllocated(value, GetArena());
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-        if (_impl_.new_prev_server_address_.IsDefault()) {
-          _impl_.new_prev_server_address_.Set("", GetArena());
+        if (_impl_.rcv_address_.IsDefault()) {
+          _impl_.rcv_address_.Set("", GetArena());
         }
   #endif  // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:rainstorm.UpdateDstTaskRecieveRequest.new_prev_server_address)
+  // @@protoc_insertion_point(field_set_allocated:rainstorm.UpdateTaskRcvRequest.rcv_address)
+}
+
+// int32 rcv_port = 3;
+inline void UpdateTaskRcvRequest::clear_rcv_port() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.rcv_port_ = 0;
+}
+inline ::int32_t UpdateTaskRcvRequest::rcv_port() const {
+  // @@protoc_insertion_point(field_get:rainstorm.UpdateTaskRcvRequest.rcv_port)
+  return _internal_rcv_port();
+}
+inline void UpdateTaskRcvRequest::set_rcv_port(::int32_t value) {
+  _internal_set_rcv_port(value);
+  // @@protoc_insertion_point(field_set:rainstorm.UpdateTaskRcvRequest.rcv_port)
+}
+inline ::int32_t UpdateTaskRcvRequest::_internal_rcv_port() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.rcv_port_;
+}
+inline void UpdateTaskRcvRequest::_internal_set_rcv_port(::int32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.rcv_port_ = value;
 }
 
 // -------------------------------------------------------------------
 
 // KV
 
-// string key = 1;
+// string id = 1;
+inline void KV::clear_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.id_.ClearToEmpty();
+}
+inline const std::string& KV::id() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:rainstorm.KV.id)
+  return _internal_id();
+}
+template <typename Arg_, typename... Args_>
+inline PROTOBUF_ALWAYS_INLINE void KV::set_id(Arg_&& arg,
+                                                     Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:rainstorm.KV.id)
+}
+inline std::string* KV::mutable_id() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  std::string* _s = _internal_mutable_id();
+  // @@protoc_insertion_point(field_mutable:rainstorm.KV.id)
+  return _s;
+}
+inline const std::string& KV::_internal_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.id_.Get();
+}
+inline void KV::_internal_set_id(const std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.id_.Set(value, GetArena());
+}
+inline std::string* KV::_internal_mutable_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.id_.Mutable( GetArena());
+}
+inline std::string* KV::release_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:rainstorm.KV.id)
+  return _impl_.id_.Release();
+}
+inline void KV::set_allocated_id(std::string* value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.id_.SetAllocated(value, GetArena());
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+        if (_impl_.id_.IsDefault()) {
+          _impl_.id_.Set("", GetArena());
+        }
+  #endif  // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:rainstorm.KV.id)
+}
+
+// string key = 2;
 inline void KV::clear_key() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.key_.ClearToEmpty();
@@ -3033,7 +3601,7 @@ inline void KV::set_allocated_key(std::string* value) {
   // @@protoc_insertion_point(field_set_allocated:rainstorm.KV.key)
 }
 
-// string value = 2;
+// string value = 3;
 inline void KV::clear_value() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.value_.ClearToEmpty();
@@ -3172,82 +3740,82 @@ inline void DataChunk::set_allocated_id(std::string* value) {
   // @@protoc_insertion_point(field_set_allocated:rainstorm.DataChunk.id)
 }
 
-// .rainstorm.KV pairs = 2;
-inline bool DataChunk::has_pairs() const {
-  return request_case() == kPairs;
+// .rainstorm.KV pair = 2;
+inline bool DataChunk::has_pair() const {
+  return request_case() == kPair;
 }
-inline bool DataChunk::_internal_has_pairs() const {
-  return request_case() == kPairs;
+inline bool DataChunk::_internal_has_pair() const {
+  return request_case() == kPair;
 }
-inline void DataChunk::set_has_pairs() {
-  _impl_._oneof_case_[0] = kPairs;
+inline void DataChunk::set_has_pair() {
+  _impl_._oneof_case_[0] = kPair;
 }
-inline void DataChunk::clear_pairs() {
+inline void DataChunk::clear_pair() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  if (request_case() == kPairs) {
+  if (request_case() == kPair) {
     if (GetArena() == nullptr) {
-      delete _impl_.request_.pairs_;
+      delete _impl_.request_.pair_;
     } else if (::google::protobuf::internal::DebugHardenClearOneofMessageOnArena()) {
-      ::google::protobuf::internal::MaybePoisonAfterClear(_impl_.request_.pairs_);
+      ::google::protobuf::internal::MaybePoisonAfterClear(_impl_.request_.pair_);
     }
     clear_has_request();
   }
 }
-inline ::rainstorm::KV* DataChunk::release_pairs() {
-  // @@protoc_insertion_point(field_release:rainstorm.DataChunk.pairs)
-  if (request_case() == kPairs) {
+inline ::rainstorm::KV* DataChunk::release_pair() {
+  // @@protoc_insertion_point(field_release:rainstorm.DataChunk.pair)
+  if (request_case() == kPair) {
     clear_has_request();
-    auto* temp = _impl_.request_.pairs_;
+    auto* temp = _impl_.request_.pair_;
     if (GetArena() != nullptr) {
       temp = ::google::protobuf::internal::DuplicateIfNonNull(temp);
     }
-    _impl_.request_.pairs_ = nullptr;
+    _impl_.request_.pair_ = nullptr;
     return temp;
   } else {
     return nullptr;
   }
 }
-inline const ::rainstorm::KV& DataChunk::_internal_pairs() const {
-  return request_case() == kPairs ? *_impl_.request_.pairs_ : reinterpret_cast<::rainstorm::KV&>(::rainstorm::_KV_default_instance_);
+inline const ::rainstorm::KV& DataChunk::_internal_pair() const {
+  return request_case() == kPair ? *_impl_.request_.pair_ : reinterpret_cast<::rainstorm::KV&>(::rainstorm::_KV_default_instance_);
 }
-inline const ::rainstorm::KV& DataChunk::pairs() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_get:rainstorm.DataChunk.pairs)
-  return _internal_pairs();
+inline const ::rainstorm::KV& DataChunk::pair() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:rainstorm.DataChunk.pair)
+  return _internal_pair();
 }
-inline ::rainstorm::KV* DataChunk::unsafe_arena_release_pairs() {
-  // @@protoc_insertion_point(field_unsafe_arena_release:rainstorm.DataChunk.pairs)
-  if (request_case() == kPairs) {
+inline ::rainstorm::KV* DataChunk::unsafe_arena_release_pair() {
+  // @@protoc_insertion_point(field_unsafe_arena_release:rainstorm.DataChunk.pair)
+  if (request_case() == kPair) {
     clear_has_request();
-    auto* temp = _impl_.request_.pairs_;
-    _impl_.request_.pairs_ = nullptr;
+    auto* temp = _impl_.request_.pair_;
+    _impl_.request_.pair_ = nullptr;
     return temp;
   } else {
     return nullptr;
   }
 }
-inline void DataChunk::unsafe_arena_set_allocated_pairs(::rainstorm::KV* value) {
+inline void DataChunk::unsafe_arena_set_allocated_pair(::rainstorm::KV* value) {
   // We rely on the oneof clear method to free the earlier contents
   // of this oneof. We can directly use the pointer we're given to
   // set the new value.
   clear_request();
   if (value) {
-    set_has_pairs();
-    _impl_.request_.pairs_ = value;
+    set_has_pair();
+    _impl_.request_.pair_ = value;
   }
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:rainstorm.DataChunk.pairs)
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:rainstorm.DataChunk.pair)
 }
-inline ::rainstorm::KV* DataChunk::_internal_mutable_pairs() {
-  if (request_case() != kPairs) {
+inline ::rainstorm::KV* DataChunk::_internal_mutable_pair() {
+  if (request_case() != kPair) {
     clear_request();
-    set_has_pairs();
-    _impl_.request_.pairs_ =
+    set_has_pair();
+    _impl_.request_.pair_ =
         ::google::protobuf::Message::DefaultConstruct<::rainstorm::KV>(GetArena());
   }
-  return _impl_.request_.pairs_;
+  return _impl_.request_.pair_;
 }
-inline ::rainstorm::KV* DataChunk::mutable_pairs() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  ::rainstorm::KV* _msg = _internal_mutable_pairs();
-  // @@protoc_insertion_point(field_mutable:rainstorm.DataChunk.pairs)
+inline ::rainstorm::KV* DataChunk::mutable_pair() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  ::rainstorm::KV* _msg = _internal_mutable_pair();
+  // @@protoc_insertion_point(field_mutable:rainstorm.DataChunk.pair)
   return _msg;
 }
 

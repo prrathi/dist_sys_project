@@ -25,167 +25,100 @@
 void RainStormNode::runHydfs() {
     std::thread listener_thread([this](){ this->hydfs.pipeListener(); });
     std::thread swim_thread([this](){ this->hydfs.swim(); });
-    std::thread server_thread([this](){ this->hydfs.runServer(); });
     listener_thread.join();
     swim_thread.join();
-    server_thread.join();
 }
 
-
+void RainStormNode::runServer() {
+    server_.wait();
+}
 
 void RainStormNode::HandleNewStageTask(const rainstorm::NewStageTaskRequest* request) {
     std::lock_guard<std::mutex> lock(task_info_mtx_);
 
     TaskInfo task_info;
-    task_info.task_id = request->id();
-    task_info.stage_number = request->stage_number();
+    task_info.task_id = std::to_string(request->task_id());
+    task_info.stage_number = request->stage_id();
     task_info.operator_executable = request->executable();
-    for (const auto& addr : request->next_server_addresses()) {
+    
+    // Handle downstream nodes (snd_addresses and snd_ports)
+    for (int i = 0; i < request->snd_addresses_size(); i++) {
+        std::string addr = request->snd_addresses(i) + ":" + std::to_string(request->snd_ports(i));
         task_info.downstream_nodes.push_back(addr);
-        task_info.downstream_queue.emplace_back();
-        task_info.ack_queue.emplace_back();
+        task_info.downstream_queue.push_back(std::make_unique<SafeQueue<std::vector<std::pair<std::string, std::string>>>>());
+        task_info.ack_queue.push_back(std::make_unique<SafeQueue<std::vector<std::pair<std::string, std::string>>>>());
     }
-    for (const auto& addr : request->prev_server_addresses()) {
+    
+    // Handle upstream nodes (rcv_addresses and rcv_ports)
+    for (int i = 0; i < request->rcv_addresses_size(); i++) {
+        std::string addr = request->rcv_addresses(i) + ":" + std::to_string(request->rcv_ports(i));
         task_info.upstream_nodes.push_back(addr);
     }
-    task_info_[task_info.task_id] = task_info;
+    
+    std::string task_id = task_info.task_id;
+    task_info_[task_id] = std::move(task_info);
 
+    // Start processing thread
+    std::thread([this, task_id]() {
+        std::lock_guard<std::mutex> lock(task_info_mtx_);
+        if (task_info_.find(task_id) != task_info_.end()) {
+            ProcessData(task_info_[task_id]);
+        }
+    }).detach();
 
-
-    // check hydfs to see if log files existed for this task
-    // if it is load
-
-
-    // detach thread to attempt to process data
-    std::thread processing_thread([this, task_info]() {
-        ProcessData(task_info);
-    });
-    processing_thread.detach();
-
-    // threads to sending data to downstream nodes
-    for (size_t i = 0; i < task_info.downstream_nodes.size(); ++i) {
-        std::thread send_data_thread([this, task_info, i]() {
-            SendDataToDownstreamNode(task_info, i);
-        });
-        send_data_thread.detach();
+    // Start data sending threads
+    size_t num_downstream = task_info_[task_id].downstream_nodes.size();
+    for (size_t i = 0; i < num_downstream; ++i) {
+        std::thread([this, task_id, i]() {
+            std::lock_guard<std::mutex> lock(task_info_mtx_);
+            if (task_info_.find(task_id) != task_info_.end()) {
+                SendDataToDownstreamNode(task_info_[task_id], i);
+            }
+        }).detach();
     }
 }
 
-// attempt to dequeue 1 chunk of data
-void RainStormNode::ProcessData(const TaskInfo& task_info) {
-    static const size_t buff_size = 128 * 1024; // 128KB buffer
-    char buffer[buff_size];
-
-    while (!should_stop_) {
-        std::vector<std::pair<std::string, std::string>> data;
-        if (to_be_processed_queue.dequeue(data)) { // blocks until data is available
-
-            std::string command = task_info.operator_executable;
-            for (const auto& pair : data) {
-                command += " " + pair.first + " " + pair.second;
-            }
-
-            // run executable wiht popen
-            FILE* pipe = popen(command.c_str(), "r");
-            if (!pipe) {
-                std::cerr << "Error opening pipe for command: " << command << std::endl;
-                should_stop_ = true;
-                return;
-            }
-
-
-            std::string all_output;
-            // check
-            while (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
-                all_output += buffer;
-            }
-
-            int status = pclose(pipe); // close the pipe
-
-            // process the output back into a vector of key-value pairs
-            // ? idk what executables return
-            std::vector<std::pair<std::string, std::string>> processed_data;
-            std::istringstream output_stream(all_output);
-            std::string line;
-            while (std::getline(output_stream, line)) {
-                // assuming output is in "key value" format, separated by space(s)
-                std::istringstream line_stream(line);
-                std::string key, value;
-                if (line_stream >> key >> value) { // Extract key and value
-                    processed_data.push_back({key, value});
-                } else {
-                    // Handle lines that don't match the "key value" format (if needed)
-                    std::cout << "Warning: Invalid output line format: " << line << std::endl;
-                }
-            }
-
-
-            // maybe easiest to save locally then push to hydfs
-
-            std::ofstream processed_log_file(task_info.processed_file, std::ios::app); // Open in append mode
-            if (processed_log_file.is_open()) {
-                for (const auto& pair : data) {
-                    processed_log_file << pair.first << " " << pair.second << "\n";
-                }
-                processed_log_file.close();
-            } else {
-                std::cout << "Failed to open processed log file: " << task_info.processed_file << std::endl;
-            }
-            std::ofstream output_log_file(task_info.output_log_file, std::ios::app); // Open in append mode
-            if (output_log_file.is_open()) {
-                for (const auto& pair : processed_data) {
-                    output_log_file << pair.first << " " << pair.second << "\n";
-                }
-                output_log_file.close();
-            } else {
-                std::cout << "Failed to open output log file: " << task_info.output_log_file << std::endl;
-            }
-
-            // save to hydfs?
-            hydfs.createFile(task_info.processed_file, task_info.processed_file);
-            hydfs.createFile(task_info.output_log_file, task_info.output_log_file);
-
-
-
-            // partition the processed data and enqueue to downstream queues
-            std::unordered_map<size_t, std::vector<std::pair<std::string, std::string>>> partitioned_data;
-            for (const auto& pair : processed_data) {
-                size_t partition_index = partitionData(pair.first, task_info.downstream_nodes.size());
-                partitioned_data[partition_index].push_back(pair);
-            }
-
-            {
-                std::lock_guard<std::mutex> lock(task_info_mtx_);
-                            // store input data in processed_tasks
-                processed_tasks[task_info.task_id].insert(data.begin(), data.end());
-                for (size_t i = 0; i < task_info.downstream_nodes.size(); ++i) {
-                    if (partitioned_data.count(i)) {
-                        task_info_[task_info.task_id].downstream_queue[i].enqueue(partitioned_data[i]);
-                    }
-                }
-            }
+void RainStormNode::EnqueueToBeProcessed(const std::string& task_id, const rainstorm::KV& kv) {
+    std::lock_guard<std::mutex> lock(task_info_mtx_);
+    if (task_info_.find(task_id) != task_info_.end()) {
+        auto& task_info = task_info_[task_id];
+        size_t partition = partitionData(kv.key(), task_info.downstream_nodes.size());
+        if (partition < task_info.downstream_queue.size()) {
+            std::vector<std::pair<std::string, std::string>> data;
+            data.emplace_back(kv.key(), kv.value());
+            task_info.downstream_queue[partition]->enqueue(std::move(data));
         }
     }
 }
 
+bool RainStormNode::DequeueProcessed(std::string& task_id, std::vector<std::pair<std::string, std::string>>& acked_ids) {
+    std::lock_guard<std::mutex> lock(task_info_mtx_);
+    for (const auto& [id, info] : task_info_) {
+        for (const auto& queue : info.ack_queue) {
+            std::vector<std::pair<std::string, std::string>> data;
+            if (queue->try_dequeue(data)) {
+                task_id = id;
+                acked_ids = std::move(data);
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+void RainStormNode::ProcessData(const TaskInfo& task_info) {
+    // Process data from upstream nodes
+    for (const auto& upstream_node : task_info.upstream_nodes) {
+        RainStormClient client(grpc::CreateChannel(upstream_node, grpc::InsecureChannelCredentials()));
+        // Process data from this upstream node...
+    }
+}
 
 void RainStormNode::SendDataToDownstreamNode(const TaskInfo& task_info, size_t downstream_node_index) {
     std::string downstream_address = task_info.downstream_nodes[downstream_node_index];
     RainStormClient client(grpc::CreateChannel(downstream_address, grpc::InsecureChannelCredentials()));
-    client.SendDataChunksStage(task_info.task_id, task_info_[task_info.task_id].downstream_queue[downstream_node_index]);
+    // Send data to downstream node...
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 size_t RainStormNode::partitionData(const std::string& key, size_t num_partitions) {
     return std::hash<std::string>{}(key) % num_partitions;
