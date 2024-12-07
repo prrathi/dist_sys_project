@@ -57,14 +57,6 @@ class RainstormService final {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::rainstorm::OperationStatus>>(PrepareAsyncNewStageTaskRaw(context, request, cq));
     }
     // tell node to start being stage task node (check if existing log files in hydfs)
-    virtual ::grpc::Status NewTgtTask(::grpc::ClientContext* context, const ::rainstorm::NewTgtTaskRequest& request, ::rainstorm::OperationStatus* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::rainstorm::OperationStatus>> AsyncNewTgtTask(::grpc::ClientContext* context, const ::rainstorm::NewTgtTaskRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::rainstorm::OperationStatus>>(AsyncNewTgtTaskRaw(context, request, cq));
-    }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::rainstorm::OperationStatus>> PrepareAsyncNewTgtTask(::grpc::ClientContext* context, const ::rainstorm::NewTgtTaskRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::rainstorm::OperationStatus>>(PrepareAsyncNewTgtTaskRaw(context, request, cq));
-    }
-    // tell node to start being tgt node (check if existing log files in hydfs)
     virtual ::grpc::Status UpdateTaskSnd(::grpc::ClientContext* context, const ::rainstorm::UpdateTaskSndRequest& request, ::rainstorm::OperationStatus* response) = 0;
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::rainstorm::OperationStatus>> AsyncUpdateTaskSnd(::grpc::ClientContext* context, const ::rainstorm::UpdateTaskSndRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::rainstorm::OperationStatus>>(AsyncUpdateTaskSndRaw(context, request, cq));
@@ -73,14 +65,6 @@ class RainstormService final {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::rainstorm::OperationStatus>>(PrepareAsyncUpdateTaskSndRaw(context, request, cq));
     }
     // tell node to start new grpc stream for task (state) to new next node
-    virtual ::grpc::Status UpdateTaskRcv(::grpc::ClientContext* context, const ::rainstorm::UpdateTaskRcvRequest& request, ::rainstorm::OperationStatus* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::rainstorm::OperationStatus>> AsyncUpdateTaskRcv(::grpc::ClientContext* context, const ::rainstorm::UpdateTaskRcvRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::rainstorm::OperationStatus>>(AsyncUpdateTaskRcvRaw(context, request, cq));
-    }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::rainstorm::OperationStatus>> PrepareAsyncUpdateTaskRcv(::grpc::ClientContext* context, const ::rainstorm::UpdateTaskRcvRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::rainstorm::OperationStatus>>(PrepareAsyncUpdateTaskRcvRaw(context, request, cq));
-    }
-    // tell node where to establish new stream to send data and to send acks
     std::unique_ptr< ::grpc::ClientReaderWriterInterface< ::rainstorm::StreamDataChunk, ::rainstorm::AckDataChunk>> SendDataChunks(::grpc::ClientContext* context) {
       return std::unique_ptr< ::grpc::ClientReaderWriterInterface< ::rainstorm::StreamDataChunk, ::rainstorm::AckDataChunk>>(SendDataChunksRaw(context));
     }
@@ -91,6 +75,16 @@ class RainstormService final {
       return std::unique_ptr< ::grpc::ClientAsyncReaderWriterInterface< ::rainstorm::StreamDataChunk, ::rainstorm::AckDataChunk>>(PrepareAsyncSendDataChunksRaw(context, cq));
     }
     // make sure to gracefully exit if connection lost
+    std::unique_ptr< ::grpc::ClientReaderWriterInterface< ::rainstorm::StreamDataChunkLeader, ::rainstorm::AckDataChunk>> SendDataChunksToLeader(::grpc::ClientContext* context) {
+      return std::unique_ptr< ::grpc::ClientReaderWriterInterface< ::rainstorm::StreamDataChunkLeader, ::rainstorm::AckDataChunk>>(SendDataChunksToLeaderRaw(context));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncReaderWriterInterface< ::rainstorm::StreamDataChunkLeader, ::rainstorm::AckDataChunk>> AsyncSendDataChunksToLeader(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq, void* tag) {
+      return std::unique_ptr< ::grpc::ClientAsyncReaderWriterInterface< ::rainstorm::StreamDataChunkLeader, ::rainstorm::AckDataChunk>>(AsyncSendDataChunksToLeaderRaw(context, cq, tag));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncReaderWriterInterface< ::rainstorm::StreamDataChunkLeader, ::rainstorm::AckDataChunk>> PrepareAsyncSendDataChunksToLeader(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncReaderWriterInterface< ::rainstorm::StreamDataChunkLeader, ::rainstorm::AckDataChunk>>(PrepareAsyncSendDataChunksToLeaderRaw(context, cq));
+    }
+    // only called for leader, handle everything serverside
     class async_interface {
      public:
       virtual ~async_interface() {}
@@ -100,17 +94,13 @@ class RainstormService final {
       virtual void NewStageTask(::grpc::ClientContext* context, const ::rainstorm::NewStageTaskRequest* request, ::rainstorm::OperationStatus* response, std::function<void(::grpc::Status)>) = 0;
       virtual void NewStageTask(::grpc::ClientContext* context, const ::rainstorm::NewStageTaskRequest* request, ::rainstorm::OperationStatus* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       // tell node to start being stage task node (check if existing log files in hydfs)
-      virtual void NewTgtTask(::grpc::ClientContext* context, const ::rainstorm::NewTgtTaskRequest* request, ::rainstorm::OperationStatus* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void NewTgtTask(::grpc::ClientContext* context, const ::rainstorm::NewTgtTaskRequest* request, ::rainstorm::OperationStatus* response, ::grpc::ClientUnaryReactor* reactor) = 0;
-      // tell node to start being tgt node (check if existing log files in hydfs)
       virtual void UpdateTaskSnd(::grpc::ClientContext* context, const ::rainstorm::UpdateTaskSndRequest* request, ::rainstorm::OperationStatus* response, std::function<void(::grpc::Status)>) = 0;
       virtual void UpdateTaskSnd(::grpc::ClientContext* context, const ::rainstorm::UpdateTaskSndRequest* request, ::rainstorm::OperationStatus* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       // tell node to start new grpc stream for task (state) to new next node
-      virtual void UpdateTaskRcv(::grpc::ClientContext* context, const ::rainstorm::UpdateTaskRcvRequest* request, ::rainstorm::OperationStatus* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void UpdateTaskRcv(::grpc::ClientContext* context, const ::rainstorm::UpdateTaskRcvRequest* request, ::rainstorm::OperationStatus* response, ::grpc::ClientUnaryReactor* reactor) = 0;
-      // tell node where to establish new stream to send data and to send acks
       virtual void SendDataChunks(::grpc::ClientContext* context, ::grpc::ClientBidiReactor< ::rainstorm::StreamDataChunk,::rainstorm::AckDataChunk>* reactor) = 0;
       // make sure to gracefully exit if connection lost
+      virtual void SendDataChunksToLeader(::grpc::ClientContext* context, ::grpc::ClientBidiReactor< ::rainstorm::StreamDataChunkLeader,::rainstorm::AckDataChunk>* reactor) = 0;
+      // only called for leader, handle everything serverside
     };
     typedef class async_interface experimental_async_interface;
     virtual class async_interface* async() { return nullptr; }
@@ -120,15 +110,14 @@ class RainstormService final {
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::rainstorm::OperationStatus>* PrepareAsyncNewSrcTaskRaw(::grpc::ClientContext* context, const ::rainstorm::NewSrcTaskRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::rainstorm::OperationStatus>* AsyncNewStageTaskRaw(::grpc::ClientContext* context, const ::rainstorm::NewStageTaskRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::rainstorm::OperationStatus>* PrepareAsyncNewStageTaskRaw(::grpc::ClientContext* context, const ::rainstorm::NewStageTaskRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::rainstorm::OperationStatus>* AsyncNewTgtTaskRaw(::grpc::ClientContext* context, const ::rainstorm::NewTgtTaskRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::rainstorm::OperationStatus>* PrepareAsyncNewTgtTaskRaw(::grpc::ClientContext* context, const ::rainstorm::NewTgtTaskRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::rainstorm::OperationStatus>* AsyncUpdateTaskSndRaw(::grpc::ClientContext* context, const ::rainstorm::UpdateTaskSndRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::rainstorm::OperationStatus>* PrepareAsyncUpdateTaskSndRaw(::grpc::ClientContext* context, const ::rainstorm::UpdateTaskSndRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::rainstorm::OperationStatus>* AsyncUpdateTaskRcvRaw(::grpc::ClientContext* context, const ::rainstorm::UpdateTaskRcvRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::rainstorm::OperationStatus>* PrepareAsyncUpdateTaskRcvRaw(::grpc::ClientContext* context, const ::rainstorm::UpdateTaskRcvRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientReaderWriterInterface< ::rainstorm::StreamDataChunk, ::rainstorm::AckDataChunk>* SendDataChunksRaw(::grpc::ClientContext* context) = 0;
     virtual ::grpc::ClientAsyncReaderWriterInterface< ::rainstorm::StreamDataChunk, ::rainstorm::AckDataChunk>* AsyncSendDataChunksRaw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq, void* tag) = 0;
     virtual ::grpc::ClientAsyncReaderWriterInterface< ::rainstorm::StreamDataChunk, ::rainstorm::AckDataChunk>* PrepareAsyncSendDataChunksRaw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientReaderWriterInterface< ::rainstorm::StreamDataChunkLeader, ::rainstorm::AckDataChunk>* SendDataChunksToLeaderRaw(::grpc::ClientContext* context) = 0;
+    virtual ::grpc::ClientAsyncReaderWriterInterface< ::rainstorm::StreamDataChunkLeader, ::rainstorm::AckDataChunk>* AsyncSendDataChunksToLeaderRaw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq, void* tag) = 0;
+    virtual ::grpc::ClientAsyncReaderWriterInterface< ::rainstorm::StreamDataChunkLeader, ::rainstorm::AckDataChunk>* PrepareAsyncSendDataChunksToLeaderRaw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq) = 0;
   };
   class Stub final : public StubInterface {
    public:
@@ -147,26 +136,12 @@ class RainstormService final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::rainstorm::OperationStatus>> PrepareAsyncNewStageTask(::grpc::ClientContext* context, const ::rainstorm::NewStageTaskRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::rainstorm::OperationStatus>>(PrepareAsyncNewStageTaskRaw(context, request, cq));
     }
-    ::grpc::Status NewTgtTask(::grpc::ClientContext* context, const ::rainstorm::NewTgtTaskRequest& request, ::rainstorm::OperationStatus* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::rainstorm::OperationStatus>> AsyncNewTgtTask(::grpc::ClientContext* context, const ::rainstorm::NewTgtTaskRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::rainstorm::OperationStatus>>(AsyncNewTgtTaskRaw(context, request, cq));
-    }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::rainstorm::OperationStatus>> PrepareAsyncNewTgtTask(::grpc::ClientContext* context, const ::rainstorm::NewTgtTaskRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::rainstorm::OperationStatus>>(PrepareAsyncNewTgtTaskRaw(context, request, cq));
-    }
     ::grpc::Status UpdateTaskSnd(::grpc::ClientContext* context, const ::rainstorm::UpdateTaskSndRequest& request, ::rainstorm::OperationStatus* response) override;
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::rainstorm::OperationStatus>> AsyncUpdateTaskSnd(::grpc::ClientContext* context, const ::rainstorm::UpdateTaskSndRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::rainstorm::OperationStatus>>(AsyncUpdateTaskSndRaw(context, request, cq));
     }
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::rainstorm::OperationStatus>> PrepareAsyncUpdateTaskSnd(::grpc::ClientContext* context, const ::rainstorm::UpdateTaskSndRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::rainstorm::OperationStatus>>(PrepareAsyncUpdateTaskSndRaw(context, request, cq));
-    }
-    ::grpc::Status UpdateTaskRcv(::grpc::ClientContext* context, const ::rainstorm::UpdateTaskRcvRequest& request, ::rainstorm::OperationStatus* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::rainstorm::OperationStatus>> AsyncUpdateTaskRcv(::grpc::ClientContext* context, const ::rainstorm::UpdateTaskRcvRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::rainstorm::OperationStatus>>(AsyncUpdateTaskRcvRaw(context, request, cq));
-    }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::rainstorm::OperationStatus>> PrepareAsyncUpdateTaskRcv(::grpc::ClientContext* context, const ::rainstorm::UpdateTaskRcvRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::rainstorm::OperationStatus>>(PrepareAsyncUpdateTaskRcvRaw(context, request, cq));
     }
     std::unique_ptr< ::grpc::ClientReaderWriter< ::rainstorm::StreamDataChunk, ::rainstorm::AckDataChunk>> SendDataChunks(::grpc::ClientContext* context) {
       return std::unique_ptr< ::grpc::ClientReaderWriter< ::rainstorm::StreamDataChunk, ::rainstorm::AckDataChunk>>(SendDataChunksRaw(context));
@@ -177,6 +152,15 @@ class RainstormService final {
     std::unique_ptr<  ::grpc::ClientAsyncReaderWriter< ::rainstorm::StreamDataChunk, ::rainstorm::AckDataChunk>> PrepareAsyncSendDataChunks(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncReaderWriter< ::rainstorm::StreamDataChunk, ::rainstorm::AckDataChunk>>(PrepareAsyncSendDataChunksRaw(context, cq));
     }
+    std::unique_ptr< ::grpc::ClientReaderWriter< ::rainstorm::StreamDataChunkLeader, ::rainstorm::AckDataChunk>> SendDataChunksToLeader(::grpc::ClientContext* context) {
+      return std::unique_ptr< ::grpc::ClientReaderWriter< ::rainstorm::StreamDataChunkLeader, ::rainstorm::AckDataChunk>>(SendDataChunksToLeaderRaw(context));
+    }
+    std::unique_ptr<  ::grpc::ClientAsyncReaderWriter< ::rainstorm::StreamDataChunkLeader, ::rainstorm::AckDataChunk>> AsyncSendDataChunksToLeader(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq, void* tag) {
+      return std::unique_ptr< ::grpc::ClientAsyncReaderWriter< ::rainstorm::StreamDataChunkLeader, ::rainstorm::AckDataChunk>>(AsyncSendDataChunksToLeaderRaw(context, cq, tag));
+    }
+    std::unique_ptr<  ::grpc::ClientAsyncReaderWriter< ::rainstorm::StreamDataChunkLeader, ::rainstorm::AckDataChunk>> PrepareAsyncSendDataChunksToLeader(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncReaderWriter< ::rainstorm::StreamDataChunkLeader, ::rainstorm::AckDataChunk>>(PrepareAsyncSendDataChunksToLeaderRaw(context, cq));
+    }
     class async final :
       public StubInterface::async_interface {
      public:
@@ -184,13 +168,10 @@ class RainstormService final {
       void NewSrcTask(::grpc::ClientContext* context, const ::rainstorm::NewSrcTaskRequest* request, ::rainstorm::OperationStatus* response, ::grpc::ClientUnaryReactor* reactor) override;
       void NewStageTask(::grpc::ClientContext* context, const ::rainstorm::NewStageTaskRequest* request, ::rainstorm::OperationStatus* response, std::function<void(::grpc::Status)>) override;
       void NewStageTask(::grpc::ClientContext* context, const ::rainstorm::NewStageTaskRequest* request, ::rainstorm::OperationStatus* response, ::grpc::ClientUnaryReactor* reactor) override;
-      void NewTgtTask(::grpc::ClientContext* context, const ::rainstorm::NewTgtTaskRequest* request, ::rainstorm::OperationStatus* response, std::function<void(::grpc::Status)>) override;
-      void NewTgtTask(::grpc::ClientContext* context, const ::rainstorm::NewTgtTaskRequest* request, ::rainstorm::OperationStatus* response, ::grpc::ClientUnaryReactor* reactor) override;
       void UpdateTaskSnd(::grpc::ClientContext* context, const ::rainstorm::UpdateTaskSndRequest* request, ::rainstorm::OperationStatus* response, std::function<void(::grpc::Status)>) override;
       void UpdateTaskSnd(::grpc::ClientContext* context, const ::rainstorm::UpdateTaskSndRequest* request, ::rainstorm::OperationStatus* response, ::grpc::ClientUnaryReactor* reactor) override;
-      void UpdateTaskRcv(::grpc::ClientContext* context, const ::rainstorm::UpdateTaskRcvRequest* request, ::rainstorm::OperationStatus* response, std::function<void(::grpc::Status)>) override;
-      void UpdateTaskRcv(::grpc::ClientContext* context, const ::rainstorm::UpdateTaskRcvRequest* request, ::rainstorm::OperationStatus* response, ::grpc::ClientUnaryReactor* reactor) override;
       void SendDataChunks(::grpc::ClientContext* context, ::grpc::ClientBidiReactor< ::rainstorm::StreamDataChunk,::rainstorm::AckDataChunk>* reactor) override;
+      void SendDataChunksToLeader(::grpc::ClientContext* context, ::grpc::ClientBidiReactor< ::rainstorm::StreamDataChunkLeader,::rainstorm::AckDataChunk>* reactor) override;
      private:
       friend class Stub;
       explicit async(Stub* stub): stub_(stub) { }
@@ -206,21 +187,19 @@ class RainstormService final {
     ::grpc::ClientAsyncResponseReader< ::rainstorm::OperationStatus>* PrepareAsyncNewSrcTaskRaw(::grpc::ClientContext* context, const ::rainstorm::NewSrcTaskRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::rainstorm::OperationStatus>* AsyncNewStageTaskRaw(::grpc::ClientContext* context, const ::rainstorm::NewStageTaskRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::rainstorm::OperationStatus>* PrepareAsyncNewStageTaskRaw(::grpc::ClientContext* context, const ::rainstorm::NewStageTaskRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::rainstorm::OperationStatus>* AsyncNewTgtTaskRaw(::grpc::ClientContext* context, const ::rainstorm::NewTgtTaskRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::rainstorm::OperationStatus>* PrepareAsyncNewTgtTaskRaw(::grpc::ClientContext* context, const ::rainstorm::NewTgtTaskRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::rainstorm::OperationStatus>* AsyncUpdateTaskSndRaw(::grpc::ClientContext* context, const ::rainstorm::UpdateTaskSndRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::rainstorm::OperationStatus>* PrepareAsyncUpdateTaskSndRaw(::grpc::ClientContext* context, const ::rainstorm::UpdateTaskSndRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::rainstorm::OperationStatus>* AsyncUpdateTaskRcvRaw(::grpc::ClientContext* context, const ::rainstorm::UpdateTaskRcvRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::rainstorm::OperationStatus>* PrepareAsyncUpdateTaskRcvRaw(::grpc::ClientContext* context, const ::rainstorm::UpdateTaskRcvRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientReaderWriter< ::rainstorm::StreamDataChunk, ::rainstorm::AckDataChunk>* SendDataChunksRaw(::grpc::ClientContext* context) override;
     ::grpc::ClientAsyncReaderWriter< ::rainstorm::StreamDataChunk, ::rainstorm::AckDataChunk>* AsyncSendDataChunksRaw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq, void* tag) override;
     ::grpc::ClientAsyncReaderWriter< ::rainstorm::StreamDataChunk, ::rainstorm::AckDataChunk>* PrepareAsyncSendDataChunksRaw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientReaderWriter< ::rainstorm::StreamDataChunkLeader, ::rainstorm::AckDataChunk>* SendDataChunksToLeaderRaw(::grpc::ClientContext* context) override;
+    ::grpc::ClientAsyncReaderWriter< ::rainstorm::StreamDataChunkLeader, ::rainstorm::AckDataChunk>* AsyncSendDataChunksToLeaderRaw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq, void* tag) override;
+    ::grpc::ClientAsyncReaderWriter< ::rainstorm::StreamDataChunkLeader, ::rainstorm::AckDataChunk>* PrepareAsyncSendDataChunksToLeaderRaw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq) override;
     const ::grpc::internal::RpcMethod rpcmethod_NewSrcTask_;
     const ::grpc::internal::RpcMethod rpcmethod_NewStageTask_;
-    const ::grpc::internal::RpcMethod rpcmethod_NewTgtTask_;
     const ::grpc::internal::RpcMethod rpcmethod_UpdateTaskSnd_;
-    const ::grpc::internal::RpcMethod rpcmethod_UpdateTaskRcv_;
     const ::grpc::internal::RpcMethod rpcmethod_SendDataChunks_;
+    const ::grpc::internal::RpcMethod rpcmethod_SendDataChunksToLeader_;
   };
   static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
 
@@ -232,14 +211,12 @@ class RainstormService final {
     // tell node to start being src node.
     virtual ::grpc::Status NewStageTask(::grpc::ServerContext* context, const ::rainstorm::NewStageTaskRequest* request, ::rainstorm::OperationStatus* response);
     // tell node to start being stage task node (check if existing log files in hydfs)
-    virtual ::grpc::Status NewTgtTask(::grpc::ServerContext* context, const ::rainstorm::NewTgtTaskRequest* request, ::rainstorm::OperationStatus* response);
-    // tell node to start being tgt node (check if existing log files in hydfs)
     virtual ::grpc::Status UpdateTaskSnd(::grpc::ServerContext* context, const ::rainstorm::UpdateTaskSndRequest* request, ::rainstorm::OperationStatus* response);
     // tell node to start new grpc stream for task (state) to new next node
-    virtual ::grpc::Status UpdateTaskRcv(::grpc::ServerContext* context, const ::rainstorm::UpdateTaskRcvRequest* request, ::rainstorm::OperationStatus* response);
-    // tell node where to establish new stream to send data and to send acks
     virtual ::grpc::Status SendDataChunks(::grpc::ServerContext* context, ::grpc::ServerReaderWriter< ::rainstorm::AckDataChunk, ::rainstorm::StreamDataChunk>* stream);
     // make sure to gracefully exit if connection lost
+    virtual ::grpc::Status SendDataChunksToLeader(::grpc::ServerContext* context, ::grpc::ServerReaderWriter< ::rainstorm::AckDataChunk, ::rainstorm::StreamDataChunkLeader>* stream);
+    // only called for leader, handle everything serverside
   };
   template <class BaseClass>
   class WithAsyncMethod_NewSrcTask : public BaseClass {
@@ -282,32 +259,12 @@ class RainstormService final {
     }
   };
   template <class BaseClass>
-  class WithAsyncMethod_NewTgtTask : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithAsyncMethod_NewTgtTask() {
-      ::grpc::Service::MarkMethodAsync(2);
-    }
-    ~WithAsyncMethod_NewTgtTask() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status NewTgtTask(::grpc::ServerContext* /*context*/, const ::rainstorm::NewTgtTaskRequest* /*request*/, ::rainstorm::OperationStatus* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestNewTgtTask(::grpc::ServerContext* context, ::rainstorm::NewTgtTaskRequest* request, ::grpc::ServerAsyncResponseWriter< ::rainstorm::OperationStatus>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
   class WithAsyncMethod_UpdateTaskSnd : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_UpdateTaskSnd() {
-      ::grpc::Service::MarkMethodAsync(3);
+      ::grpc::Service::MarkMethodAsync(2);
     }
     ~WithAsyncMethod_UpdateTaskSnd() override {
       BaseClassMustBeDerivedFromService(this);
@@ -318,27 +275,7 @@ class RainstormService final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestUpdateTaskSnd(::grpc::ServerContext* context, ::rainstorm::UpdateTaskSndRequest* request, ::grpc::ServerAsyncResponseWriter< ::rainstorm::OperationStatus>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(3, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithAsyncMethod_UpdateTaskRcv : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithAsyncMethod_UpdateTaskRcv() {
-      ::grpc::Service::MarkMethodAsync(4);
-    }
-    ~WithAsyncMethod_UpdateTaskRcv() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status UpdateTaskRcv(::grpc::ServerContext* /*context*/, const ::rainstorm::UpdateTaskRcvRequest* /*request*/, ::rainstorm::OperationStatus* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestUpdateTaskRcv(::grpc::ServerContext* context, ::rainstorm::UpdateTaskRcvRequest* request, ::grpc::ServerAsyncResponseWriter< ::rainstorm::OperationStatus>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -347,7 +284,7 @@ class RainstormService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_SendDataChunks() {
-      ::grpc::Service::MarkMethodAsync(5);
+      ::grpc::Service::MarkMethodAsync(3);
     }
     ~WithAsyncMethod_SendDataChunks() override {
       BaseClassMustBeDerivedFromService(this);
@@ -358,10 +295,30 @@ class RainstormService final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestSendDataChunks(::grpc::ServerContext* context, ::grpc::ServerAsyncReaderWriter< ::rainstorm::AckDataChunk, ::rainstorm::StreamDataChunk>* stream, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncBidiStreaming(5, context, stream, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncBidiStreaming(3, context, stream, new_call_cq, notification_cq, tag);
     }
   };
-  typedef WithAsyncMethod_NewSrcTask<WithAsyncMethod_NewStageTask<WithAsyncMethod_NewTgtTask<WithAsyncMethod_UpdateTaskSnd<WithAsyncMethod_UpdateTaskRcv<WithAsyncMethod_SendDataChunks<Service > > > > > > AsyncService;
+  template <class BaseClass>
+  class WithAsyncMethod_SendDataChunksToLeader : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_SendDataChunksToLeader() {
+      ::grpc::Service::MarkMethodAsync(4);
+    }
+    ~WithAsyncMethod_SendDataChunksToLeader() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SendDataChunksToLeader(::grpc::ServerContext* /*context*/, ::grpc::ServerReaderWriter< ::rainstorm::AckDataChunk, ::rainstorm::StreamDataChunkLeader>* /*stream*/)  override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestSendDataChunksToLeader(::grpc::ServerContext* context, ::grpc::ServerAsyncReaderWriter< ::rainstorm::AckDataChunk, ::rainstorm::StreamDataChunkLeader>* stream, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncBidiStreaming(4, context, stream, new_call_cq, notification_cq, tag);
+    }
+  };
+  typedef WithAsyncMethod_NewSrcTask<WithAsyncMethod_NewStageTask<WithAsyncMethod_UpdateTaskSnd<WithAsyncMethod_SendDataChunks<WithAsyncMethod_SendDataChunksToLeader<Service > > > > > AsyncService;
   template <class BaseClass>
   class WithCallbackMethod_NewSrcTask : public BaseClass {
    private:
@@ -417,45 +374,18 @@ class RainstormService final {
       ::grpc::CallbackServerContext* /*context*/, const ::rainstorm::NewStageTaskRequest* /*request*/, ::rainstorm::OperationStatus* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
-  class WithCallbackMethod_NewTgtTask : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithCallbackMethod_NewTgtTask() {
-      ::grpc::Service::MarkMethodCallback(2,
-          new ::grpc::internal::CallbackUnaryHandler< ::rainstorm::NewTgtTaskRequest, ::rainstorm::OperationStatus>(
-            [this](
-                   ::grpc::CallbackServerContext* context, const ::rainstorm::NewTgtTaskRequest* request, ::rainstorm::OperationStatus* response) { return this->NewTgtTask(context, request, response); }));}
-    void SetMessageAllocatorFor_NewTgtTask(
-        ::grpc::MessageAllocator< ::rainstorm::NewTgtTaskRequest, ::rainstorm::OperationStatus>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(2);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::rainstorm::NewTgtTaskRequest, ::rainstorm::OperationStatus>*>(handler)
-              ->SetMessageAllocator(allocator);
-    }
-    ~WithCallbackMethod_NewTgtTask() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status NewTgtTask(::grpc::ServerContext* /*context*/, const ::rainstorm::NewTgtTaskRequest* /*request*/, ::rainstorm::OperationStatus* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    virtual ::grpc::ServerUnaryReactor* NewTgtTask(
-      ::grpc::CallbackServerContext* /*context*/, const ::rainstorm::NewTgtTaskRequest* /*request*/, ::rainstorm::OperationStatus* /*response*/)  { return nullptr; }
-  };
-  template <class BaseClass>
   class WithCallbackMethod_UpdateTaskSnd : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithCallbackMethod_UpdateTaskSnd() {
-      ::grpc::Service::MarkMethodCallback(3,
+      ::grpc::Service::MarkMethodCallback(2,
           new ::grpc::internal::CallbackUnaryHandler< ::rainstorm::UpdateTaskSndRequest, ::rainstorm::OperationStatus>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::rainstorm::UpdateTaskSndRequest* request, ::rainstorm::OperationStatus* response) { return this->UpdateTaskSnd(context, request, response); }));}
     void SetMessageAllocatorFor_UpdateTaskSnd(
         ::grpc::MessageAllocator< ::rainstorm::UpdateTaskSndRequest, ::rainstorm::OperationStatus>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(3);
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(2);
       static_cast<::grpc::internal::CallbackUnaryHandler< ::rainstorm::UpdateTaskSndRequest, ::rainstorm::OperationStatus>*>(handler)
               ->SetMessageAllocator(allocator);
     }
@@ -471,39 +401,12 @@ class RainstormService final {
       ::grpc::CallbackServerContext* /*context*/, const ::rainstorm::UpdateTaskSndRequest* /*request*/, ::rainstorm::OperationStatus* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
-  class WithCallbackMethod_UpdateTaskRcv : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithCallbackMethod_UpdateTaskRcv() {
-      ::grpc::Service::MarkMethodCallback(4,
-          new ::grpc::internal::CallbackUnaryHandler< ::rainstorm::UpdateTaskRcvRequest, ::rainstorm::OperationStatus>(
-            [this](
-                   ::grpc::CallbackServerContext* context, const ::rainstorm::UpdateTaskRcvRequest* request, ::rainstorm::OperationStatus* response) { return this->UpdateTaskRcv(context, request, response); }));}
-    void SetMessageAllocatorFor_UpdateTaskRcv(
-        ::grpc::MessageAllocator< ::rainstorm::UpdateTaskRcvRequest, ::rainstorm::OperationStatus>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(4);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::rainstorm::UpdateTaskRcvRequest, ::rainstorm::OperationStatus>*>(handler)
-              ->SetMessageAllocator(allocator);
-    }
-    ~WithCallbackMethod_UpdateTaskRcv() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status UpdateTaskRcv(::grpc::ServerContext* /*context*/, const ::rainstorm::UpdateTaskRcvRequest* /*request*/, ::rainstorm::OperationStatus* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    virtual ::grpc::ServerUnaryReactor* UpdateTaskRcv(
-      ::grpc::CallbackServerContext* /*context*/, const ::rainstorm::UpdateTaskRcvRequest* /*request*/, ::rainstorm::OperationStatus* /*response*/)  { return nullptr; }
-  };
-  template <class BaseClass>
   class WithCallbackMethod_SendDataChunks : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithCallbackMethod_SendDataChunks() {
-      ::grpc::Service::MarkMethodCallback(5,
+      ::grpc::Service::MarkMethodCallback(3,
           new ::grpc::internal::CallbackBidiHandler< ::rainstorm::StreamDataChunk, ::rainstorm::AckDataChunk>(
             [this](
                    ::grpc::CallbackServerContext* context) { return this->SendDataChunks(context); }));
@@ -520,7 +423,30 @@ class RainstormService final {
       ::grpc::CallbackServerContext* /*context*/)
       { return nullptr; }
   };
-  typedef WithCallbackMethod_NewSrcTask<WithCallbackMethod_NewStageTask<WithCallbackMethod_NewTgtTask<WithCallbackMethod_UpdateTaskSnd<WithCallbackMethod_UpdateTaskRcv<WithCallbackMethod_SendDataChunks<Service > > > > > > CallbackService;
+  template <class BaseClass>
+  class WithCallbackMethod_SendDataChunksToLeader : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_SendDataChunksToLeader() {
+      ::grpc::Service::MarkMethodCallback(4,
+          new ::grpc::internal::CallbackBidiHandler< ::rainstorm::StreamDataChunkLeader, ::rainstorm::AckDataChunk>(
+            [this](
+                   ::grpc::CallbackServerContext* context) { return this->SendDataChunksToLeader(context); }));
+    }
+    ~WithCallbackMethod_SendDataChunksToLeader() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SendDataChunksToLeader(::grpc::ServerContext* /*context*/, ::grpc::ServerReaderWriter< ::rainstorm::AckDataChunk, ::rainstorm::StreamDataChunkLeader>* /*stream*/)  override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerBidiReactor< ::rainstorm::StreamDataChunkLeader, ::rainstorm::AckDataChunk>* SendDataChunksToLeader(
+      ::grpc::CallbackServerContext* /*context*/)
+      { return nullptr; }
+  };
+  typedef WithCallbackMethod_NewSrcTask<WithCallbackMethod_NewStageTask<WithCallbackMethod_UpdateTaskSnd<WithCallbackMethod_SendDataChunks<WithCallbackMethod_SendDataChunksToLeader<Service > > > > > CallbackService;
   typedef CallbackService ExperimentalCallbackService;
   template <class BaseClass>
   class WithGenericMethod_NewSrcTask : public BaseClass {
@@ -557,29 +483,12 @@ class RainstormService final {
     }
   };
   template <class BaseClass>
-  class WithGenericMethod_NewTgtTask : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithGenericMethod_NewTgtTask() {
-      ::grpc::Service::MarkMethodGeneric(2);
-    }
-    ~WithGenericMethod_NewTgtTask() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status NewTgtTask(::grpc::ServerContext* /*context*/, const ::rainstorm::NewTgtTaskRequest* /*request*/, ::rainstorm::OperationStatus* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-  };
-  template <class BaseClass>
   class WithGenericMethod_UpdateTaskSnd : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_UpdateTaskSnd() {
-      ::grpc::Service::MarkMethodGeneric(3);
+      ::grpc::Service::MarkMethodGeneric(2);
     }
     ~WithGenericMethod_UpdateTaskSnd() override {
       BaseClassMustBeDerivedFromService(this);
@@ -591,35 +500,35 @@ class RainstormService final {
     }
   };
   template <class BaseClass>
-  class WithGenericMethod_UpdateTaskRcv : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithGenericMethod_UpdateTaskRcv() {
-      ::grpc::Service::MarkMethodGeneric(4);
-    }
-    ~WithGenericMethod_UpdateTaskRcv() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status UpdateTaskRcv(::grpc::ServerContext* /*context*/, const ::rainstorm::UpdateTaskRcvRequest* /*request*/, ::rainstorm::OperationStatus* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-  };
-  template <class BaseClass>
   class WithGenericMethod_SendDataChunks : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_SendDataChunks() {
-      ::grpc::Service::MarkMethodGeneric(5);
+      ::grpc::Service::MarkMethodGeneric(3);
     }
     ~WithGenericMethod_SendDataChunks() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
     ::grpc::Status SendDataChunks(::grpc::ServerContext* /*context*/, ::grpc::ServerReaderWriter< ::rainstorm::AckDataChunk, ::rainstorm::StreamDataChunk>* /*stream*/)  override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_SendDataChunksToLeader : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_SendDataChunksToLeader() {
+      ::grpc::Service::MarkMethodGeneric(4);
+    }
+    ~WithGenericMethod_SendDataChunksToLeader() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SendDataChunksToLeader(::grpc::ServerContext* /*context*/, ::grpc::ServerReaderWriter< ::rainstorm::AckDataChunk, ::rainstorm::StreamDataChunkLeader>* /*stream*/)  override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -665,32 +574,12 @@ class RainstormService final {
     }
   };
   template <class BaseClass>
-  class WithRawMethod_NewTgtTask : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithRawMethod_NewTgtTask() {
-      ::grpc::Service::MarkMethodRaw(2);
-    }
-    ~WithRawMethod_NewTgtTask() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status NewTgtTask(::grpc::ServerContext* /*context*/, const ::rainstorm::NewTgtTaskRequest* /*request*/, ::rainstorm::OperationStatus* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestNewTgtTask(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
   class WithRawMethod_UpdateTaskSnd : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_UpdateTaskSnd() {
-      ::grpc::Service::MarkMethodRaw(3);
+      ::grpc::Service::MarkMethodRaw(2);
     }
     ~WithRawMethod_UpdateTaskSnd() override {
       BaseClassMustBeDerivedFromService(this);
@@ -701,27 +590,7 @@ class RainstormService final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestUpdateTaskSnd(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(3, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithRawMethod_UpdateTaskRcv : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithRawMethod_UpdateTaskRcv() {
-      ::grpc::Service::MarkMethodRaw(4);
-    }
-    ~WithRawMethod_UpdateTaskRcv() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status UpdateTaskRcv(::grpc::ServerContext* /*context*/, const ::rainstorm::UpdateTaskRcvRequest* /*request*/, ::rainstorm::OperationStatus* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestUpdateTaskRcv(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -730,7 +599,7 @@ class RainstormService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_SendDataChunks() {
-      ::grpc::Service::MarkMethodRaw(5);
+      ::grpc::Service::MarkMethodRaw(3);
     }
     ~WithRawMethod_SendDataChunks() override {
       BaseClassMustBeDerivedFromService(this);
@@ -741,7 +610,27 @@ class RainstormService final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestSendDataChunks(::grpc::ServerContext* context, ::grpc::ServerAsyncReaderWriter< ::grpc::ByteBuffer, ::grpc::ByteBuffer>* stream, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncBidiStreaming(5, context, stream, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncBidiStreaming(3, context, stream, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_SendDataChunksToLeader : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_SendDataChunksToLeader() {
+      ::grpc::Service::MarkMethodRaw(4);
+    }
+    ~WithRawMethod_SendDataChunksToLeader() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SendDataChunksToLeader(::grpc::ServerContext* /*context*/, ::grpc::ServerReaderWriter< ::rainstorm::AckDataChunk, ::rainstorm::StreamDataChunkLeader>* /*stream*/)  override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestSendDataChunksToLeader(::grpc::ServerContext* context, ::grpc::ServerAsyncReaderWriter< ::grpc::ByteBuffer, ::grpc::ByteBuffer>* stream, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncBidiStreaming(4, context, stream, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -789,34 +678,12 @@ class RainstormService final {
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
-  class WithRawCallbackMethod_NewTgtTask : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithRawCallbackMethod_NewTgtTask() {
-      ::grpc::Service::MarkMethodRawCallback(2,
-          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
-            [this](
-                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->NewTgtTask(context, request, response); }));
-    }
-    ~WithRawCallbackMethod_NewTgtTask() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status NewTgtTask(::grpc::ServerContext* /*context*/, const ::rainstorm::NewTgtTaskRequest* /*request*/, ::rainstorm::OperationStatus* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    virtual ::grpc::ServerUnaryReactor* NewTgtTask(
-      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
-  };
-  template <class BaseClass>
   class WithRawCallbackMethod_UpdateTaskSnd : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawCallbackMethod_UpdateTaskSnd() {
-      ::grpc::Service::MarkMethodRawCallback(3,
+      ::grpc::Service::MarkMethodRawCallback(2,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->UpdateTaskSnd(context, request, response); }));
@@ -833,34 +700,12 @@ class RainstormService final {
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
-  class WithRawCallbackMethod_UpdateTaskRcv : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithRawCallbackMethod_UpdateTaskRcv() {
-      ::grpc::Service::MarkMethodRawCallback(4,
-          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
-            [this](
-                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->UpdateTaskRcv(context, request, response); }));
-    }
-    ~WithRawCallbackMethod_UpdateTaskRcv() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status UpdateTaskRcv(::grpc::ServerContext* /*context*/, const ::rainstorm::UpdateTaskRcvRequest* /*request*/, ::rainstorm::OperationStatus* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    virtual ::grpc::ServerUnaryReactor* UpdateTaskRcv(
-      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
-  };
-  template <class BaseClass>
   class WithRawCallbackMethod_SendDataChunks : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawCallbackMethod_SendDataChunks() {
-      ::grpc::Service::MarkMethodRawCallback(5,
+      ::grpc::Service::MarkMethodRawCallback(3,
           new ::grpc::internal::CallbackBidiHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
                    ::grpc::CallbackServerContext* context) { return this->SendDataChunks(context); }));
@@ -874,6 +719,29 @@ class RainstormService final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     virtual ::grpc::ServerBidiReactor< ::grpc::ByteBuffer, ::grpc::ByteBuffer>* SendDataChunks(
+      ::grpc::CallbackServerContext* /*context*/)
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_SendDataChunksToLeader : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_SendDataChunksToLeader() {
+      ::grpc::Service::MarkMethodRawCallback(4,
+          new ::grpc::internal::CallbackBidiHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context) { return this->SendDataChunksToLeader(context); }));
+    }
+    ~WithRawCallbackMethod_SendDataChunksToLeader() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SendDataChunksToLeader(::grpc::ServerContext* /*context*/, ::grpc::ServerReaderWriter< ::rainstorm::AckDataChunk, ::rainstorm::StreamDataChunkLeader>* /*stream*/)  override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerBidiReactor< ::grpc::ByteBuffer, ::grpc::ByteBuffer>* SendDataChunksToLeader(
       ::grpc::CallbackServerContext* /*context*/)
       { return nullptr; }
   };
@@ -932,39 +800,12 @@ class RainstormService final {
     virtual ::grpc::Status StreamedNewStageTask(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::rainstorm::NewStageTaskRequest,::rainstorm::OperationStatus>* server_unary_streamer) = 0;
   };
   template <class BaseClass>
-  class WithStreamedUnaryMethod_NewTgtTask : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithStreamedUnaryMethod_NewTgtTask() {
-      ::grpc::Service::MarkMethodStreamed(2,
-        new ::grpc::internal::StreamedUnaryHandler<
-          ::rainstorm::NewTgtTaskRequest, ::rainstorm::OperationStatus>(
-            [this](::grpc::ServerContext* context,
-                   ::grpc::ServerUnaryStreamer<
-                     ::rainstorm::NewTgtTaskRequest, ::rainstorm::OperationStatus>* streamer) {
-                       return this->StreamedNewTgtTask(context,
-                         streamer);
-                  }));
-    }
-    ~WithStreamedUnaryMethod_NewTgtTask() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable regular version of this method
-    ::grpc::Status NewTgtTask(::grpc::ServerContext* /*context*/, const ::rainstorm::NewTgtTaskRequest* /*request*/, ::rainstorm::OperationStatus* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedNewTgtTask(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::rainstorm::NewTgtTaskRequest,::rainstorm::OperationStatus>* server_unary_streamer) = 0;
-  };
-  template <class BaseClass>
   class WithStreamedUnaryMethod_UpdateTaskSnd : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_UpdateTaskSnd() {
-      ::grpc::Service::MarkMethodStreamed(3,
+      ::grpc::Service::MarkMethodStreamed(2,
         new ::grpc::internal::StreamedUnaryHandler<
           ::rainstorm::UpdateTaskSndRequest, ::rainstorm::OperationStatus>(
             [this](::grpc::ServerContext* context,
@@ -985,36 +826,9 @@ class RainstormService final {
     // replace default version of method with streamed unary
     virtual ::grpc::Status StreamedUpdateTaskSnd(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::rainstorm::UpdateTaskSndRequest,::rainstorm::OperationStatus>* server_unary_streamer) = 0;
   };
-  template <class BaseClass>
-  class WithStreamedUnaryMethod_UpdateTaskRcv : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithStreamedUnaryMethod_UpdateTaskRcv() {
-      ::grpc::Service::MarkMethodStreamed(4,
-        new ::grpc::internal::StreamedUnaryHandler<
-          ::rainstorm::UpdateTaskRcvRequest, ::rainstorm::OperationStatus>(
-            [this](::grpc::ServerContext* context,
-                   ::grpc::ServerUnaryStreamer<
-                     ::rainstorm::UpdateTaskRcvRequest, ::rainstorm::OperationStatus>* streamer) {
-                       return this->StreamedUpdateTaskRcv(context,
-                         streamer);
-                  }));
-    }
-    ~WithStreamedUnaryMethod_UpdateTaskRcv() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable regular version of this method
-    ::grpc::Status UpdateTaskRcv(::grpc::ServerContext* /*context*/, const ::rainstorm::UpdateTaskRcvRequest* /*request*/, ::rainstorm::OperationStatus* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedUpdateTaskRcv(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::rainstorm::UpdateTaskRcvRequest,::rainstorm::OperationStatus>* server_unary_streamer) = 0;
-  };
-  typedef WithStreamedUnaryMethod_NewSrcTask<WithStreamedUnaryMethod_NewStageTask<WithStreamedUnaryMethod_NewTgtTask<WithStreamedUnaryMethod_UpdateTaskSnd<WithStreamedUnaryMethod_UpdateTaskRcv<Service > > > > > StreamedUnaryService;
+  typedef WithStreamedUnaryMethod_NewSrcTask<WithStreamedUnaryMethod_NewStageTask<WithStreamedUnaryMethod_UpdateTaskSnd<Service > > > StreamedUnaryService;
   typedef Service SplitStreamedService;
-  typedef WithStreamedUnaryMethod_NewSrcTask<WithStreamedUnaryMethod_NewStageTask<WithStreamedUnaryMethod_NewTgtTask<WithStreamedUnaryMethod_UpdateTaskSnd<WithStreamedUnaryMethod_UpdateTaskRcv<Service > > > > > StreamedService;
+  typedef WithStreamedUnaryMethod_NewSrcTask<WithStreamedUnaryMethod_NewStageTask<WithStreamedUnaryMethod_UpdateTaskSnd<Service > > > StreamedService;
 };
 
 }  // namespace rainstorm

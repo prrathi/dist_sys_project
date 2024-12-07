@@ -1,13 +1,20 @@
-#include "rainstorm_service_client.h"
+#include <fstream>
 #include <iostream>
+#include <memory>
+#include <string>
 #include <utility>
+#include <vector>
+
+#include "rainstorm_common.h"
+#include "rainstorm_service_client.h"
+#include "safequeue.hpp"
 
 using namespace std;
 
-RainStormClient::RainStormClient(std::shared_ptr<grpc::Channel> channel)
+RainStormClient::RainStormClient(shared_ptr<grpc::Channel> channel)
     : stub_(rainstorm::RainstormService::NewStub(channel)) {}
 
-bool RainStormClient::NewSrcTask(const std::string &id, const std::string &src_filename) {
+bool RainStormClient::NewSrcTask(const string& id, const string& src_filename) {
     grpc::ClientContext context;
     rainstorm::NewSrcTaskRequest request;
     rainstorm::OperationStatus response;
@@ -22,7 +29,8 @@ bool RainStormClient::NewSrcTask(const std::string &id, const std::string &src_f
     return false;
 }
 
-bool RainStormClient::NewStageTask(const std::string &id, const std::string &next_server_address, const std::string &prev_server_address) {
+bool RainStormClient::NewStageTask(const string& id, const string& next_server_address, 
+                                  const string& prev_server_address) {
     grpc::ClientContext context;
     rainstorm::NewStageTaskRequest request;
     rainstorm::OperationStatus response;
@@ -35,148 +43,132 @@ bool RainStormClient::NewStageTask(const std::string &id, const std::string &nex
     return status.ok() && response.status() == rainstorm::SUCCESS;
 }
 
-bool RainStormClient::UpdateSrcTaskSend(const std::string &id, const std::string &new_next_server_address) {
+bool RainStormClient::UpdateTaskSnd(int32_t index, const string& snd_address, int32_t snd_port) {
     grpc::ClientContext context;
-    rainstorm::UpdateSrcTaskSendRequest request;
+    rainstorm::UpdateTaskSndRequest request;
     rainstorm::OperationStatus response;
 
-    request.set_id(id);
-    request.set_new_next_server_address(new_next_server_address);
+    request.set_index(index);
+    request.set_snd_address(snd_address);
+    request.set_snd_port(snd_port);
 
-    grpc::Status status = stub_->UpdateSrcTaskSend(&context, request, &response);
+    grpc::Status status = stub_->UpdateTaskSnd(&context, request, &response);
     return status.ok() && response.status() == rainstorm::SUCCESS;
 }
 
-bool RainStormClient::UpdateDstTaskRecieve(const std::string &id, const std::string &new_next_server_address, const std::string &new_prev_server_address) {
+bool RainStormClient::SendDataChunks(shared_ptr<SafeQueue<vector<KVStruct>>> queue, unordered_set<int>& acked_ids, mutex& acked_ids_mutex) {
     grpc::ClientContext context;
-    rainstorm::UpdateDstTaskRecieveRequest request;
-    rainstorm::OperationStatus response;
-
-    request.set_id(id);
-    request.set_new_next_server_address(new_next_server_address);
-    request.set_new_prev_server_address(new_prev_server_address);
-
-    grpc::Status status = stub_->UpdateDstTaskRecieve(&context, request, &response);
-    return status.ok() && response.status() == rainstorm::SUCCESS;
-}
-
-bool RainStormClient::SendDataChunksStage(const std::string &task_id, SafeQueue<vector<pair<string, string>>>& queue) {
-    grpc::ClientContext context;
-    std::unique_ptr<grpc::ClientReaderWriter<rainstorm::StreamDataChunk, rainstorm::AckDataChunk>> stream(stub_->SendDataChunks(&context));
-
-    std::mutex mtx;
-    std::condition_variable cv;
-    bool done_writing = false;
-
-    // Writer thread
-    std::thread writer_thread([&] {
-        // 1. Send initial request with task ID
-        rainstorm::StreamDataChunk init_chunk;
-        rainstorm::DataChunk* data_chunk = init_chunk.add_chunks();
-        data_chunk->set_id(task_id);
-        if (!stream->Write(init_chunk)) {
-            std::cout << "Initial Write failed (task ID)." << std::endl;
-        }
-        //std::cout << "Initial chunk with id: " << task_id << " sent successfully" << std::endl;
-
-        // 2. Send subsequent requests with key-value pairs
-        while (true) {
-            std::vector<std::pair<std::string, std::string>> kv_pairs;
-            if (queue.dequeue(kv_pairs)) {
-                rainstorm::StreamDataChunk data_chunk_msg;
-                for (const auto& kv : kv_pairs) {
-                    rainstorm::DataChunk* data_chunk = data_chunk_msg.add_chunks();
-                    rainstorm::KV* p = data_chunk->mutable_pairs();
-                    p->set_key(kv.first);
-                    p->set_value(kv.second);
-                }
-
-                if (!stream->Write(data_chunk_msg)) {
-                    std::cout << "Write failed (key-value pairs)." << std::endl;
-                    break;
-                }
-            }
-        }
-        // 3. Signal that writing is done
-        stream->WritesDone();
-        {
-            std::lock_guard<std::mutex> lock(mtx);
-            done_writing = true;
-        }
-        cv.notify_one();
-
-    });
-
-    // Reader thread
-    std::thread reader_thread([&] {
-        rainstorm::StreamDataChunk server_chunk;
-        while (stream->Read(&server_chunk)) {
-            // process server acks if any
-        }
-    });
-
-    writer_thread.join();
-    {
-        std::unique_lock<std::mutex> lock(mtx);
-        cv.wait(lock, [&] { return done_writing; });
-    }
-    reader_thread.join();
-
-    grpc::Status status = stream->Finish();
-    return status.ok();
-}
-
-bool RainStormClient::SendDataChunksSrc(const std::string &task_id, const string& srcfile) {
-    grpc::ClientContext context;
-    std::shared_ptr<grpc::ClientReaderWriter<rainstorm::StreamDataChunk, rainstorm::StreamDataChunk>> stream(
+    unique_ptr<grpc::ClientReaderWriter<rainstorm::StreamDataChunk, rainstorm::AckDataChunk>> stream(
         stub_->SendDataChunks(&context));
 
-    std::mutex mtx;
-    std::condition_variable cv;
-    bool done_writing = false;
-
     // Writer thread
-    std::thread writer_thread([&] {
+    thread writer_thread([&] {
         rainstorm::StreamDataChunk init_chunk;
-        init_chunk.set_id(task_id);
         if (!stream->Write(init_chunk)) {
+            cerr << "Initial Write failed." << endl;
             return;
         }
 
-        for (auto &kv : kv_pairs) {
-            rainstorm::StreamDataChunk chunk;
-            auto p = chunk.add_pairs();
-            p->set_key(kv.first);
-            p->set_value(kv.second);
-            if (!stream->Write(chunk)) {
+        while (true) {
+            vector<KVStruct> kv_pairs;
+            if (queue->dequeue(kv_pairs)) {
+                rainstorm::StreamDataChunk data_chunk_msg;
+                for (const auto& kv : kv_pairs) {
+                    auto* data_chunk = data_chunk_msg.mutable_chunks()->Add();
+                    auto* pair = data_chunk->mutable_pair();
+                    pair->set_id(kv.id);
+                    pair->set_key(kv.key);
+                    pair->set_value(kv.value);
+                }
+
+                if (!stream->Write(data_chunk_msg)) {
+                    cerr << "Failed to write data chunk" << endl;
+                    break;
+                }
+            } else {
                 break;
             }
         }
 
         stream->WritesDone();
-        {
-            std::lock_guard<std::mutex> lock(mtx);
-            done_writing = true;
-        }
-        cv.notify_one();
     });
 
     // Reader thread
-    std::thread reader_thread([&] {
-        rainstorm::StreamDataChunk server_chunk;
+    thread reader_thread([&] {
+        rainstorm::AckDataChunk server_chunk;
         while (stream->Read(&server_chunk)) {
-            // process server acks if any
+            lock_guard<mutex> lock(acked_ids_mutex);
+            for (const auto& chunk_id : server_chunk.id()) {
+                acked_ids.insert(chunk_id);
+            }
         }
     });
 
     writer_thread.join();
-    {
-        std::unique_lock<std::mutex> lock(mtx);
-        cv.wait(lock, [&] { return done_writing; });
-    }
     reader_thread.join();
 
     grpc::Status status = stream->Finish();
     return status.ok();
 }
 
+bool RainStormClient::SendDataChunksLeader(shared_ptr<SafeQueue<vector<KVStruct>>> queue, unordered_set<int>& acked_ids, mutex& acked_ids_mutex, string job_id) {
+    grpc::ClientContext context;
+    unique_ptr<grpc::ClientReaderWriter<rainstorm::StreamDataChunkLeader, rainstorm::AckDataChunk>> stream(
+        stub_->SendDataChunksLeader(&context));
+
+    // Writer thread
+    thread writer_thread([&] {
+        rainstorm::StreamDataChunkLeader init_chunk;
+        auto* first_chunk = init_chunk.mutable_chunks()->Add();
+        first_chunk->set_job_id(job_id);
+        
+        if (!stream->Write(init_chunk)) {
+            cerr << "Initial Write failed." << endl;
+            return;
+        }
+
+        while (true) {
+            vector<KVStruct> kv_pairs;
+            if (queue->dequeue(kv_pairs)) {
+                rainstorm::StreamDataChunkLeader data_chunk_msg;
+                for (const auto& kv : kv_pairs) {
+                    auto* data_chunk = data_chunk_msg.mutable_chunks()->Add();
+                    auto* pair = data_chunk->mutable_pair();
+                    pair->set_id(kv.id);
+                    pair->set_key(kv.key);
+                    pair->set_value(kv.value);
+                }
+
+                if (!stream->Write(data_chunk_msg)) {
+                    cerr << "Failed to write data chunk" << endl;
+                    break;
+                }
+            } else {
+                rainstorm::StreamDataChunkLeader final_chunk;
+                auto* last_chunk = final_chunk.mutable_chunks()->Add();
+                last_chunk->set_finished(true);
+                stream->Write(final_chunk);
+                break;
+            }
+        }
+
+        stream->WritesDone();
+    });
+
+    // Reader thread
+    thread reader_thread([&] {
+        rainstorm::AckDataChunk server_chunk;
+        while (stream->Read(&server_chunk)) {
+            lock_guard<mutex> lock(acked_ids_mutex);
+            for (const auto& chunk_id : server_chunk.id()) {
+                acked_ids.insert(chunk_id);
+            }
+        }
+    });
+
+    writer_thread.join();
+    reader_thread.join();
+
+    grpc::Status status = stream->Finish();
+    return status.ok();
+}

@@ -1,32 +1,38 @@
-#include "rainstorm_leader.h"
-#include <random>
-#include <chrono>
 #include <algorithm>
+#include <chrono>
 #include <iostream>
+#include <random>
+#include <string>
+#include <vector>
 
-// Dummy function: In a real system, this might query the membership layer.
-std::vector<std::string> RainStormLeader::GetAllWorkerVMs() {
+#include "rainstorm_leader.h"
+#include "rainstorm_service_client.h"
 
+using namespace std;
+
+vector<string> RainStormLeader::GetAllWorkerVMs() {
+    // Dummy function: In a real system, this might query the membership layer.
+    return vector<string>();
 }
 
 RainStormLeader::RainStormLeader() {}
 RainStormLeader::~RainStormLeader() {}
 
-std::string RainStormLeader::GenerateJobId() {
-    static std::mt19937 gen(std::random_device{}());
-    static std::uniform_int_distribution<> dist(1000,999999);
-    return "job_" + std::to_string(dist(gen));
+string RainStormLeader::GenerateJobId() {
+    static mt19937 gen(random_device{}());
+    static uniform_int_distribution<> dist(1000, 999999);
+    return "job_" + to_string(dist(gen));
 }
 
-std::string RainStormLeader::GenerateTaskId(const std::string &job_id, int stage_num, int task_index) {
-    return job_id + "-" + std::to_string(stage_num) + "-" + std::to_string(task_index);
+string RainStormLeader::GenerateTaskId(const string& job_id, int stage_num, int task_index) {
+    return job_id + "-" + to_string(stage_num) + "-" + to_string(task_index);
 }
 
-std::string RainStormLeader::SubmitJob(const std::string &op1, const std::string &op2,
-                                       const std::string &src_file, const std::string &dest_file,
-                                       int num_tasks) {
+string RainStormLeader::SubmitJob(const string& op1, const string& op2,
+                               const string& src_file, const string& dest_file,
+                               int num_tasks) {
     std::lock_guard<std::mutex> lock(mtx_);
-    std::string job_id = GenerateJobId();
+    string job_id = GenerateJobId();
     JobInfo job;
     job.job_id = job_id;
     job.src_file = src_file;
@@ -57,7 +63,7 @@ std::string RainStormLeader::SubmitJob(const std::string &op1, const std::string
     return job_id;
 }
 
-void RainStormLeader::AssignTasksToNodes(JobInfo &job) {
+void RainStormLeader::AssignTasksToNodes(JobInfo& job) {
     // Round-robin assignment of tasks to available worker VMs
     auto workers = GetAllWorkerVMs();
     int wcount = (int)workers.size();
@@ -76,7 +82,7 @@ void RainStormLeader::AssignTasksToNodes(JobInfo &job) {
     }
 }
 
-void RainStormLeader::HandleNodeFailure(const std::string &failed_node_id) {
+void RainStormLeader::HandleNodeFailure(const string& failed_node_id) {
     std::lock_guard<std::mutex> lock(mtx_);
     // On a node failure, we must reschedule tasks from that node to a new node
     // This is a simplified version: reassign all tasks from failed_node_id
