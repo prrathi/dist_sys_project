@@ -44,6 +44,7 @@ if __name__ == "__main__":
 
     # Spark configuration
     sc = SparkContext(master_url, "TrafficSignsSocket")
+    sc.setLogLevel("ERROR")  # Minimal logging
     ssc = StreamingContext(sc, 5)  # Batch interval of 5 seconds
     ssc.checkpoint("/tmp/checkpoint_dir")  # Checkpoint directory for stateful operations
 
