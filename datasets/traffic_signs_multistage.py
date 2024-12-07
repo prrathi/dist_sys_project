@@ -1,4 +1,4 @@
-from pyspark import SparkContext, SparkConf
+from pyspark import SparkContext
 from pyspark.streaming import StreamingContext
 import sys
 
@@ -32,71 +32,35 @@ def stage2_filter_signpost_and_count(dstream, sign_post_filter):
 
 if __name__ == "__main__":
     if len(sys.argv) != 5:
-        print("Usage: traffic_signs_stream.py <master_url> <input_dir> <filter_pattern_X> <sign_post_type>", file=sys.stderr)
+        print("Usage: traffic_signs_stream_socket.py <master_url> <socket_host> <socket_port> <filter_pattern_X> <sign_post_type>", file=sys.stderr)
         sys.exit(-1)
 
     master_url = sys.argv[1]
-    input_dir = sys.argv[2]
-    filter_pattern = sys.argv[3]       # Pattern X to filter rows
-    sign_post_filter = sys.argv[4]     # Sign_Post type (e.g., 'Punched Telespar')
+    socket_host = sys.argv[2]
+    socket_port = int(sys.argv[3])
+    filter_pattern = sys.argv[4]
+    sign_post_filter = sys.argv[5]
 
     # Spark configuration
-    conf = SparkConf().setAppName("TrafficSignsWithFeedback")
-    sc = SparkContext(master_url, "TrafficSignsWithFeedback", conf=conf)
-    sc.setLogLevel("ERROR")  # Minimal logging
-
-    # Create StreamingContext
+    sc = SparkContext(master_url, "TrafficSignsSocket")
     ssc = StreamingContext(sc, 2)  # Batch interval of 2 seconds
     ssc.checkpoint("checkpoint_dir")  # Checkpoint directory for stateful operations
 
-    # Read lines from the input directory
-    lines = ssc.textFileStream(input_dir)
+    # Read data from the socket
+    lines = ssc.socketTextStream(socket_host, socket_port)
 
-    # Feedback: Check if data is flowing at the raw input level
-    def debug_raw_lines(rdd):
-        if rdd.isEmpty():
-            print(">>> No new files detected in the input directory.")
-        else:
-            print(f">>> Raw input batch size: {rdd.count()} lines.")
-
-    lines.foreachRDD(debug_raw_lines)
-
-    # Parse lines into fields
+    # Parse lines
     parsed = lines.map(parse_line)
-
-    # Feedback: Parsed lines
-    def debug_parsed_lines(rdd):
-        if rdd.isEmpty():
-            print(">>> No parsed lines in this batch.")
-        else:
-            print(f">>> Parsed batch size: {rdd.count()} records.")
-    parsed.foreachRDD(debug_parsed_lines)
 
     # Stage 1: Filter by pattern X and extract fields
     stage1_output = stage1_filter_and_extract(parsed, filter_pattern)
-    # Feedback: Stage 1 output
-    def debug_stage1_output(rdd):
-        if rdd.isEmpty():
-            print(">>> Stage 1 output: No data passed through filter.")
-        else:
-            print(f">>> Stage 1 output batch size: {rdd.count()} records.")
-            print(f"    Sample: {rdd.take(5)}")
-    stage1_output.foreachRDD(debug_stage1_output)
 
     # Stage 2: Filter by Sign_Post and count Categories
     running_counts = stage2_filter_signpost_and_count(stage1_output, sign_post_filter)
-    # Feedback: Stage 2 output
-    def debug_stage2_output(rdd):
-        if rdd.isEmpty():
-            print(">>> Stage 2 output: No matching categories found.")
-        else:
-            print(f">>> Stage 2 running counts batch size: {rdd.count()} records.")
-            print(f"    Sample: {rdd.take(5)}")
-    running_counts.foreachRDD(debug_stage2_output)
 
-    # Save outputs to files for verification
-    stage1_output.foreachRDD(lambda rdd: rdd.saveAsTextFile("Stage1_output"))
-    running_counts.foreachRDD(lambda rdd: rdd.saveAsTextFile("Stage2_output"))
+    # Debugging: Print Stage 1 and Stage 2 outputs
+    stage1_output.pprint()
+    running_counts.pprint()
 
     # Start computation
     ssc.start()
