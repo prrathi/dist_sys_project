@@ -7,13 +7,17 @@
 #include <mutex>
 #include <grpcpp/grpcpp.h>
 #include "rainstorm.grpc.pb.h"
-#include "rainstorm_node.h"
+
+
+class RainStormLeader;
+class RainStormNode;
 
 class RainStormServer : public rainstorm::RainstormService::Service {
 public:
     RainStormServer();
     ~RainStormServer();
     RainStormServer(RainStormNode* node) : node_(node) {};
+    RainStormServer(RainStormLeader* leader) : leader_node_(leader) {};
 
     void wait();
 
@@ -45,4 +49,5 @@ private:
     std::unique_ptr<grpc::Server> server_;
     std::mutex global_mtx_;
     RainStormNode* node_;
+    RainStormLeader* leader_node_;
 };

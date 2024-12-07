@@ -17,63 +17,55 @@ message OperationStatus {
 // I guess run executables with popen + args .. need to limit calls to 32k-64k bytes .. kinda slow?
 // each connection between task has 2 uni-directional streams 
 // - 1 client side stream from src to server, 1 client side stream from server to src 
-// - src streams data to server, server copies it somewhere and at some point executes program on data chunk, stream ack to src, and stores 
-// the resultant data 
+// - src streams data to server, server copies it somewhere and at some point executes program on data chunk, stream ack to src, and stores the resultant data 
 // would copy k,v data to some buffer associated with task, then at some point send to next stage associated with task 
-
-// actually nvm ill just do 1 client streaming from src to dest and to ack just do normal for now... or maybe both normal what if overload?
-// could do like bidirectional async streaming but ... may be complex? bidirectional sync streaming might not be that complex? meh prob fine
-// actually i change my mind i think bidirectional sync probably not that hard
-
-// used the finished to see if was finished properly (including acks)
 
 service RainstormService {
     rpc NewSrcTask(NewSrcTaskRequest) returns (OperationStatus); // tell node to start being src node.
-    rpc NewStageTask(NewSrcTaskRequest) returns (OperationStatus); // tell node to start being stage task node (check if existing log files in hydfs)
-    rpc UpdateSrcTaskSend(UpdateSrcTaskSendRequest) returns (OperationStatus); // tell node to start new grpc stream for task (state) to new next node
-    rpc UpdateDstTaskRecieve(UpdateDstTaskRecieveRequest) returns (OperationStatus); // tell node where to establish new stream to send data and to send acks
-    rpc SendDataChunks(stream StreamDataChunk) returns (stream AckDataChunk); // make sure to gracefully exit if connection lost // maybe batch instead..
+    rpc NewStageTask(NewStageTaskRequest) returns (OperationStatus); // tell node to start being stage task node (check if existing log files in hydfs)
+    //rpc NewTgtTask(NewTgtTaskRequest) returns (OperationStatus); // tell node to start being tgt node (check if existing log files in hydfs)
+    rpc UpdateTaskSnd(UpdateTaskSndRequest) returns (OperationStatus); // tell node to start new grpc stream for task (state) to new next node
+    //rpc UpdateTaskRcv(UpdateTaskRcvRequest) returns (OperationStatus); // tell node where to establish new stream to send data and to send acks
+    rpc SendDataChunks(stream StreamDataChunk) returns (stream AckDataChunk); // make sure to gracefully exit if connection lost
 }
 
-
 message NewSrcTaskRequest {
-    string id = 1;
-    string src_filename = 2;
-    int32 stage_number = 3;
-    repeated string next_server_addresses = 4;  
+    string job_id = 1;
+    int32 task_id = 2;
+    int32 task_count = 3;
+    string src_filename = 4;
+    string snd_address = 5;  
+    int32 snd_port = 6;
 }
 
 message NewStageTaskRequest {
-    string id = 1;
-    string executable = 2;
-    int32 stage_number = 3;
-    repeated string next_server_addresses = 4;
-    repeated string prev_server_addresses = 5;
+    string job_id = 1;
+    int32 stage_id = 2;
+    int32 task_id = 3;
+    int32 task_count = 4;
+    string executable = 5;
+    bool stateful = 6;
+    bool last = 7;
+    repeated string snd_addresses = 8;
+    repeated int32 snd_ports = 9;
 }
 
-
-message UpdateSrcTaskSendRequest {
-    string id = 1;
-    string old_next_server_address = 2;
-    string new_next_server_address = 3;
-}
-
-
-message UpdateDstTaskRecieveRequest {
-    string id = 1;
-    string old_prev_server_address = 2;
-    string new_prev_server_address = 3;
+message UpdateTaskSndRequest {
+    int32 index = 1; // among the snd_addresses
+    string snd_address = 2;
+    int32 snd_port = 3;
 }
 
 message KV {
-    string key = 1;
-    string value = 2;
+    string id = 1; // can be != key if key is big
+    string key = 2;
+    string value = 3;
 }
 
 message DataChunk {
     oneof request {
-        string id = 1; 
-        KV pairs = 2;
+        int32 id = 1;
+        KV pair = 2;
         bool finished = 3;
     }
 }

@@ -21,8 +21,6 @@
 #include "rainstorm_service_client.h"
 
 
-
-
 using namespace std;
 
 // Need to think what is the partition key?
@@ -51,7 +49,7 @@ public:
     ~RainStormNode() {}
     void runHydfs();
     void HandleNewStageTask(const rainstorm::NewStageTaskRequest* request);
-    
+
 private:
 void ProcessData(const TaskInfo& task_info);
 void SendDataToDownstreamNode(const TaskInfo& task_info, size_t downstream_node_index);
@@ -83,7 +81,6 @@ std::mutex task_info_mtx_;
 std::atomic<bool> should_stop_;
 
 // I think flow should go like NewStageTask called -> create new thread  
-
 
 Hydfs hydfs;
 

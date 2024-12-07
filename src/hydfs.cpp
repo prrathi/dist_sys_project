@@ -459,7 +459,23 @@ void Hydfs::swim() {
                     currNode.removeNewId(state.nodeId);
                     currNode.removeSendId(state.nodeId);
                     if (checkIfMinVM(currNode.getId(), currNode.getAllIds(), MODULUS)) {
-                        handleNodeFailureDetected(state.nodeId, currNode.getAllIds());   
+                        handleNodeFailureDetected(state.nodeId, currNode.getAllIds());  
+                                                 handleNodeFailureDetected(state.nodeId, currNode.getAllIds());  
+
+                        string hostname = state.nodeId.substr(0, state.nodeId.rfind("-")); 
+                        string default_fifo_path = DEFAULT_FIFO_PATH;
+                        string leader_pipe = "/tmp/mp4-leader";
+                        if (default_fifo_path == "/tmp/mp4-prathi3") {
+                            leader_pipe = "/tmp/mp4-leader-prathi3";
+                        }
+
+                        std::string message = "failure " + hostname;
+                        std::ofstream pipe_stream(leader_pipe);
+                        if (!pipe_stream.is_open()) {
+                            std::cout << "Failed to open named pipe when failure detected" << std::endl;
+                        }
+                        pipe_stream << message;
+                        pipe_stream.close();
                     }
                 }
                 else if (state.status == Dead) {
