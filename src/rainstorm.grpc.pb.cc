@@ -26,6 +26,7 @@ static const char* RainstormService_method_names[] = {
   "/rainstorm.RainstormService/NewStageTask",
   "/rainstorm.RainstormService/UpdateTaskSnd",
   "/rainstorm.RainstormService/SendDataChunks",
+  "/rainstorm.RainstormService/SendDataChunksToLeader",
 };
 
 std::unique_ptr< RainstormService::Stub> RainstormService::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
@@ -39,6 +40,7 @@ RainstormService::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& c
   , rpcmethod_NewStageTask_(RainstormService_method_names[1], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_UpdateTaskSnd_(RainstormService_method_names[2], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_SendDataChunks_(RainstormService_method_names[3], options.suffix_for_stats(),::grpc::internal::RpcMethod::BIDI_STREAMING, channel)
+  , rpcmethod_SendDataChunksToLeader_(RainstormService_method_names[4], options.suffix_for_stats(),::grpc::internal::RpcMethod::BIDI_STREAMING, channel)
   {}
 
 ::grpc::Status RainstormService::Stub::NewSrcTask(::grpc::ClientContext* context, const ::rainstorm::NewSrcTaskRequest& request, ::rainstorm::OperationStatus* response) {
@@ -126,6 +128,22 @@ void RainstormService::Stub::async::SendDataChunks(::grpc::ClientContext* contex
   return ::grpc::internal::ClientAsyncReaderWriterFactory< ::rainstorm::StreamDataChunk, ::rainstorm::AckDataChunk>::Create(channel_.get(), cq, rpcmethod_SendDataChunks_, context, false, nullptr);
 }
 
+::grpc::ClientReaderWriter< ::rainstorm::StreamDataChunkLeader, ::rainstorm::AckDataChunk>* RainstormService::Stub::SendDataChunksToLeaderRaw(::grpc::ClientContext* context) {
+  return ::grpc::internal::ClientReaderWriterFactory< ::rainstorm::StreamDataChunkLeader, ::rainstorm::AckDataChunk>::Create(channel_.get(), rpcmethod_SendDataChunksToLeader_, context);
+}
+
+void RainstormService::Stub::async::SendDataChunksToLeader(::grpc::ClientContext* context, ::grpc::ClientBidiReactor< ::rainstorm::StreamDataChunkLeader,::rainstorm::AckDataChunk>* reactor) {
+  ::grpc::internal::ClientCallbackReaderWriterFactory< ::rainstorm::StreamDataChunkLeader,::rainstorm::AckDataChunk>::Create(stub_->channel_.get(), stub_->rpcmethod_SendDataChunksToLeader_, context, reactor);
+}
+
+::grpc::ClientAsyncReaderWriter< ::rainstorm::StreamDataChunkLeader, ::rainstorm::AckDataChunk>* RainstormService::Stub::AsyncSendDataChunksToLeaderRaw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq, void* tag) {
+  return ::grpc::internal::ClientAsyncReaderWriterFactory< ::rainstorm::StreamDataChunkLeader, ::rainstorm::AckDataChunk>::Create(channel_.get(), cq, rpcmethod_SendDataChunksToLeader_, context, true, tag);
+}
+
+::grpc::ClientAsyncReaderWriter< ::rainstorm::StreamDataChunkLeader, ::rainstorm::AckDataChunk>* RainstormService::Stub::PrepareAsyncSendDataChunksToLeaderRaw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncReaderWriterFactory< ::rainstorm::StreamDataChunkLeader, ::rainstorm::AckDataChunk>::Create(channel_.get(), cq, rpcmethod_SendDataChunksToLeader_, context, false, nullptr);
+}
+
 RainstormService::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       RainstormService_method_names[0],
@@ -167,6 +185,16 @@ RainstormService::Service::Service() {
              ::rainstorm::StreamDataChunk>* stream) {
                return service->SendDataChunks(ctx, stream);
              }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      RainstormService_method_names[4],
+      ::grpc::internal::RpcMethod::BIDI_STREAMING,
+      new ::grpc::internal::BidiStreamingHandler< RainstormService::Service, ::rainstorm::StreamDataChunkLeader, ::rainstorm::AckDataChunk>(
+          [](RainstormService::Service* service,
+             ::grpc::ServerContext* ctx,
+             ::grpc::ServerReaderWriter<::rainstorm::AckDataChunk,
+             ::rainstorm::StreamDataChunkLeader>* stream) {
+               return service->SendDataChunksToLeader(ctx, stream);
+             }, this)));
 }
 
 RainstormService::Service::~Service() {
@@ -194,6 +222,12 @@ RainstormService::Service::~Service() {
 }
 
 ::grpc::Status RainstormService::Service::SendDataChunks(::grpc::ServerContext* context, ::grpc::ServerReaderWriter< ::rainstorm::AckDataChunk, ::rainstorm::StreamDataChunk>* stream) {
+  (void) context;
+  (void) stream;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status RainstormService::Service::SendDataChunksToLeader(::grpc::ServerContext* context, ::grpc::ServerReaderWriter< ::rainstorm::AckDataChunk, ::rainstorm::StreamDataChunkLeader>* stream) {
   (void) context;
   (void) stream;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");

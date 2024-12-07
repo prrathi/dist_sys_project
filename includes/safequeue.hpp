@@ -1,3 +1,6 @@
+#ifndef SAFEQUEUE_HPP
+#define SAFEQUEUE_HPP
+
 #include <iostream>
 #include <memory>
 #include <string>
@@ -54,3 +57,5 @@ private:
     std::condition_variable cv_;
     bool finished_ = false;
 };
+
+#endif

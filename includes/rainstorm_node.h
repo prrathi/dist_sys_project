@@ -39,8 +39,7 @@ struct TaskInfo {
     string processed_file;
     string acked_file;
     // what else?
-}
-
+};
 
 
 class RainStormNode {

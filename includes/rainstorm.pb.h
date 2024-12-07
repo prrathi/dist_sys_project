@@ -57,6 +57,9 @@ extern AckDataChunkDefaultTypeInternal _AckDataChunk_default_instance_;
 class DataChunk;
 struct DataChunkDefaultTypeInternal;
 extern DataChunkDefaultTypeInternal _DataChunk_default_instance_;
+class DataChunkLeader;
+struct DataChunkLeaderDefaultTypeInternal;
+extern DataChunkLeaderDefaultTypeInternal _DataChunkLeader_default_instance_;
 class KV;
 struct KVDefaultTypeInternal;
 extern KVDefaultTypeInternal _KV_default_instance_;
@@ -72,6 +75,9 @@ extern OperationStatusDefaultTypeInternal _OperationStatus_default_instance_;
 class StreamDataChunk;
 struct StreamDataChunkDefaultTypeInternal;
 extern StreamDataChunkDefaultTypeInternal _StreamDataChunk_default_instance_;
+class StreamDataChunkLeader;
+struct StreamDataChunkLeaderDefaultTypeInternal;
+extern StreamDataChunkLeaderDefaultTypeInternal _StreamDataChunkLeader_default_instance_;
 class UpdateTaskSndRequest;
 struct UpdateTaskSndRequestDefaultTypeInternal;
 extern UpdateTaskSndRequestDefaultTypeInternal _UpdateTaskSndRequest_default_instance_;
@@ -1192,26 +1198,10 @@ class KV final : public ::google::protobuf::Message
 
   // accessors -------------------------------------------------------
   enum : int {
-    kIdFieldNumber = 1,
     kKeyFieldNumber = 2,
     kValueFieldNumber = 3,
+    kIdFieldNumber = 1,
   };
-  // string id = 1;
-  void clear_id() ;
-  const std::string& id() const;
-  template <typename Arg_ = const std::string&, typename... Args_>
-  void set_id(Arg_&& arg, Args_... args);
-  std::string* mutable_id();
-  PROTOBUF_NODISCARD std::string* release_id();
-  void set_allocated_id(std::string* value);
-
-  private:
-  const std::string& _internal_id() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_id(
-      const std::string& value);
-  std::string* _internal_mutable_id();
-
-  public:
   // string key = 2;
   void clear_key() ;
   const std::string& key() const;
@@ -1244,13 +1234,23 @@ class KV final : public ::google::protobuf::Message
   std::string* _internal_mutable_value();
 
   public:
+  // int32 id = 1;
+  void clear_id() ;
+  ::int32_t id() const;
+  void set_id(::int32_t value);
+
+  private:
+  ::int32_t _internal_id() const;
+  void _internal_set_id(::int32_t value);
+
+  public:
   // @@protoc_insertion_point(class_scope:rainstorm.KV)
  private:
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
   static const ::google::protobuf::internal::TcParseTable<
       2, 3, 0,
-      31, 2>
+      29, 2>
       _table_;
 
   static constexpr const void* _raw_default_instance_ =
@@ -1270,10 +1270,420 @@ class KV final : public ::google::protobuf::Message
     inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
                           ::google::protobuf::Arena* arena, const Impl_& from,
                           const KV& from_msg);
-    ::google::protobuf::internal::ArenaStringPtr id_;
     ::google::protobuf::internal::ArenaStringPtr key_;
     ::google::protobuf::internal::ArenaStringPtr value_;
+    ::int32_t id_;
     mutable ::google::protobuf::internal::CachedSize _cached_size_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_rainstorm_2eproto;
+};
+// -------------------------------------------------------------------
+
+class AckDataChunk final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:rainstorm.AckDataChunk) */ {
+ public:
+  inline AckDataChunk() : AckDataChunk(nullptr) {}
+  ~AckDataChunk() override;
+  template <typename = void>
+  explicit PROTOBUF_CONSTEXPR AckDataChunk(
+      ::google::protobuf::internal::ConstantInitialized);
+
+  inline AckDataChunk(const AckDataChunk& from) : AckDataChunk(nullptr, from) {}
+  inline AckDataChunk(AckDataChunk&& from) noexcept
+      : AckDataChunk(nullptr, std::move(from)) {}
+  inline AckDataChunk& operator=(const AckDataChunk& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline AckDataChunk& operator=(AckDataChunk&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetArena() == from.GetArena()
+#ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetArena() != nullptr
+#endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::google::protobuf::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::google::protobuf::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const AckDataChunk& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const AckDataChunk* internal_default_instance() {
+    return reinterpret_cast<const AckDataChunk*>(
+        &_AckDataChunk_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages = 7;
+  friend void swap(AckDataChunk& a, AckDataChunk& b) { a.Swap(&b); }
+  inline void Swap(AckDataChunk* other) {
+    if (other == this) return;
+#ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetArena() != nullptr && GetArena() == other->GetArena()) {
+#else   // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetArena() == other->GetArena()) {
+#endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(AckDataChunk* other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  AckDataChunk* New(::google::protobuf::Arena* arena = nullptr) const final {
+    return ::google::protobuf::Message::DefaultConstruct<AckDataChunk>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const AckDataChunk& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const AckDataChunk& from) { AckDataChunk::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(
+      ::google::protobuf::MessageLite& to_msg,
+      const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() final;
+  ::size_t ByteSizeLong() const final;
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* arena);
+  void SharedDtor();
+  void InternalSwap(AckDataChunk* other);
+ private:
+  friend class ::google::protobuf::internal::AnyMetadata;
+  static ::absl::string_view FullMessageName() { return "rainstorm.AckDataChunk"; }
+
+ protected:
+  explicit AckDataChunk(::google::protobuf::Arena* arena);
+  AckDataChunk(::google::protobuf::Arena* arena, const AckDataChunk& from);
+  AckDataChunk(::google::protobuf::Arena* arena, AckDataChunk&& from) noexcept
+      : AckDataChunk(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::Message::ClassData* GetClassData() const final;
+
+ public:
+  ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kIdFieldNumber = 1,
+  };
+  // repeated int32 id = 1;
+  int id_size() const;
+  private:
+  int _internal_id_size() const;
+
+  public:
+  void clear_id() ;
+  ::int32_t id(int index) const;
+  void set_id(int index, ::int32_t value);
+  void add_id(::int32_t value);
+  const ::google::protobuf::RepeatedField<::int32_t>& id() const;
+  ::google::protobuf::RepeatedField<::int32_t>* mutable_id();
+
+  private:
+  const ::google::protobuf::RepeatedField<::int32_t>& _internal_id() const;
+  ::google::protobuf::RepeatedField<::int32_t>* _internal_mutable_id();
+
+  public:
+  // @@protoc_insertion_point(class_scope:rainstorm.AckDataChunk)
+ private:
+  class _Internal;
+  friend class ::google::protobuf::internal::TcParser;
+  static const ::google::protobuf::internal::TcParseTable<
+      0, 1, 0,
+      0, 2>
+      _table_;
+
+  static constexpr const void* _raw_default_instance_ =
+      &_AckDataChunk_default_instance_;
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(
+        ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena);
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena, const Impl_& from,
+                          const AckDataChunk& from_msg);
+    ::google::protobuf::RepeatedField<::int32_t> id_;
+    mutable ::google::protobuf::internal::CachedSize _id_cached_byte_size_;
+    mutable ::google::protobuf::internal::CachedSize _cached_size_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_rainstorm_2eproto;
+};
+// -------------------------------------------------------------------
+
+class DataChunkLeader final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:rainstorm.DataChunkLeader) */ {
+ public:
+  inline DataChunkLeader() : DataChunkLeader(nullptr) {}
+  ~DataChunkLeader() override;
+  template <typename = void>
+  explicit PROTOBUF_CONSTEXPR DataChunkLeader(
+      ::google::protobuf::internal::ConstantInitialized);
+
+  inline DataChunkLeader(const DataChunkLeader& from) : DataChunkLeader(nullptr, from) {}
+  inline DataChunkLeader(DataChunkLeader&& from) noexcept
+      : DataChunkLeader(nullptr, std::move(from)) {}
+  inline DataChunkLeader& operator=(const DataChunkLeader& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline DataChunkLeader& operator=(DataChunkLeader&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetArena() == from.GetArena()
+#ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetArena() != nullptr
+#endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::google::protobuf::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::google::protobuf::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const DataChunkLeader& default_instance() {
+    return *internal_default_instance();
+  }
+  enum RequestCase {
+    kJobId = 1,
+    kPair = 2,
+    kFinished = 3,
+    REQUEST_NOT_SET = 0,
+  };
+  static inline const DataChunkLeader* internal_default_instance() {
+    return reinterpret_cast<const DataChunkLeader*>(
+        &_DataChunkLeader_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages = 8;
+  friend void swap(DataChunkLeader& a, DataChunkLeader& b) { a.Swap(&b); }
+  inline void Swap(DataChunkLeader* other) {
+    if (other == this) return;
+#ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetArena() != nullptr && GetArena() == other->GetArena()) {
+#else   // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetArena() == other->GetArena()) {
+#endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(DataChunkLeader* other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  DataChunkLeader* New(::google::protobuf::Arena* arena = nullptr) const final {
+    return ::google::protobuf::Message::DefaultConstruct<DataChunkLeader>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const DataChunkLeader& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const DataChunkLeader& from) { DataChunkLeader::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(
+      ::google::protobuf::MessageLite& to_msg,
+      const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() final;
+  ::size_t ByteSizeLong() const final;
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* arena);
+  void SharedDtor();
+  void InternalSwap(DataChunkLeader* other);
+ private:
+  friend class ::google::protobuf::internal::AnyMetadata;
+  static ::absl::string_view FullMessageName() { return "rainstorm.DataChunkLeader"; }
+
+ protected:
+  explicit DataChunkLeader(::google::protobuf::Arena* arena);
+  DataChunkLeader(::google::protobuf::Arena* arena, const DataChunkLeader& from);
+  DataChunkLeader(::google::protobuf::Arena* arena, DataChunkLeader&& from) noexcept
+      : DataChunkLeader(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::Message::ClassData* GetClassData() const final;
+
+ public:
+  ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kJobIdFieldNumber = 1,
+    kPairFieldNumber = 2,
+    kFinishedFieldNumber = 3,
+  };
+  // string job_id = 1;
+  bool has_job_id() const;
+  void clear_job_id() ;
+  const std::string& job_id() const;
+  template <typename Arg_ = const std::string&, typename... Args_>
+  void set_job_id(Arg_&& arg, Args_... args);
+  std::string* mutable_job_id();
+  PROTOBUF_NODISCARD std::string* release_job_id();
+  void set_allocated_job_id(std::string* value);
+
+  private:
+  const std::string& _internal_job_id() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_job_id(
+      const std::string& value);
+  std::string* _internal_mutable_job_id();
+
+  public:
+  // .rainstorm.KV pair = 2;
+  bool has_pair() const;
+  private:
+  bool _internal_has_pair() const;
+
+  public:
+  void clear_pair() ;
+  const ::rainstorm::KV& pair() const;
+  PROTOBUF_NODISCARD ::rainstorm::KV* release_pair();
+  ::rainstorm::KV* mutable_pair();
+  void set_allocated_pair(::rainstorm::KV* value);
+  void unsafe_arena_set_allocated_pair(::rainstorm::KV* value);
+  ::rainstorm::KV* unsafe_arena_release_pair();
+
+  private:
+  const ::rainstorm::KV& _internal_pair() const;
+  ::rainstorm::KV* _internal_mutable_pair();
+
+  public:
+  // bool finished = 3;
+  bool has_finished() const;
+  void clear_finished() ;
+  bool finished() const;
+  void set_finished(bool value);
+
+  private:
+  bool _internal_finished() const;
+  void _internal_set_finished(bool value);
+
+  public:
+  void clear_request();
+  RequestCase request_case() const;
+  // @@protoc_insertion_point(class_scope:rainstorm.DataChunkLeader)
+ private:
+  class _Internal;
+  void set_has_job_id();
+  void set_has_pair();
+  void set_has_finished();
+  inline bool has_request() const;
+  inline void clear_has_request();
+  friend class ::google::protobuf::internal::TcParser;
+  static const ::google::protobuf::internal::TcParseTable<
+      0, 3, 1,
+      40, 2>
+      _table_;
+
+  static constexpr const void* _raw_default_instance_ =
+      &_DataChunkLeader_default_instance_;
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(
+        ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena);
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena, const Impl_& from,
+                          const DataChunkLeader& from_msg);
+    union RequestUnion {
+      constexpr RequestUnion() : _constinit_{} {}
+      ::google::protobuf::internal::ConstantInitialized _constinit_;
+      ::google::protobuf::internal::ArenaStringPtr job_id_;
+      ::rainstorm::KV* pair_;
+      bool finished_;
+    } request_;
+    mutable ::google::protobuf::internal::CachedSize _cached_size_;
+    ::uint32_t _oneof_case_[1];
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
   union { Impl_ _impl_; };
@@ -1333,9 +1743,8 @@ class DataChunk final : public ::google::protobuf::Message
     return *internal_default_instance();
   }
   enum RequestCase {
-    kId = 1,
-    kPair = 2,
-    kFinished = 3,
+    kPair = 1,
+    kFinished = 2,
     REQUEST_NOT_SET = 0,
   };
   static inline const DataChunk* internal_default_instance() {
@@ -1411,22 +1820,10 @@ class DataChunk final : public ::google::protobuf::Message
 
   // accessors -------------------------------------------------------
   enum : int {
-    kIdFieldNumber = 1,
-    kPairFieldNumber = 2,
-    kFinishedFieldNumber = 3,
+    kPairFieldNumber = 1,
+    kFinishedFieldNumber = 2,
   };
-  // int32 id = 1;
-  bool has_id() const;
-  void clear_id() ;
-  ::int32_t id() const;
-  void set_id(::int32_t value);
-
-  private:
-  ::int32_t _internal_id() const;
-  void _internal_set_id(::int32_t value);
-
-  public:
-  // .rainstorm.KV pair = 2;
+  // .rainstorm.KV pair = 1;
   bool has_pair() const;
   private:
   bool _internal_has_pair() const;
@@ -1445,7 +1842,7 @@ class DataChunk final : public ::google::protobuf::Message
   ::rainstorm::KV* _internal_mutable_pair();
 
   public:
-  // bool finished = 3;
+  // bool finished = 2;
   bool has_finished() const;
   void clear_finished() ;
   bool finished() const;
@@ -1461,14 +1858,13 @@ class DataChunk final : public ::google::protobuf::Message
   // @@protoc_insertion_point(class_scope:rainstorm.DataChunk)
  private:
   class _Internal;
-  void set_has_id();
   void set_has_pair();
   void set_has_finished();
   inline bool has_request() const;
   inline void clear_has_request();
   friend class ::google::protobuf::internal::TcParser;
   static const ::google::protobuf::internal::TcParseTable<
-      0, 3, 1,
+      0, 2, 1,
       0, 2>
       _table_;
 
@@ -1492,12 +1888,189 @@ class DataChunk final : public ::google::protobuf::Message
     union RequestUnion {
       constexpr RequestUnion() : _constinit_{} {}
       ::google::protobuf::internal::ConstantInitialized _constinit_;
-      ::int32_t id_;
       ::rainstorm::KV* pair_;
       bool finished_;
     } request_;
     mutable ::google::protobuf::internal::CachedSize _cached_size_;
     ::uint32_t _oneof_case_[1];
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_rainstorm_2eproto;
+};
+// -------------------------------------------------------------------
+
+class StreamDataChunkLeader final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:rainstorm.StreamDataChunkLeader) */ {
+ public:
+  inline StreamDataChunkLeader() : StreamDataChunkLeader(nullptr) {}
+  ~StreamDataChunkLeader() override;
+  template <typename = void>
+  explicit PROTOBUF_CONSTEXPR StreamDataChunkLeader(
+      ::google::protobuf::internal::ConstantInitialized);
+
+  inline StreamDataChunkLeader(const StreamDataChunkLeader& from) : StreamDataChunkLeader(nullptr, from) {}
+  inline StreamDataChunkLeader(StreamDataChunkLeader&& from) noexcept
+      : StreamDataChunkLeader(nullptr, std::move(from)) {}
+  inline StreamDataChunkLeader& operator=(const StreamDataChunkLeader& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline StreamDataChunkLeader& operator=(StreamDataChunkLeader&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetArena() == from.GetArena()
+#ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetArena() != nullptr
+#endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::google::protobuf::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::google::protobuf::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const StreamDataChunkLeader& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const StreamDataChunkLeader* internal_default_instance() {
+    return reinterpret_cast<const StreamDataChunkLeader*>(
+        &_StreamDataChunkLeader_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages = 9;
+  friend void swap(StreamDataChunkLeader& a, StreamDataChunkLeader& b) { a.Swap(&b); }
+  inline void Swap(StreamDataChunkLeader* other) {
+    if (other == this) return;
+#ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetArena() != nullptr && GetArena() == other->GetArena()) {
+#else   // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetArena() == other->GetArena()) {
+#endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(StreamDataChunkLeader* other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  StreamDataChunkLeader* New(::google::protobuf::Arena* arena = nullptr) const final {
+    return ::google::protobuf::Message::DefaultConstruct<StreamDataChunkLeader>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const StreamDataChunkLeader& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const StreamDataChunkLeader& from) { StreamDataChunkLeader::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(
+      ::google::protobuf::MessageLite& to_msg,
+      const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() final;
+  ::size_t ByteSizeLong() const final;
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* arena);
+  void SharedDtor();
+  void InternalSwap(StreamDataChunkLeader* other);
+ private:
+  friend class ::google::protobuf::internal::AnyMetadata;
+  static ::absl::string_view FullMessageName() { return "rainstorm.StreamDataChunkLeader"; }
+
+ protected:
+  explicit StreamDataChunkLeader(::google::protobuf::Arena* arena);
+  StreamDataChunkLeader(::google::protobuf::Arena* arena, const StreamDataChunkLeader& from);
+  StreamDataChunkLeader(::google::protobuf::Arena* arena, StreamDataChunkLeader&& from) noexcept
+      : StreamDataChunkLeader(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::Message::ClassData* GetClassData() const final;
+
+ public:
+  ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kChunksFieldNumber = 1,
+  };
+  // repeated .rainstorm.DataChunkLeader chunks = 1;
+  int chunks_size() const;
+  private:
+  int _internal_chunks_size() const;
+
+  public:
+  void clear_chunks() ;
+  ::rainstorm::DataChunkLeader* mutable_chunks(int index);
+  ::google::protobuf::RepeatedPtrField<::rainstorm::DataChunkLeader>* mutable_chunks();
+
+  private:
+  const ::google::protobuf::RepeatedPtrField<::rainstorm::DataChunkLeader>& _internal_chunks() const;
+  ::google::protobuf::RepeatedPtrField<::rainstorm::DataChunkLeader>* _internal_mutable_chunks();
+  public:
+  const ::rainstorm::DataChunkLeader& chunks(int index) const;
+  ::rainstorm::DataChunkLeader* add_chunks();
+  const ::google::protobuf::RepeatedPtrField<::rainstorm::DataChunkLeader>& chunks() const;
+  // @@protoc_insertion_point(class_scope:rainstorm.StreamDataChunkLeader)
+ private:
+  class _Internal;
+  friend class ::google::protobuf::internal::TcParser;
+  static const ::google::protobuf::internal::TcParseTable<
+      0, 1, 1,
+      0, 2>
+      _table_;
+
+  static constexpr const void* _raw_default_instance_ =
+      &_StreamDataChunkLeader_default_instance_;
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(
+        ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena);
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena, const Impl_& from,
+                          const StreamDataChunkLeader& from_msg);
+    ::google::protobuf::RepeatedPtrField< ::rainstorm::DataChunkLeader > chunks_;
+    mutable ::google::protobuf::internal::CachedSize _cached_size_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
   union { Impl_ _impl_; };
@@ -1674,184 +2247,6 @@ class StreamDataChunk final : public ::google::protobuf::Message
     inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
                           ::google::protobuf::Arena* arena, const Impl_& from,
                           const StreamDataChunk& from_msg);
-    ::google::protobuf::RepeatedPtrField< ::rainstorm::DataChunk > chunks_;
-    mutable ::google::protobuf::internal::CachedSize _cached_size_;
-    PROTOBUF_TSAN_DECLARE_MEMBER
-  };
-  union { Impl_ _impl_; };
-  friend struct ::TableStruct_rainstorm_2eproto;
-};
-// -------------------------------------------------------------------
-
-class AckDataChunk final : public ::google::protobuf::Message
-/* @@protoc_insertion_point(class_definition:rainstorm.AckDataChunk) */ {
- public:
-  inline AckDataChunk() : AckDataChunk(nullptr) {}
-  ~AckDataChunk() override;
-  template <typename = void>
-  explicit PROTOBUF_CONSTEXPR AckDataChunk(
-      ::google::protobuf::internal::ConstantInitialized);
-
-  inline AckDataChunk(const AckDataChunk& from) : AckDataChunk(nullptr, from) {}
-  inline AckDataChunk(AckDataChunk&& from) noexcept
-      : AckDataChunk(nullptr, std::move(from)) {}
-  inline AckDataChunk& operator=(const AckDataChunk& from) {
-    CopyFrom(from);
-    return *this;
-  }
-  inline AckDataChunk& operator=(AckDataChunk&& from) noexcept {
-    if (this == &from) return *this;
-    if (GetArena() == from.GetArena()
-#ifdef PROTOBUF_FORCE_COPY_IN_MOVE
-        && GetArena() != nullptr
-#endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
-    ) {
-      InternalSwap(&from);
-    } else {
-      CopyFrom(from);
-    }
-    return *this;
-  }
-
-  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
-      ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
-  }
-  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields()
-      ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
-  }
-
-  static const ::google::protobuf::Descriptor* descriptor() {
-    return GetDescriptor();
-  }
-  static const ::google::protobuf::Descriptor* GetDescriptor() {
-    return default_instance().GetMetadata().descriptor;
-  }
-  static const ::google::protobuf::Reflection* GetReflection() {
-    return default_instance().GetMetadata().reflection;
-  }
-  static const AckDataChunk& default_instance() {
-    return *internal_default_instance();
-  }
-  static inline const AckDataChunk* internal_default_instance() {
-    return reinterpret_cast<const AckDataChunk*>(
-        &_AckDataChunk_default_instance_);
-  }
-  static constexpr int kIndexInFileMessages = 7;
-  friend void swap(AckDataChunk& a, AckDataChunk& b) { a.Swap(&b); }
-  inline void Swap(AckDataChunk* other) {
-    if (other == this) return;
-#ifdef PROTOBUF_FORCE_COPY_IN_SWAP
-    if (GetArena() != nullptr && GetArena() == other->GetArena()) {
-#else   // PROTOBUF_FORCE_COPY_IN_SWAP
-    if (GetArena() == other->GetArena()) {
-#endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
-      InternalSwap(other);
-    } else {
-      ::google::protobuf::internal::GenericSwap(this, other);
-    }
-  }
-  void UnsafeArenaSwap(AckDataChunk* other) {
-    if (other == this) return;
-    ABSL_DCHECK(GetArena() == other->GetArena());
-    InternalSwap(other);
-  }
-
-  // implements Message ----------------------------------------------
-
-  AckDataChunk* New(::google::protobuf::Arena* arena = nullptr) const final {
-    return ::google::protobuf::Message::DefaultConstruct<AckDataChunk>(arena);
-  }
-  using ::google::protobuf::Message::CopyFrom;
-  void CopyFrom(const AckDataChunk& from);
-  using ::google::protobuf::Message::MergeFrom;
-  void MergeFrom(const AckDataChunk& from) { AckDataChunk::MergeImpl(*this, from); }
-
-  private:
-  static void MergeImpl(
-      ::google::protobuf::MessageLite& to_msg,
-      const ::google::protobuf::MessageLite& from_msg);
-
-  public:
-  bool IsInitialized() const {
-    return true;
-  }
-  ABSL_ATTRIBUTE_REINITIALIZES void Clear() final;
-  ::size_t ByteSizeLong() const final;
-  ::uint8_t* _InternalSerialize(
-      ::uint8_t* target,
-      ::google::protobuf::io::EpsCopyOutputStream* stream) const final;
-  int GetCachedSize() const { return _impl_._cached_size_.Get(); }
-
-  private:
-  void SharedCtor(::google::protobuf::Arena* arena);
-  void SharedDtor();
-  void InternalSwap(AckDataChunk* other);
- private:
-  friend class ::google::protobuf::internal::AnyMetadata;
-  static ::absl::string_view FullMessageName() { return "rainstorm.AckDataChunk"; }
-
- protected:
-  explicit AckDataChunk(::google::protobuf::Arena* arena);
-  AckDataChunk(::google::protobuf::Arena* arena, const AckDataChunk& from);
-  AckDataChunk(::google::protobuf::Arena* arena, AckDataChunk&& from) noexcept
-      : AckDataChunk(arena) {
-    *this = ::std::move(from);
-  }
-  const ::google::protobuf::Message::ClassData* GetClassData() const final;
-
- public:
-  ::google::protobuf::Metadata GetMetadata() const;
-  // nested types ----------------------------------------------------
-
-  // accessors -------------------------------------------------------
-  enum : int {
-    kChunksFieldNumber = 1,
-  };
-  // repeated .rainstorm.DataChunk chunks = 1;
-  int chunks_size() const;
-  private:
-  int _internal_chunks_size() const;
-
-  public:
-  void clear_chunks() ;
-  ::rainstorm::DataChunk* mutable_chunks(int index);
-  ::google::protobuf::RepeatedPtrField<::rainstorm::DataChunk>* mutable_chunks();
-
-  private:
-  const ::google::protobuf::RepeatedPtrField<::rainstorm::DataChunk>& _internal_chunks() const;
-  ::google::protobuf::RepeatedPtrField<::rainstorm::DataChunk>* _internal_mutable_chunks();
-  public:
-  const ::rainstorm::DataChunk& chunks(int index) const;
-  ::rainstorm::DataChunk* add_chunks();
-  const ::google::protobuf::RepeatedPtrField<::rainstorm::DataChunk>& chunks() const;
-  // @@protoc_insertion_point(class_scope:rainstorm.AckDataChunk)
- private:
-  class _Internal;
-  friend class ::google::protobuf::internal::TcParser;
-  static const ::google::protobuf::internal::TcParseTable<
-      0, 1, 1,
-      0, 2>
-      _table_;
-
-  static constexpr const void* _raw_default_instance_ =
-      &_AckDataChunk_default_instance_;
-
-  friend class ::google::protobuf::MessageLite;
-  friend class ::google::protobuf::Arena;
-  template <typename T>
-  friend class ::google::protobuf::Arena::InternalHelper;
-  using InternalArenaConstructable_ = void;
-  using DestructorSkippable_ = void;
-  struct Impl_ {
-    inline explicit constexpr Impl_(
-        ::google::protobuf::internal::ConstantInitialized) noexcept;
-    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
-                          ::google::protobuf::Arena* arena);
-    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
-                          ::google::protobuf::Arena* arena, const Impl_& from,
-                          const AckDataChunk& from_msg);
     ::google::protobuf::RepeatedPtrField< ::rainstorm::DataChunk > chunks_;
     mutable ::google::protobuf::internal::CachedSize _cached_size_;
     PROTOBUF_TSAN_DECLARE_MEMBER
@@ -2631,54 +3026,26 @@ inline void UpdateTaskSndRequest::_internal_set_snd_port(::int32_t value) {
 
 // KV
 
-// string id = 1;
+// int32 id = 1;
 inline void KV::clear_id() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.id_.ClearToEmpty();
+  _impl_.id_ = 0;
 }
-inline const std::string& KV::id() const
-    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+inline ::int32_t KV::id() const {
   // @@protoc_insertion_point(field_get:rainstorm.KV.id)
   return _internal_id();
 }
-template <typename Arg_, typename... Args_>
-inline PROTOBUF_ALWAYS_INLINE void KV::set_id(Arg_&& arg,
-                                                     Args_... args) {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+inline void KV::set_id(::int32_t value) {
+  _internal_set_id(value);
   // @@protoc_insertion_point(field_set:rainstorm.KV.id)
 }
-inline std::string* KV::mutable_id() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  std::string* _s = _internal_mutable_id();
-  // @@protoc_insertion_point(field_mutable:rainstorm.KV.id)
-  return _s;
-}
-inline const std::string& KV::_internal_id() const {
+inline ::int32_t KV::_internal_id() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
-  return _impl_.id_.Get();
+  return _impl_.id_;
 }
-inline void KV::_internal_set_id(const std::string& value) {
+inline void KV::_internal_set_id(::int32_t value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.id_.Set(value, GetArena());
-}
-inline std::string* KV::_internal_mutable_id() {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  return _impl_.id_.Mutable( GetArena());
-}
-inline std::string* KV::release_id() {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  // @@protoc_insertion_point(field_release:rainstorm.KV.id)
-  return _impl_.id_.Release();
-}
-inline void KV::set_allocated_id(std::string* value) {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.id_.SetAllocated(value, GetArena());
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-        if (_impl_.id_.IsDefault()) {
-          _impl_.id_.Set("", GetArena());
-        }
-  #endif  // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:rainstorm.KV.id)
+  _impl_.id_ = value;
 }
 
 // string key = 2;
@@ -2785,40 +3152,7 @@ inline void KV::set_allocated_value(std::string* value) {
 
 // DataChunk
 
-// int32 id = 1;
-inline bool DataChunk::has_id() const {
-  return request_case() == kId;
-}
-inline void DataChunk::set_has_id() {
-  _impl_._oneof_case_[0] = kId;
-}
-inline void DataChunk::clear_id() {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  if (request_case() == kId) {
-    _impl_.request_.id_ = 0;
-    clear_has_request();
-  }
-}
-inline ::int32_t DataChunk::id() const {
-  // @@protoc_insertion_point(field_get:rainstorm.DataChunk.id)
-  return _internal_id();
-}
-inline void DataChunk::set_id(::int32_t value) {
-  if (request_case() != kId) {
-    clear_request();
-    set_has_id();
-  }
-  _impl_.request_.id_ = value;
-  // @@protoc_insertion_point(field_set:rainstorm.DataChunk.id)
-}
-inline ::int32_t DataChunk::_internal_id() const {
-  if (request_case() == kId) {
-    return _impl_.request_.id_;
-  }
-  return 0;
-}
-
-// .rainstorm.KV pair = 2;
+// .rainstorm.KV pair = 1;
 inline bool DataChunk::has_pair() const {
   return request_case() == kPair;
 }
@@ -2897,7 +3231,7 @@ inline ::rainstorm::KV* DataChunk::mutable_pair() ABSL_ATTRIBUTE_LIFETIME_BOUND 
   return _msg;
 }
 
-// bool finished = 3;
+// bool finished = 2;
 inline bool DataChunk::has_finished() const {
   return request_case() == kFinished;
 }
@@ -2996,51 +3330,310 @@ StreamDataChunk::_internal_mutable_chunks() {
 
 // AckDataChunk
 
-// repeated .rainstorm.DataChunk chunks = 1;
-inline int AckDataChunk::_internal_chunks_size() const {
+// repeated int32 id = 1;
+inline int AckDataChunk::_internal_id_size() const {
+  return _internal_id().size();
+}
+inline int AckDataChunk::id_size() const {
+  return _internal_id_size();
+}
+inline void AckDataChunk::clear_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.id_.Clear();
+}
+inline ::int32_t AckDataChunk::id(int index) const {
+  // @@protoc_insertion_point(field_get:rainstorm.AckDataChunk.id)
+  return _internal_id().Get(index);
+}
+inline void AckDataChunk::set_id(int index, ::int32_t value) {
+  _internal_mutable_id()->Set(index, value);
+  // @@protoc_insertion_point(field_set:rainstorm.AckDataChunk.id)
+}
+inline void AckDataChunk::add_id(::int32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _internal_mutable_id()->Add(value);
+  // @@protoc_insertion_point(field_add:rainstorm.AckDataChunk.id)
+}
+inline const ::google::protobuf::RepeatedField<::int32_t>& AckDataChunk::id() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_list:rainstorm.AckDataChunk.id)
+  return _internal_id();
+}
+inline ::google::protobuf::RepeatedField<::int32_t>* AckDataChunk::mutable_id()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_mutable_list:rainstorm.AckDataChunk.id)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _internal_mutable_id();
+}
+inline const ::google::protobuf::RepeatedField<::int32_t>&
+AckDataChunk::_internal_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.id_;
+}
+inline ::google::protobuf::RepeatedField<::int32_t>* AckDataChunk::_internal_mutable_id() {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return &_impl_.id_;
+}
+
+// -------------------------------------------------------------------
+
+// DataChunkLeader
+
+// string job_id = 1;
+inline bool DataChunkLeader::has_job_id() const {
+  return request_case() == kJobId;
+}
+inline void DataChunkLeader::set_has_job_id() {
+  _impl_._oneof_case_[0] = kJobId;
+}
+inline void DataChunkLeader::clear_job_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (request_case() == kJobId) {
+    _impl_.request_.job_id_.Destroy();
+    clear_has_request();
+  }
+}
+inline const std::string& DataChunkLeader::job_id() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:rainstorm.DataChunkLeader.job_id)
+  return _internal_job_id();
+}
+template <typename Arg_, typename... Args_>
+inline PROTOBUF_ALWAYS_INLINE void DataChunkLeader::set_job_id(Arg_&& arg,
+                                                     Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (request_case() != kJobId) {
+    clear_request();
+
+    set_has_job_id();
+    _impl_.request_.job_id_.InitDefault();
+  }
+  _impl_.request_.job_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:rainstorm.DataChunkLeader.job_id)
+}
+inline std::string* DataChunkLeader::mutable_job_id() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  std::string* _s = _internal_mutable_job_id();
+  // @@protoc_insertion_point(field_mutable:rainstorm.DataChunkLeader.job_id)
+  return _s;
+}
+inline const std::string& DataChunkLeader::_internal_job_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  if (request_case() != kJobId) {
+    return ::google::protobuf::internal::GetEmptyStringAlreadyInited();
+  }
+  return _impl_.request_.job_id_.Get();
+}
+inline void DataChunkLeader::_internal_set_job_id(const std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (request_case() != kJobId) {
+    clear_request();
+
+    set_has_job_id();
+    _impl_.request_.job_id_.InitDefault();
+  }
+  _impl_.request_.job_id_.Set(value, GetArena());
+}
+inline std::string* DataChunkLeader::_internal_mutable_job_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (request_case() != kJobId) {
+    clear_request();
+
+    set_has_job_id();
+    _impl_.request_.job_id_.InitDefault();
+  }
+  return _impl_.request_.job_id_.Mutable( GetArena());
+}
+inline std::string* DataChunkLeader::release_job_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:rainstorm.DataChunkLeader.job_id)
+  if (request_case() != kJobId) {
+    return nullptr;
+  }
+  clear_has_request();
+  return _impl_.request_.job_id_.Release();
+}
+inline void DataChunkLeader::set_allocated_job_id(std::string* value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (has_request()) {
+    clear_request();
+  }
+  if (value != nullptr) {
+    set_has_job_id();
+    _impl_.request_.job_id_.InitAllocated(value, GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:rainstorm.DataChunkLeader.job_id)
+}
+
+// .rainstorm.KV pair = 2;
+inline bool DataChunkLeader::has_pair() const {
+  return request_case() == kPair;
+}
+inline bool DataChunkLeader::_internal_has_pair() const {
+  return request_case() == kPair;
+}
+inline void DataChunkLeader::set_has_pair() {
+  _impl_._oneof_case_[0] = kPair;
+}
+inline void DataChunkLeader::clear_pair() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (request_case() == kPair) {
+    if (GetArena() == nullptr) {
+      delete _impl_.request_.pair_;
+    } else if (::google::protobuf::internal::DebugHardenClearOneofMessageOnArena()) {
+      ::google::protobuf::internal::MaybePoisonAfterClear(_impl_.request_.pair_);
+    }
+    clear_has_request();
+  }
+}
+inline ::rainstorm::KV* DataChunkLeader::release_pair() {
+  // @@protoc_insertion_point(field_release:rainstorm.DataChunkLeader.pair)
+  if (request_case() == kPair) {
+    clear_has_request();
+    auto* temp = _impl_.request_.pair_;
+    if (GetArena() != nullptr) {
+      temp = ::google::protobuf::internal::DuplicateIfNonNull(temp);
+    }
+    _impl_.request_.pair_ = nullptr;
+    return temp;
+  } else {
+    return nullptr;
+  }
+}
+inline const ::rainstorm::KV& DataChunkLeader::_internal_pair() const {
+  return request_case() == kPair ? *_impl_.request_.pair_ : reinterpret_cast<::rainstorm::KV&>(::rainstorm::_KV_default_instance_);
+}
+inline const ::rainstorm::KV& DataChunkLeader::pair() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:rainstorm.DataChunkLeader.pair)
+  return _internal_pair();
+}
+inline ::rainstorm::KV* DataChunkLeader::unsafe_arena_release_pair() {
+  // @@protoc_insertion_point(field_unsafe_arena_release:rainstorm.DataChunkLeader.pair)
+  if (request_case() == kPair) {
+    clear_has_request();
+    auto* temp = _impl_.request_.pair_;
+    _impl_.request_.pair_ = nullptr;
+    return temp;
+  } else {
+    return nullptr;
+  }
+}
+inline void DataChunkLeader::unsafe_arena_set_allocated_pair(::rainstorm::KV* value) {
+  // We rely on the oneof clear method to free the earlier contents
+  // of this oneof. We can directly use the pointer we're given to
+  // set the new value.
+  clear_request();
+  if (value) {
+    set_has_pair();
+    _impl_.request_.pair_ = value;
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:rainstorm.DataChunkLeader.pair)
+}
+inline ::rainstorm::KV* DataChunkLeader::_internal_mutable_pair() {
+  if (request_case() != kPair) {
+    clear_request();
+    set_has_pair();
+    _impl_.request_.pair_ =
+        ::google::protobuf::Message::DefaultConstruct<::rainstorm::KV>(GetArena());
+  }
+  return _impl_.request_.pair_;
+}
+inline ::rainstorm::KV* DataChunkLeader::mutable_pair() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  ::rainstorm::KV* _msg = _internal_mutable_pair();
+  // @@protoc_insertion_point(field_mutable:rainstorm.DataChunkLeader.pair)
+  return _msg;
+}
+
+// bool finished = 3;
+inline bool DataChunkLeader::has_finished() const {
+  return request_case() == kFinished;
+}
+inline void DataChunkLeader::set_has_finished() {
+  _impl_._oneof_case_[0] = kFinished;
+}
+inline void DataChunkLeader::clear_finished() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (request_case() == kFinished) {
+    _impl_.request_.finished_ = false;
+    clear_has_request();
+  }
+}
+inline bool DataChunkLeader::finished() const {
+  // @@protoc_insertion_point(field_get:rainstorm.DataChunkLeader.finished)
+  return _internal_finished();
+}
+inline void DataChunkLeader::set_finished(bool value) {
+  if (request_case() != kFinished) {
+    clear_request();
+    set_has_finished();
+  }
+  _impl_.request_.finished_ = value;
+  // @@protoc_insertion_point(field_set:rainstorm.DataChunkLeader.finished)
+}
+inline bool DataChunkLeader::_internal_finished() const {
+  if (request_case() == kFinished) {
+    return _impl_.request_.finished_;
+  }
+  return false;
+}
+
+inline bool DataChunkLeader::has_request() const {
+  return request_case() != REQUEST_NOT_SET;
+}
+inline void DataChunkLeader::clear_has_request() {
+  _impl_._oneof_case_[0] = REQUEST_NOT_SET;
+}
+inline DataChunkLeader::RequestCase DataChunkLeader::request_case() const {
+  return DataChunkLeader::RequestCase(_impl_._oneof_case_[0]);
+}
+// -------------------------------------------------------------------
+
+// StreamDataChunkLeader
+
+// repeated .rainstorm.DataChunkLeader chunks = 1;
+inline int StreamDataChunkLeader::_internal_chunks_size() const {
   return _internal_chunks().size();
 }
-inline int AckDataChunk::chunks_size() const {
+inline int StreamDataChunkLeader::chunks_size() const {
   return _internal_chunks_size();
 }
-inline void AckDataChunk::clear_chunks() {
+inline void StreamDataChunkLeader::clear_chunks() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.chunks_.Clear();
 }
-inline ::rainstorm::DataChunk* AckDataChunk::mutable_chunks(int index)
+inline ::rainstorm::DataChunkLeader* StreamDataChunkLeader::mutable_chunks(int index)
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_mutable:rainstorm.AckDataChunk.chunks)
+  // @@protoc_insertion_point(field_mutable:rainstorm.StreamDataChunkLeader.chunks)
   return _internal_mutable_chunks()->Mutable(index);
 }
-inline ::google::protobuf::RepeatedPtrField<::rainstorm::DataChunk>* AckDataChunk::mutable_chunks()
+inline ::google::protobuf::RepeatedPtrField<::rainstorm::DataChunkLeader>* StreamDataChunkLeader::mutable_chunks()
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_mutable_list:rainstorm.AckDataChunk.chunks)
+  // @@protoc_insertion_point(field_mutable_list:rainstorm.StreamDataChunkLeader.chunks)
   ::google::protobuf::internal::TSanWrite(&_impl_);
   return _internal_mutable_chunks();
 }
-inline const ::rainstorm::DataChunk& AckDataChunk::chunks(int index) const
+inline const ::rainstorm::DataChunkLeader& StreamDataChunkLeader::chunks(int index) const
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_get:rainstorm.AckDataChunk.chunks)
+  // @@protoc_insertion_point(field_get:rainstorm.StreamDataChunkLeader.chunks)
   return _internal_chunks().Get(index);
 }
-inline ::rainstorm::DataChunk* AckDataChunk::add_chunks() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+inline ::rainstorm::DataChunkLeader* StreamDataChunkLeader::add_chunks() ABSL_ATTRIBUTE_LIFETIME_BOUND {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  ::rainstorm::DataChunk* _add = _internal_mutable_chunks()->Add();
-  // @@protoc_insertion_point(field_add:rainstorm.AckDataChunk.chunks)
+  ::rainstorm::DataChunkLeader* _add = _internal_mutable_chunks()->Add();
+  // @@protoc_insertion_point(field_add:rainstorm.StreamDataChunkLeader.chunks)
   return _add;
 }
-inline const ::google::protobuf::RepeatedPtrField<::rainstorm::DataChunk>& AckDataChunk::chunks() const
+inline const ::google::protobuf::RepeatedPtrField<::rainstorm::DataChunkLeader>& StreamDataChunkLeader::chunks() const
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_list:rainstorm.AckDataChunk.chunks)
+  // @@protoc_insertion_point(field_list:rainstorm.StreamDataChunkLeader.chunks)
   return _internal_chunks();
 }
-inline const ::google::protobuf::RepeatedPtrField<::rainstorm::DataChunk>&
-AckDataChunk::_internal_chunks() const {
+inline const ::google::protobuf::RepeatedPtrField<::rainstorm::DataChunkLeader>&
+StreamDataChunkLeader::_internal_chunks() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.chunks_;
 }
-inline ::google::protobuf::RepeatedPtrField<::rainstorm::DataChunk>*
-AckDataChunk::_internal_mutable_chunks() {
+inline ::google::protobuf::RepeatedPtrField<::rainstorm::DataChunkLeader>*
+StreamDataChunkLeader::_internal_mutable_chunks() {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return &_impl_.chunks_;
 }

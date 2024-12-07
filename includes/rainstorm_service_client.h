@@ -32,7 +32,9 @@ public:
     bool SendDataChunksSrc(const std::string &task_id, const string& srcfile);
     bool SendDataChunksStage(const std::string &task_id, SafeQueue<vector<pair<string, string>>>& queue);
 
+    // send data chunks to the leader on the client side it is same as SendDataChunksStage
+    bool SendDataChunksLeader(const std::string &task_id, SafeQueue<vector<pair<string, string>>>& queue);
+
 private:
     std::unique_ptr<rainstorm::RainstormService::Stub> stub_;
-    RainStormNode rainstorm_node_;
 };

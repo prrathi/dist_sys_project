@@ -10,7 +10,6 @@
 #define DEFAULT_NUM_STAGES 3;
 
 struct TaskInfo {
-    int task_id;
     int task_index;
     int stage_index;
     std::string operator_executable;   
@@ -29,6 +28,10 @@ struct JobInfo {
     int num_stages = DEFAULT_NUM_STAGES;
     int num_tasks_per_stage;
     std::vector<TaskInfo> tasks;
+
+    // just for the final stage
+    unordered_set<int> seen_kv_ids; // to be used server side SendDataChunksToLeader
+    int num_completed_final_task = 0;
 };
 
 class RainStormLeader {
@@ -40,23 +43,26 @@ public:
     void HandleNodeFailure(const std::string &failed_node_id);
     void pipeListener();
 
+    JobInfo& GetJobInfo(const std::string& job_id) { return jobs_[job_id]; }
+    Hydfs& GetHydfs() { return hydfs; }
+    
+    std::mutex mtx_;
+    // unordered_set<int> seen_kv_ids; // to be used server side SendDataChunksToLeader
+    // std::mutex seen_kv_ids_mtx;
 
 private:
     std::vector<std::string> GetAllWorkerVMs();
     std::string GenerateJobId();
-    int GenerateTaskId();
-
     int getUnusedPortNumberForVM(const std::string& vm);
     string getNextVM();
     vector<string> getTargetNodes(const int stage_num,  vector<TaskInfo>& tasks, int num_stages);
     
 private:
-    std::mutex mtx_;
+    const std::string leader_address = "fa24-cs425-5801.cs.illinois.edu"; 
     // job_id -> JobInfo
     std::unordered_map<std::string, JobInfo> jobs_;
 
     Hydfs hydfs; // setup this  
-
 
     string listener_pipe_path = "/tmp/mp4-leader"; 
     // keep track of the ports being used for each vm

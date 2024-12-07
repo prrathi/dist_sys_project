@@ -220,3 +220,7 @@ bool RainStormClient::SendDataChunksSrc(const std::string &task_id, const string
     return status.ok();
 }
 
+bool RainStormClient::SendDataChunksLeader(const std::string &task_id, SafeQueue<vector<pair<string, string>>>& queue) {
+    // On the client side it is same as SendDataChunksStage except for we send a job_id before sending data.
+    return true;
+}

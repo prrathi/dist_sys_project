@@ -1,3 +1,6 @@
+#ifndef LRU_CACHE_H
+#define LRU_CACHE_H
+
 #include <list>
 #include <unordered_map>
 #include <assert.h>
@@ -22,3 +25,5 @@ private:
         size_t cache_size;
         size_t cache_capacity; // in bytes
 };
+
+#endif

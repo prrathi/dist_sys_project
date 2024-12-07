@@ -7,6 +7,7 @@
 #include <mutex>
 #include <grpcpp/grpcpp.h>
 #include "rainstorm.grpc.pb.h"
+#include "safequeue.hpp"
 
 
 class RainStormLeader;
@@ -16,8 +17,8 @@ class RainStormServer : public rainstorm::RainstormService::Service {
 public:
     RainStormServer();
     ~RainStormServer();
-    RainStormServer(RainStormNode* node) : node_(node) {};
-    RainStormServer(RainStormLeader* leader) : leader_node_(leader) {};
+    RainStormServer(RainStormNode* node);
+    RainStormServer(RainStormLeader* leader);
 
     void wait();
 
@@ -39,6 +40,9 @@ public:
 
     grpc::Status SendDataChunks(grpc::ServerContext* context,
                                 grpc::ServerReaderWriter<rainstorm::StreamDataChunk, rainstorm::StreamDataChunk>* stream) override;
+    
+    grpc::Status SendDataChunksToLeader(grpc::ServerContext* context,
+                                        grpc::ServerReaderWriter<rainstorm::AckDataChunk, rainstorm::StreamDataChunkLeader>* stream) override;
 
 private:
 

@@ -34,14 +34,7 @@ RainStormLeader::~RainStormLeader() {}
 std::string RainStormLeader::GenerateJobId() {
     static std::mt19937 gen(std::random_device{}());
     static std::uniform_int_distribution<> dist(1000,999999);
-    return "job" + std::to_string(dist(gen));
-}
-
-//const std::string &job_id, int stage_num, int task_index
-int RainStormLeader::GenerateTaskId() {
-    static std::mt19937 gen(std::random_device{}());
-    static std::uniform_int_distribution<> dist(1000,9999999);
-    return dist(gen);
+    return "job_" + std::to_string(dist(gen));
 }
 
 // need to test this cause it may or may not be sent a new line.
@@ -116,8 +109,8 @@ void RainStormLeader::SubmitJob(const std::string &op1, const std::string &op2, 
     for (int stage = 0; stage < job.num_stages; stage++) {
         for (int t = 0; t < num_tasks; t++) {
             TaskInfo task;
-            task.task_id = GenerateTaskId();
             task.stage_index = stage;
+            task.task_index = stage * num_tasks + t;
             if (stage == 0) {
                 task.operator_executable = ""; // nothing
             } else if (stage == 1) {
@@ -125,7 +118,8 @@ void RainStormLeader::SubmitJob(const std::string &op1, const std::string &op2, 
             } else {
                 task.operator_executable = op2;
             }
-            job.tasks.push_back(task); 
+            //job.tasks.push_back(task); // insert beginning cuz want to build connections end -> src 
+            job.tasks.insert(job.tasks.begin(), task);
         }
     }
 
@@ -159,11 +153,11 @@ void RainStormLeader::SubmitJob(const std::string &op1, const std::string &op2, 
 
         // assuming the second one is stateful, first not, 0 is suourc
         if (task.stage_index == 0) {
-            client.NewSrcTask(job.job_id, task.task_id, job.num_tasks_per_stage, job.src_file, task.vm, task.port_nums[0]);
+            client.NewSrcTask(job.job_id, task.task_index, job.num_tasks_per_stage, job.src_file, task.vm, task.port_nums[0]);
         } else if (task.stage_index == 1) {
-            client.NewStageTask(job.job_id, task.stage_index, task.task_id, job.num_tasks_per_stage, task.operator_executable, false, false, task.assigned_nodes, task.port_nums);
+            client.NewStageTask(job.job_id, task.stage_index, task.task_index, job.num_tasks_per_stage, task.operator_executable, false, false, task.assigned_nodes, task.port_nums);
         } else if (task.stage_index == 2) {
-            client.NewStageTask(job.job_id, task.stage_index, task.task_id, job.num_tasks_per_stage, task.operator_executable, true, true, task.assigned_nodes, task.port_nums);
+            client.NewStageTask(job.job_id, task.stage_index, task.task_index, job.num_tasks_per_stage, task.operator_executable, true, true, task.assigned_nodes, task.port_nums);
         } else {
             std::cout << "Error: Invalid stage index." << std::endl; // assuming only 2 stages
         }
@@ -198,7 +192,7 @@ void RainStormLeader::HandleNodeFailure(const std::string &failed_node_id) {
         for (auto &task : job.tasks) {
             // if task was scheduled on a failed vm
             if (task.vm == failed_node_id) {
-                std::cout << "Reassigning Task ID: " << task.task_id << " from VM: " << failed_node_id << std::endl;
+                std::cout << "Reassigning Task ID: " << task.task_index << " from VM: " << failed_node_id << std::endl;
 
                 std::string new_vm = getNextVM();
 
@@ -222,17 +216,17 @@ void RainStormLeader::HandleNodeFailure(const std::string &failed_node_id) {
 
                 new_task_stuff = task;
 
-                std::cout << "Assigned Task ID: " << task.task_id << " to VM: " << new_vm << std::endl;
+                std::cout << "Assigned Task ID: " << task.task_index << " to VM: " << new_vm << std::endl;
 
                 std::string target_Address = task.vm + ":" + std::to_string(getUnusedPortNumberForVM(task.vm));
                 RainStormClient client(grpc::CreateChannel(target_Address, grpc::InsecureChannelCredentials()));
 
                 if (new_task_stuff.stage_index == 0) {
-                    client.NewSrcTask(job.job_id, new_task_stuff.task_id, job.num_tasks_per_stage, job.src_file, new_task_stuff.vm, new_task_stuff.port_nums[0]);
+                    client.NewSrcTask(job.job_id, new_task_stuff.task_index, job.num_tasks_per_stage, job.src_file, new_task_stuff.vm, new_task_stuff.port_nums[0]);
                 } else if (task.stage_index == 1) {
-                    client.NewStageTask(job.job_id, new_task_stuff.stage_index, new_task_stuff.task_id, job.num_tasks_per_stage, task.operator_executable, false, false, task.assigned_nodes, task.port_nums);
+                    client.NewStageTask(job.job_id, new_task_stuff.stage_index, new_task_stuff.task_index, job.num_tasks_per_stage, task.operator_executable, false, false, task.assigned_nodes, task.port_nums);
                 } else if (task.stage_index == 2) {
-                    client.NewStageTask(job.job_id, new_task_stuff.stage_index, new_task_stuff.task_id, job.num_tasks_per_stage, task.operator_executable, true, true, task.assigned_nodes, task.port_nums);
+                    client.NewStageTask(job.job_id, new_task_stuff.stage_index, new_task_stuff.task_index, job.num_tasks_per_stage, task.operator_executable, true, true, task.assigned_nodes, task.port_nums);
                 } else {
                     std::cout << "Error: Invalid stage index." << std::endl; // assuming only 2 stages
                 }
@@ -260,9 +254,9 @@ void RainStormLeader::HandleNodeFailure(const std::string &failed_node_id) {
                 bool update_success = client.UpdateSrcTaskSend(index, new_task_stuff.vm, getUnusedPortNumberForVM(new_task_stuff.vm));
                 
                 if (update_success) {
-                    std::cout << "Successfully updated sending stream for Task ID: " << task.task_id << " at index: " << index << std::endl;
+                    std::cout << "Successfully updated sending stream for Task ID: " << task.task_index << " at index: " << index << std::endl;
                 } else {
-                    std::cout << "Failed to update sending stream for Task ID: " << task.task_id << " at index: " << index << std::endl;
+                    std::cout << "Failed to update sending stream for Task ID: " << task.task_index << " at index: " << index << std::endl;
                 }
             }
         }
@@ -276,7 +270,7 @@ std::vector<std::string> RainStormLeader::GetAllWorkerVMs() {
 }
 
 int RainStormLeader::getUnusedPortNumberForVM(const std::string& vm) {
-    
+
     if (used_ports_per_vm.find(vm) == used_ports_per_vm.end()) {
         used_ports_per_vm[vm] = {};
     }
@@ -319,6 +313,10 @@ vector<string> RainStormLeader::getTargetNodes(const int stage_num,  vector<Task
         // have nothing -> last stage
         if (task.stage_index == targetStage && targetStage != 0) {
             targetNodes.push_back(task.vm);
+        }
+        if (targetStage == 0) {
+            targetNodes.push_back(leader_address);
+            return targetNodes;
         }
     }
     return targetNodes;

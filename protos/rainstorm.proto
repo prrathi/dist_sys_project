@@ -27,6 +27,9 @@ service RainstormService {
     rpc UpdateTaskSnd(UpdateTaskSndRequest) returns (OperationStatus); // tell node to start new grpc stream for task (state) to new next node
     //rpc UpdateTaskRcv(UpdateTaskRcvRequest) returns (OperationStatus); // tell node where to establish new stream to send data and to send acks
     rpc SendDataChunks(stream StreamDataChunk) returns (stream AckDataChunk); // make sure to gracefully exit if connection lost
+
+    // on the client side same as SendDataChunk
+    rpc SendDataChunksToLeader(stream StreamDataChunkLeader) returns (stream AckDataChunk); // only called for leader, handle everything serverside so leader can  chill
 }
 
 message NewSrcTaskRequest {
@@ -56,17 +59,17 @@ message UpdateTaskSndRequest {
     int32 snd_port = 3;
 }
 
+// id is the identification for the key, value pair cuz the key and value could be pretty large
 message KV {
-    string id = 1; // can be != key if key is big
+    int32 id = 1; // can be != key if key is big
     string key = 2;
     string value = 3;
 }
 
 message DataChunk {
     oneof request {
-        int32 id = 1;
-        KV pair = 2;
-        bool finished = 3;
+        KV pair = 1;
+        bool finished = 2;
     }
 }
 
@@ -75,5 +78,17 @@ message StreamDataChunk {
 }
 
 message AckDataChunk { 
-    repeated DataChunk chunks = 1;
+    repeated int32 id = 1;
+}
+
+message DataChunkLeader {
+    oneof request {
+        string job_id = 1;
+        KV pair = 2;
+        bool finished = 3;
+    }
+}
+
+message StreamDataChunkLeader {
+    repeated DataChunkLeader chunks = 1;
 }
