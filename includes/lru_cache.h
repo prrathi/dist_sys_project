@@ -24,3 +24,5 @@ private:
         size_t cache_size;
         size_t cache_capacity; // in bytes
 };
+
+#endif

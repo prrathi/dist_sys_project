@@ -6,14 +6,20 @@
 #include <memory>
 #include <mutex>
 #include <grpcpp/grpcpp.h>
-
 #include "rainstorm.grpc.pb.h"
 #include "rainstorm_common.h"
+#include "safequeue.hpp"
+
+
+class RainStormLeader;
+class RainStormNode;
 
 class RainStormServer final : public rainstorm::RainstormService::Service {
 public:
     RainStormServer(const std::string& server_address, INodeServerInterface* node_interface);
     ~RainStormServer();
+    RainStormServer(RainStormNode* node);
+    RainStormServer(RainStormLeader* leader);
 
     void wait();
     void shutdown();
@@ -52,4 +58,6 @@ private:
     std::unique_ptr<grpc::Server> server_;
     INodeServerInterface* node_; 
     std::mutex global_mtx_;
+    RainStormNode* node_;
+    RainStormLeader* leader_node_;
 };

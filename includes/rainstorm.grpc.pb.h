@@ -57,6 +57,10 @@ class RainstormService final {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::rainstorm::OperationStatus>>(PrepareAsyncNewStageTaskRaw(context, request, cq));
     }
     // tell node to start being stage task node (check if existing log files in hydfs)
+<<<<<<< HEAD
+=======
+    // rpc NewTgtTask(NewTgtTaskRequest) returns (OperationStatus); // tell node to start being tgt node (check if existing log files in hydfs)
+>>>>>>> origin/messy_branch
     virtual ::grpc::Status UpdateTaskSnd(::grpc::ClientContext* context, const ::rainstorm::UpdateTaskSndRequest& request, ::rainstorm::OperationStatus* response) = 0;
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::rainstorm::OperationStatus>> AsyncUpdateTaskSnd(::grpc::ClientContext* context, const ::rainstorm::UpdateTaskSndRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::rainstorm::OperationStatus>>(AsyncUpdateTaskSndRaw(context, request, cq));
@@ -65,6 +69,10 @@ class RainstormService final {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::rainstorm::OperationStatus>>(PrepareAsyncUpdateTaskSndRaw(context, request, cq));
     }
     // tell node to start new grpc stream for task (state) to new next node
+<<<<<<< HEAD
+=======
+    // rpc UpdateTaskRcv(UpdateTaskRcvRequest) returns (OperationStatus); // tell node where to establish new stream to send data and to send acks
+>>>>>>> origin/messy_branch
     std::unique_ptr< ::grpc::ClientReaderWriterInterface< ::rainstorm::StreamDataChunk, ::rainstorm::AckDataChunk>> SendDataChunks(::grpc::ClientContext* context) {
       return std::unique_ptr< ::grpc::ClientReaderWriterInterface< ::rainstorm::StreamDataChunk, ::rainstorm::AckDataChunk>>(SendDataChunksRaw(context));
     }
@@ -75,6 +83,10 @@ class RainstormService final {
       return std::unique_ptr< ::grpc::ClientAsyncReaderWriterInterface< ::rainstorm::StreamDataChunk, ::rainstorm::AckDataChunk>>(PrepareAsyncSendDataChunksRaw(context, cq));
     }
     // make sure to gracefully exit if connection lost
+<<<<<<< HEAD
+=======
+    // on the client side same as SendDataChunk
+>>>>>>> origin/messy_branch
     std::unique_ptr< ::grpc::ClientReaderWriterInterface< ::rainstorm::StreamDataChunkLeader, ::rainstorm::AckDataChunk>> SendDataChunksToLeader(::grpc::ClientContext* context) {
       return std::unique_ptr< ::grpc::ClientReaderWriterInterface< ::rainstorm::StreamDataChunkLeader, ::rainstorm::AckDataChunk>>(SendDataChunksToLeaderRaw(context));
     }
@@ -84,7 +96,11 @@ class RainstormService final {
     std::unique_ptr< ::grpc::ClientAsyncReaderWriterInterface< ::rainstorm::StreamDataChunkLeader, ::rainstorm::AckDataChunk>> PrepareAsyncSendDataChunksToLeader(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncReaderWriterInterface< ::rainstorm::StreamDataChunkLeader, ::rainstorm::AckDataChunk>>(PrepareAsyncSendDataChunksToLeaderRaw(context, cq));
     }
+<<<<<<< HEAD
     // only called for leader, handle everything serverside
+=======
+    // only called for leader, handle everything serverside so leader can  chill
+>>>>>>> origin/messy_branch
     class async_interface {
      public:
       virtual ~async_interface() {}
@@ -94,6 +110,7 @@ class RainstormService final {
       virtual void NewStageTask(::grpc::ClientContext* context, const ::rainstorm::NewStageTaskRequest* request, ::rainstorm::OperationStatus* response, std::function<void(::grpc::Status)>) = 0;
       virtual void NewStageTask(::grpc::ClientContext* context, const ::rainstorm::NewStageTaskRequest* request, ::rainstorm::OperationStatus* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       // tell node to start being stage task node (check if existing log files in hydfs)
+<<<<<<< HEAD
       virtual void UpdateTaskSnd(::grpc::ClientContext* context, const ::rainstorm::UpdateTaskSndRequest* request, ::rainstorm::OperationStatus* response, std::function<void(::grpc::Status)>) = 0;
       virtual void UpdateTaskSnd(::grpc::ClientContext* context, const ::rainstorm::UpdateTaskSndRequest* request, ::rainstorm::OperationStatus* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       // tell node to start new grpc stream for task (state) to new next node
@@ -101,6 +118,18 @@ class RainstormService final {
       // make sure to gracefully exit if connection lost
       virtual void SendDataChunksToLeader(::grpc::ClientContext* context, ::grpc::ClientBidiReactor< ::rainstorm::StreamDataChunkLeader,::rainstorm::AckDataChunk>* reactor) = 0;
       // only called for leader, handle everything serverside
+=======
+      // rpc NewTgtTask(NewTgtTaskRequest) returns (OperationStatus); // tell node to start being tgt node (check if existing log files in hydfs)
+      virtual void UpdateTaskSnd(::grpc::ClientContext* context, const ::rainstorm::UpdateTaskSndRequest* request, ::rainstorm::OperationStatus* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void UpdateTaskSnd(::grpc::ClientContext* context, const ::rainstorm::UpdateTaskSndRequest* request, ::rainstorm::OperationStatus* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      // tell node to start new grpc stream for task (state) to new next node
+      // rpc UpdateTaskRcv(UpdateTaskRcvRequest) returns (OperationStatus); // tell node where to establish new stream to send data and to send acks
+      virtual void SendDataChunks(::grpc::ClientContext* context, ::grpc::ClientBidiReactor< ::rainstorm::StreamDataChunk,::rainstorm::AckDataChunk>* reactor) = 0;
+      // make sure to gracefully exit if connection lost
+      // on the client side same as SendDataChunk
+      virtual void SendDataChunksToLeader(::grpc::ClientContext* context, ::grpc::ClientBidiReactor< ::rainstorm::StreamDataChunkLeader,::rainstorm::AckDataChunk>* reactor) = 0;
+      // only called for leader, handle everything serverside so leader can  chill
+>>>>>>> origin/messy_branch
     };
     typedef class async_interface experimental_async_interface;
     virtual class async_interface* async() { return nullptr; }
@@ -211,12 +240,24 @@ class RainstormService final {
     // tell node to start being src node.
     virtual ::grpc::Status NewStageTask(::grpc::ServerContext* context, const ::rainstorm::NewStageTaskRequest* request, ::rainstorm::OperationStatus* response);
     // tell node to start being stage task node (check if existing log files in hydfs)
+<<<<<<< HEAD
     virtual ::grpc::Status UpdateTaskSnd(::grpc::ServerContext* context, const ::rainstorm::UpdateTaskSndRequest* request, ::rainstorm::OperationStatus* response);
     // tell node to start new grpc stream for task (state) to new next node
     virtual ::grpc::Status SendDataChunks(::grpc::ServerContext* context, ::grpc::ServerReaderWriter< ::rainstorm::AckDataChunk, ::rainstorm::StreamDataChunk>* stream);
     // make sure to gracefully exit if connection lost
     virtual ::grpc::Status SendDataChunksToLeader(::grpc::ServerContext* context, ::grpc::ServerReaderWriter< ::rainstorm::AckDataChunk, ::rainstorm::StreamDataChunkLeader>* stream);
     // only called for leader, handle everything serverside
+=======
+    // rpc NewTgtTask(NewTgtTaskRequest) returns (OperationStatus); // tell node to start being tgt node (check if existing log files in hydfs)
+    virtual ::grpc::Status UpdateTaskSnd(::grpc::ServerContext* context, const ::rainstorm::UpdateTaskSndRequest* request, ::rainstorm::OperationStatus* response);
+    // tell node to start new grpc stream for task (state) to new next node
+    // rpc UpdateTaskRcv(UpdateTaskRcvRequest) returns (OperationStatus); // tell node where to establish new stream to send data and to send acks
+    virtual ::grpc::Status SendDataChunks(::grpc::ServerContext* context, ::grpc::ServerReaderWriter< ::rainstorm::AckDataChunk, ::rainstorm::StreamDataChunk>* stream);
+    // make sure to gracefully exit if connection lost
+    // on the client side same as SendDataChunk
+    virtual ::grpc::Status SendDataChunksToLeader(::grpc::ServerContext* context, ::grpc::ServerReaderWriter< ::rainstorm::AckDataChunk, ::rainstorm::StreamDataChunkLeader>* stream);
+    // only called for leader, handle everything serverside so leader can  chill
+>>>>>>> origin/messy_branch
   };
   template <class BaseClass>
   class WithAsyncMethod_NewSrcTask : public BaseClass {

@@ -14,33 +14,77 @@ using namespace std;
 RainStormClient::RainStormClient(shared_ptr<grpc::Channel> channel)
     : stub_(rainstorm::RainstormService::NewStub(channel)) {}
 
-bool RainStormClient::NewSrcTask(const string& id, const string& src_filename) {
+bool RainStormClient::NewSrcTask(const std::string &job_id, 
+                                  int32_t task_id, 
+                                  int32_t task_count, 
+                                  const std::string &src_filename, 
+                                  const std::string &snd_address, 
+                                  int32_t snd_port) {
     grpc::ClientContext context;
     rainstorm::NewSrcTaskRequest request;
     rainstorm::OperationStatus response;
 
-    request.set_id(id);
+    request.set_job_id(job_id);
+    request.set_task_id(task_id);
+    request.set_task_count(task_count);
     request.set_src_filename(src_filename);
+    request.set_snd_address(snd_address);
+    request.set_snd_port(snd_port);
 
     grpc::Status status = stub_->NewSrcTask(&context, request, &response);
+
     if (status.ok() && response.status() == rainstorm::SUCCESS) {
+        std::cout << "NewSrcTask succeeded: " << std::endl;
         return true;
+    } else {
+        std::cerr << "NewSrcTask failed: " << std::endl;
+        return false;
     }
-    return false;
 }
 
-bool RainStormClient::NewStageTask(const string& id, const string& next_server_address, 
-                                  const string& prev_server_address) {
+bool RainStormClient::NewStageTask(const std::string &job_id, 
+                                    int32_t stage_id, 
+                                    int32_t task_id, 
+                                    int32_t task_count, 
+                                    const std::string &executable, 
+                                    bool stateful, 
+                                    bool last, 
+                                    const std::vector<std::string> &snd_addresses, 
+                                    const std::vector<int32_t> &snd_ports) {
     grpc::ClientContext context;
     rainstorm::NewStageTaskRequest request;
     rainstorm::OperationStatus response;
 
-    request.set_id(id);
-    request.set_next_server_address(next_server_address);
-    request.set_prev_server_address(prev_server_address);
+    request.set_job_id(job_id);
+    request.set_stage_id(stage_id);
+    request.set_task_id(task_id);
+    request.set_task_count(task_count);
+    request.set_executable(executable);
+    request.set_stateful(stateful);
+    request.set_last(last);
+    
+    if (snd_addresses.size() != snd_ports.size()) {
+        std::cerr << "NewStageTask failed: snd_addresses and snd_ports size mismatch." << std::endl;
+        return false;
+    }
+
+    for (const auto &addr : snd_addresses) {
+        request.add_snd_addresses(addr);
+    }
+
+    for (const auto &port : snd_ports) {
+        request.add_snd_ports(port);
+    }
 
     grpc::Status status = stub_->NewStageTask(&context, request, &response);
-    return status.ok() && response.status() == rainstorm::SUCCESS;
+
+    if (status.ok() && response.status() == rainstorm::SUCCESS) {
+        std::cout << "NewSrcTask succeeded: " << std::endl;
+        return true;
+    } else {
+        std::cerr << "NewSrcTask failed: " << std::endl;
+        return false;
+    }
 }
 
 bool RainStormClient::UpdateTaskSnd(int32_t index, const string& snd_address, int32_t snd_port) {

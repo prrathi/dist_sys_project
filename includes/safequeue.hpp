@@ -56,3 +56,5 @@ private:
     std::condition_variable cv_;
     bool finished_ = false;
 };
+
+#endif
