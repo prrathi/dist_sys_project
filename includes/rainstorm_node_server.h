@@ -46,7 +46,19 @@ private:
     void SendDataChunksReader(grpc::ServerReaderWriter<rainstorm::AckDataChunk,
                                                        rainstorm::StreamDataChunk>* stream);
     void SendDataChunksWriter(grpc::ServerReaderWriter<rainstorm::AckDataChunk,
-                                                       rainstorm::StreamDataChunk>* stream);
+                                                       rainstorm::StreamDataChunk>* stream,
+                                                       int task_index);
+
+    void SendDataChunksLeaderReader(
+        grpc::ServerReaderWriter<rainstorm::AckDataChunk, rainstorm::StreamDataChunkLeader>* stream,
+        SafeQueue<std::vector<int>>& ack_queue,
+        std::atomic<bool>& done_reading,
+        const std::string job_id);
+    void SendDataChunksLeaderWriter(
+        grpc::ServerReaderWriter<rainstorm::AckDataChunk, rainstorm::StreamDataChunkLeader>* stream,
+        SafeQueue<std::vector<int>>& ack_queue,
+        std::atomic<bool>& done_reading,
+        const std::string job_id);
 
     KVStruct protoToKVStruct(const rainstorm::KV& proto_kv);
     rainstorm::KV kvStructToProto(const KVStruct& kv);

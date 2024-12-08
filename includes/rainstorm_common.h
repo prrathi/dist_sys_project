@@ -20,14 +20,14 @@ struct KVStruct {
 struct PendingAck {
     std::chrono::steady_clock::time_point timestamp;
     std::vector<KVStruct> data;
-    int task_id;
+    int task_index;
 };
 
 // Structure for task information
 struct TaskInfo {
     std::string job_id;
-    int stage_id;
-    int task_id;
+    int stage_index;
+    int task_index;
     int task_count;
     std::string operator_executable;
     std::shared_ptr<SafeQueue<std::vector<KVStruct>>> upstream_queue;
@@ -37,6 +37,7 @@ struct TaskInfo {
     std::string state_output_file;
     std::string processed_file;
     std::string filtered_file;
+    int prev_task_count;
     bool stateful = false;
     bool last = false;
 };

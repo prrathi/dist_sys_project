@@ -647,8 +647,8 @@ class NewStageTaskRequest final : public ::google::protobuf::Message
     kSndPortsFieldNumber = 9,
     kJobIdFieldNumber = 1,
     kExecutableFieldNumber = 5,
-    kStageIdFieldNumber = 2,
-    kTaskIdFieldNumber = 3,
+    kStageIndexFieldNumber = 2,
+    kTaskIndexFieldNumber = 3,
     kTaskCountFieldNumber = 4,
     kStatefulFieldNumber = 6,
     kLastFieldNumber = 7,
@@ -731,24 +731,24 @@ class NewStageTaskRequest final : public ::google::protobuf::Message
   std::string* _internal_mutable_executable();
 
   public:
-  // int32 stage_id = 2;
-  void clear_stage_id() ;
-  ::int32_t stage_id() const;
-  void set_stage_id(::int32_t value);
+  // int32 stage_index = 2;
+  void clear_stage_index() ;
+  ::int32_t stage_index() const;
+  void set_stage_index(::int32_t value);
 
   private:
-  ::int32_t _internal_stage_id() const;
-  void _internal_set_stage_id(::int32_t value);
+  ::int32_t _internal_stage_index() const;
+  void _internal_set_stage_index(::int32_t value);
 
   public:
-  // int32 task_id = 3;
-  void clear_task_id() ;
-  ::int32_t task_id() const;
-  void set_task_id(::int32_t value);
+  // int32 task_index = 3;
+  void clear_task_index() ;
+  ::int32_t task_index() const;
+  void set_task_index(::int32_t value);
 
   private:
-  ::int32_t _internal_task_id() const;
-  void _internal_set_task_id(::int32_t value);
+  ::int32_t _internal_task_index() const;
+  void _internal_set_task_index(::int32_t value);
 
   public:
   // int32 task_count = 4;
@@ -812,8 +812,8 @@ class NewStageTaskRequest final : public ::google::protobuf::Message
     mutable ::google::protobuf::internal::CachedSize _snd_ports_cached_byte_size_;
     ::google::protobuf::internal::ArenaStringPtr job_id_;
     ::google::protobuf::internal::ArenaStringPtr executable_;
-    ::int32_t stage_id_;
-    ::int32_t task_id_;
+    ::int32_t stage_index_;
+    ::int32_t task_index_;
     ::int32_t task_count_;
     bool stateful_;
     bool last_;
@@ -952,7 +952,7 @@ class NewSrcTaskRequest final : public ::google::protobuf::Message
     kJobIdFieldNumber = 1,
     kSrcFilenameFieldNumber = 4,
     kSndAddressFieldNumber = 5,
-    kTaskIdFieldNumber = 2,
+    kTaskIndexFieldNumber = 2,
     kTaskCountFieldNumber = 3,
     kSndPortFieldNumber = 6,
   };
@@ -1004,14 +1004,14 @@ class NewSrcTaskRequest final : public ::google::protobuf::Message
   std::string* _internal_mutable_snd_address();
 
   public:
-  // int32 task_id = 2;
-  void clear_task_id() ;
-  ::int32_t task_id() const;
-  void set_task_id(::int32_t value);
+  // int32 task_index = 2;
+  void clear_task_index() ;
+  ::int32_t task_index() const;
+  void set_task_index(::int32_t value);
 
   private:
-  ::int32_t _internal_task_id() const;
-  void _internal_set_task_id(::int32_t value);
+  ::int32_t _internal_task_index() const;
+  void _internal_set_task_index(::int32_t value);
 
   public:
   // int32 task_count = 3;
@@ -1063,7 +1063,7 @@ class NewSrcTaskRequest final : public ::google::protobuf::Message
     ::google::protobuf::internal::ArenaStringPtr job_id_;
     ::google::protobuf::internal::ArenaStringPtr src_filename_;
     ::google::protobuf::internal::ArenaStringPtr snd_address_;
-    ::int32_t task_id_;
+    ::int32_t task_index_;
     ::int32_t task_count_;
     ::int32_t snd_port_;
     mutable ::google::protobuf::internal::CachedSize _cached_size_;
@@ -1755,8 +1755,9 @@ class DataChunk final : public ::google::protobuf::Message
     return *internal_default_instance();
   }
   enum RequestCase {
-    kPair = 1,
-    kFinished = 2,
+    kTaskIndex = 1,
+    kPair = 2,
+    kFinished = 3,
     REQUEST_NOT_SET = 0,
   };
   static inline const DataChunk* internal_default_instance() {
@@ -1832,10 +1833,22 @@ class DataChunk final : public ::google::protobuf::Message
 
   // accessors -------------------------------------------------------
   enum : int {
-    kPairFieldNumber = 1,
-    kFinishedFieldNumber = 2,
+    kTaskIndexFieldNumber = 1,
+    kPairFieldNumber = 2,
+    kFinishedFieldNumber = 3,
   };
-  // .rainstorm.KV pair = 1;
+  // int32 task_index = 1;
+  bool has_task_index() const;
+  void clear_task_index() ;
+  ::int32_t task_index() const;
+  void set_task_index(::int32_t value);
+
+  private:
+  ::int32_t _internal_task_index() const;
+  void _internal_set_task_index(::int32_t value);
+
+  public:
+  // .rainstorm.KV pair = 2;
   bool has_pair() const;
   private:
   bool _internal_has_pair() const;
@@ -1854,7 +1867,7 @@ class DataChunk final : public ::google::protobuf::Message
   ::rainstorm::KV* _internal_mutable_pair();
 
   public:
-  // bool finished = 2;
+  // bool finished = 3;
   bool has_finished() const;
   void clear_finished() ;
   bool finished() const;
@@ -1870,13 +1883,14 @@ class DataChunk final : public ::google::protobuf::Message
   // @@protoc_insertion_point(class_scope:rainstorm.DataChunk)
  private:
   class _Internal;
+  void set_has_task_index();
   void set_has_pair();
   void set_has_finished();
   inline bool has_request() const;
   inline void clear_has_request();
   friend class ::google::protobuf::internal::TcParser;
   static const ::google::protobuf::internal::TcParseTable<
-      0, 2, 1,
+      0, 3, 1,
       0, 2>
       _table_;
 
@@ -1900,6 +1914,7 @@ class DataChunk final : public ::google::protobuf::Message
     union RequestUnion {
       constexpr RequestUnion() : _constinit_{} {}
       ::google::protobuf::internal::ConstantInitialized _constinit_;
+      ::int32_t task_index_;
       ::rainstorm::KV* pair_;
       bool finished_;
     } request_;
@@ -2409,26 +2424,26 @@ inline void NewSrcTaskRequest::set_allocated_job_id(std::string* value) {
   // @@protoc_insertion_point(field_set_allocated:rainstorm.NewSrcTaskRequest.job_id)
 }
 
-// int32 task_id = 2;
-inline void NewSrcTaskRequest::clear_task_id() {
+// int32 task_index = 2;
+inline void NewSrcTaskRequest::clear_task_index() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.task_id_ = 0;
+  _impl_.task_index_ = 0;
 }
-inline ::int32_t NewSrcTaskRequest::task_id() const {
-  // @@protoc_insertion_point(field_get:rainstorm.NewSrcTaskRequest.task_id)
-  return _internal_task_id();
+inline ::int32_t NewSrcTaskRequest::task_index() const {
+  // @@protoc_insertion_point(field_get:rainstorm.NewSrcTaskRequest.task_index)
+  return _internal_task_index();
 }
-inline void NewSrcTaskRequest::set_task_id(::int32_t value) {
-  _internal_set_task_id(value);
-  // @@protoc_insertion_point(field_set:rainstorm.NewSrcTaskRequest.task_id)
+inline void NewSrcTaskRequest::set_task_index(::int32_t value) {
+  _internal_set_task_index(value);
+  // @@protoc_insertion_point(field_set:rainstorm.NewSrcTaskRequest.task_index)
 }
-inline ::int32_t NewSrcTaskRequest::_internal_task_id() const {
+inline ::int32_t NewSrcTaskRequest::_internal_task_index() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
-  return _impl_.task_id_;
+  return _impl_.task_index_;
 }
-inline void NewSrcTaskRequest::_internal_set_task_id(::int32_t value) {
+inline void NewSrcTaskRequest::_internal_set_task_index(::int32_t value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.task_id_ = value;
+  _impl_.task_index_ = value;
 }
 
 // int32 task_count = 3;
@@ -2629,48 +2644,48 @@ inline void NewStageTaskRequest::set_allocated_job_id(std::string* value) {
   // @@protoc_insertion_point(field_set_allocated:rainstorm.NewStageTaskRequest.job_id)
 }
 
-// int32 stage_id = 2;
-inline void NewStageTaskRequest::clear_stage_id() {
+// int32 stage_index = 2;
+inline void NewStageTaskRequest::clear_stage_index() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.stage_id_ = 0;
+  _impl_.stage_index_ = 0;
 }
-inline ::int32_t NewStageTaskRequest::stage_id() const {
-  // @@protoc_insertion_point(field_get:rainstorm.NewStageTaskRequest.stage_id)
-  return _internal_stage_id();
+inline ::int32_t NewStageTaskRequest::stage_index() const {
+  // @@protoc_insertion_point(field_get:rainstorm.NewStageTaskRequest.stage_index)
+  return _internal_stage_index();
 }
-inline void NewStageTaskRequest::set_stage_id(::int32_t value) {
-  _internal_set_stage_id(value);
-  // @@protoc_insertion_point(field_set:rainstorm.NewStageTaskRequest.stage_id)
+inline void NewStageTaskRequest::set_stage_index(::int32_t value) {
+  _internal_set_stage_index(value);
+  // @@protoc_insertion_point(field_set:rainstorm.NewStageTaskRequest.stage_index)
 }
-inline ::int32_t NewStageTaskRequest::_internal_stage_id() const {
+inline ::int32_t NewStageTaskRequest::_internal_stage_index() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
-  return _impl_.stage_id_;
+  return _impl_.stage_index_;
 }
-inline void NewStageTaskRequest::_internal_set_stage_id(::int32_t value) {
+inline void NewStageTaskRequest::_internal_set_stage_index(::int32_t value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.stage_id_ = value;
+  _impl_.stage_index_ = value;
 }
 
-// int32 task_id = 3;
-inline void NewStageTaskRequest::clear_task_id() {
+// int32 task_index = 3;
+inline void NewStageTaskRequest::clear_task_index() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.task_id_ = 0;
+  _impl_.task_index_ = 0;
 }
-inline ::int32_t NewStageTaskRequest::task_id() const {
-  // @@protoc_insertion_point(field_get:rainstorm.NewStageTaskRequest.task_id)
-  return _internal_task_id();
+inline ::int32_t NewStageTaskRequest::task_index() const {
+  // @@protoc_insertion_point(field_get:rainstorm.NewStageTaskRequest.task_index)
+  return _internal_task_index();
 }
-inline void NewStageTaskRequest::set_task_id(::int32_t value) {
-  _internal_set_task_id(value);
-  // @@protoc_insertion_point(field_set:rainstorm.NewStageTaskRequest.task_id)
+inline void NewStageTaskRequest::set_task_index(::int32_t value) {
+  _internal_set_task_index(value);
+  // @@protoc_insertion_point(field_set:rainstorm.NewStageTaskRequest.task_index)
 }
-inline ::int32_t NewStageTaskRequest::_internal_task_id() const {
+inline ::int32_t NewStageTaskRequest::_internal_task_index() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
-  return _impl_.task_id_;
+  return _impl_.task_index_;
 }
-inline void NewStageTaskRequest::_internal_set_task_id(::int32_t value) {
+inline void NewStageTaskRequest::_internal_set_task_index(::int32_t value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.task_id_ = value;
+  _impl_.task_index_ = value;
 }
 
 // int32 task_count = 4;
@@ -3186,7 +3201,40 @@ inline void KV::_internal_set_task_index(::int32_t value) {
 
 // DataChunk
 
-// .rainstorm.KV pair = 1;
+// int32 task_index = 1;
+inline bool DataChunk::has_task_index() const {
+  return request_case() == kTaskIndex;
+}
+inline void DataChunk::set_has_task_index() {
+  _impl_._oneof_case_[0] = kTaskIndex;
+}
+inline void DataChunk::clear_task_index() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (request_case() == kTaskIndex) {
+    _impl_.request_.task_index_ = 0;
+    clear_has_request();
+  }
+}
+inline ::int32_t DataChunk::task_index() const {
+  // @@protoc_insertion_point(field_get:rainstorm.DataChunk.task_index)
+  return _internal_task_index();
+}
+inline void DataChunk::set_task_index(::int32_t value) {
+  if (request_case() != kTaskIndex) {
+    clear_request();
+    set_has_task_index();
+  }
+  _impl_.request_.task_index_ = value;
+  // @@protoc_insertion_point(field_set:rainstorm.DataChunk.task_index)
+}
+inline ::int32_t DataChunk::_internal_task_index() const {
+  if (request_case() == kTaskIndex) {
+    return _impl_.request_.task_index_;
+  }
+  return 0;
+}
+
+// .rainstorm.KV pair = 2;
 inline bool DataChunk::has_pair() const {
   return request_case() == kPair;
 }
@@ -3265,7 +3313,7 @@ inline ::rainstorm::KV* DataChunk::mutable_pair() ABSL_ATTRIBUTE_LIFETIME_BOUND 
   return _msg;
 }
 
-// bool finished = 2;
+// bool finished = 3;
 inline bool DataChunk::has_finished() const {
   return request_case() == kFinished;
 }

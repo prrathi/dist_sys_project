@@ -28,7 +28,7 @@ static const int PING_PERIOD = 800;
 static const int NORMAL_PERIOD = 3000;
 static const int NORMAL_PING_PERIOD = 2500;
 static const int MODULUS = 8192 * 2;
-static const int GRPC_PORT_SERVER = 8084;
+static const int GRPC_PORT_SERVER = 8081;
 static const size_t LRU_CACHE_CAPACITY = 1024 * 1024 * 50;
 static const size_t NUM_NODES_TO_CALL = 3;
 

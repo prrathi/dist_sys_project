@@ -10,8 +10,8 @@
 #include "hydfs_server.h"
 #include "file_transfer_client.h"
 
-static const int GRPC_PORT_SERVER = 8084;
-static const int GRPC_PORT_SERVER_2 = 8085;
+static const int GRPC_PORT_SERVER = 8081;
+static const int GRPC_PORT_SERVER_2 = 8082;
 static const size_t BUFFER_SIZE = 1024 * 1024;  // 1MB buffer
 static const int MAX_RETRIES = 3;
 static const int RETRY_DELAY_MS = 100;

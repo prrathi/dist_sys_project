@@ -37,7 +37,6 @@ struct JobInfo {
 class RainStormLeader {
 public:
     RainStormLeader(); 
-    ~RainStormLeader();
 
     void runHydfs();
     void runServer() { rainstorm_node_server_.wait(); }
@@ -53,23 +52,30 @@ public:
 private:
     std::vector<std::string> getAllWorkerVMs();
     std::string generateJobId();
-    int getUnusedPortNumberForVM(const std::string& vm);
+    void submitSingleTask(RainStormClient& client, const LeaderTaskInfo& task, const JobInfo& job);
     std::string getNextVM();
+    int getUnusedPortNumberForVM(const std::string& vm);
     std::pair<std::vector<std::string>, std::vector<int>> getTargetNodes(int stage_num, std::vector<LeaderTaskInfo>& tasks, int num_stages);
+    void jobCompletionChecker();
+    bool isJobCompleted(const std::string& job_id);
 
 private:
     const std::string leader_address = "fa24-cs425-5801.cs.illinois.edu"; 
     std::string listener_pipe_path = "/tmp/mp4-leader";
     const int leader_port = 8083;
     const int node_factory_port = 8083;
-    std::mutex mtx_;
     std::unordered_map<std::string, JobInfo> jobs_;
     std::unordered_map<std::string, std::unordered_set<int>> used_ports_per_vm;
     int total_tasks_running_counter = 0;
     RainStormServer rainstorm_node_server_;
     Hydfs hydfs;
+    const unordered_map<std::string, bool> is_exec_agg = {
+        {"test1_1", false},
+        {"test1_2", false},
+        {"test2_1", false},
+        {"test2_2", true},
+    };
 
-    // rainstorm factory client methods
     bool CreateServerOnNode(const std::string& node_address, int port);
     bool RemoveServerFromNode(const std::string& node_address, int port);
 };

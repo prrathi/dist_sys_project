@@ -15,14 +15,6 @@
 #include "rainstorm_common.h"
 #include "rainstorm_node_server.h"
 
-// Error codes for server operations
-enum class ServerError {
-    SUCCESS = 0,
-    PORT_IN_USE,
-    PORT_NOT_FOUND,
-    INTERNAL_ERROR
-};
-
 class RainstormFactoryServiceImpl final : public rainstorm_factory::RainstormFactoryService::Service {
     RainStormNode* node_;
 public:
@@ -46,26 +38,28 @@ public:
     }
 
     void runHydfs();
-    ServerError createServer(int port);
-    ServerError removeServer(int port);
+    rainstorm_factory::StatusCode createServer(int port);
+    rainstorm_factory::StatusCode removeServer(int port);
     void handleNewStageTask(const rainstorm::NewStageTaskRequest* request);
 
     void enqueueIncomingData(const std::vector<KVStruct>& data);
-    bool dequeueAcks(std::vector<int>& acks);
+    bool dequeueAcks(std::vector<int>& acks, int task_index);
 
 private:
     static const std::chrono::seconds ACK_TIMEOUT; 
     static const std::chrono::seconds PERSIST_INTERVAL; 
 
-    void loadProcessedIds();
-    void persistNewIds();
-    void persistNewOutput(const std::vector<PendingAck>& new_pending_acks);
+    void processData();
+    void sendData(std::size_t downstream_node_index);
+    void recoverDataState();
+    void loadIds(string filename, unordered_set<int>& ids);
+    void storeIds(string filename, unordered_set<int>& ids);
     void checkPendingAcks();
     void retryPendingData(const PendingAck& pending);
-    void processData();
-    void recoverDataState();
+    void persistNewIds();
+    void persistNewOutput(const std::vector<PendingAck>& new_pending_acks);
+    void enqueueAcks(const std::vector<vector<int>>& acks);
     int partitionData(const std::string& key, std::size_t num_partitions);
-    void sendData(std::size_t downstream_node_index);
 
     TaskInfo current_task_;
     std::mutex task_mtx_;
@@ -82,7 +76,7 @@ private:
     std::unordered_map<std::string, int> key_to_aggregate_{};
 
     std::atomic<bool> should_stop_;
-    const int factory_port_;
+    const int factory_port_ = 8083;
     std::mutex servers_mutex_;
     std::unique_ptr<grpc::Server> factory_server_;
     std::unordered_map<int, std::unique_ptr<grpc::Server>> rainstorm_servers_;
