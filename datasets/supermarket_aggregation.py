@@ -8,6 +8,10 @@ spark-submit --master <master_url> order_aggregate.py localhost <socket_host> 99
 Stage 1: Filter orders where the Segment is "Corporate" (to analyze corporate customer behavior).
 Stage 2: Count the number of orders for each Category within the "Corporate" segment.
 '''
+from pyspark import SparkContext
+from pyspark.streaming import StreamingContext
+import sys
+
 PORT_START = 9999
 NUM_SOURCES = 3
 
@@ -19,18 +23,15 @@ def parse_line(line):
 def stage1_filter_segment(dstream, segment_filter):
     """Filters DStream based on Segment."""
     parsed = dstream.map(parse_line)
-    # Filter by Segment (column index 7)
     filtered = parsed.filter(lambda kv: segment_filter == kv[1].split(",")[7].strip())
-    # Extract Category (index 14) as the new key
-    extracted = filtered.map(lambda kv: (kv[1].split(",")[14].strip(), (kv[1].split(",")[1].strip(), kv[1].split(",")[7].strip(), kv[1].split(",")[14].strip())))
-    extracted = extracted.repartitionByKey(NUM_SOURCES)
+    # Repartition after filtering
+    extracted = filtered.map(lambda kv: (kv[1].split(",")[14].strip(), (kv[1].split(",")[1].strip(), kv[1].split(",")[7].strip(), kv[1].split(",")[14].strip()))).repartition(NUM_SOURCES)
     extracted.foreachRDD(lambda rdd: print_stage_output(rdd, "Stage 1"))
     return extracted
 
 def stage2_count_categories(dstream):
     """Counts orders for each Category."""
-    counts = dstream.map(lambda kv: (kv[0], 1))  # (Category, 1)
-    counts = counts.reduceByKey(lambda x, y: x + y)
+    counts = dstream.map(lambda kv: (kv[0], 1)).reduceByKey(lambda x, y: x + y)
     counts.foreachRDD(lambda rdd: print_stage_output(rdd, "Stage 2"))
     return counts
 
@@ -48,7 +49,7 @@ if __name__ == "__main__":
 
     master_url = sys.argv[1]
     socket_host = sys.argv[2]
-    segment_filter = sys.argv[4]  # e.g., "Corporate"
+    segment_filter = sys.argv[4]
 
     sc = SparkContext(master_url, "OrderAggregate")
     sc.setLogLevel("ERROR")
