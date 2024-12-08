@@ -36,7 +36,8 @@ public:
     RainStormLeader(); 
     ~RainStormLeader();
 
-    void runHydfsServer();
+    void runHydfs();
+    void runServer() { rainstorm_node_server_.wait(); }
     void submitJob(const std::string &op1, const std::string &op2, const std::string &src_file, const std::string &dest_file, int num_tasks);
     void HandleNodeFailure(const std::string &failed_node_id);
     void pipeListener();
@@ -62,5 +63,5 @@ private:
     const int initial_port_number = 8083;
     int total_tasks_running_counter = 0;
 
-    RainStormServer rainstorm_node_server; 
+    RainStormServer rainstorm_node_server_; 
 };

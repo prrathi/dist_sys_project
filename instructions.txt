@@ -1,7 +1,7 @@
 *** compile and run ***
 protoc -I=protos/ --cpp_out=src/ protos/rainstorm.proto && protoc -I=protos/ --grpc_out=src/ --plugin=protoc-gen-grpc=/home/prathi3/.local/bin/grpc_cpp_plugin protos/rainstorm.proto && mv src/rainstorm.grpc.pb.h includes/rainstorm.grpc.pb.h && mv src/rainstorm.pb.h includes/rainstorm.pb.h
 rm -rf build; mkdir -p build; cd build; cmake ..; cmake --build .; cd ..
-cd datasets; make; cd..
+cd datasets; make; cd ..
 ./build/Rainstorm
 
 *** join ***

@@ -40,11 +40,3 @@ struct TaskInfo {
     bool stateful = false;
     bool last = false;
 };
-
-// Interface for node-server communication
-class INodeServerInterface {
-public:
-    virtual void enqueueIncomingData(const std::vector<KVStruct>& data) = 0;
-    virtual bool dequeueAcks(std::vector<int>& acks) = 0;
-    virtual ~INodeServerInterface() = default;
-};

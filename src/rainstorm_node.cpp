@@ -20,9 +20,9 @@ using namespace chrono;
 const chrono::seconds RainStormNode::ACK_TIMEOUT(30);
 const chrono::seconds RainStormNode::PERSIST_INTERVAL(10);
 
-RainStormNode::RainStormNode(const string& server_address)
+RainStormNode::RainStormNode()
     : should_stop_(false)
-    , rainstorm_node_server_(server_address, this) {
+    , rainstorm_node_server_(this) {
 }
 
 void RainStormNode::runHydfs() {

@@ -12,17 +12,17 @@
 #include "rainstorm_common.h"
 #include "rainstorm_node_server.h"
 
-class RainStormNode : public INodeServerInterface {
+class RainStormNode {
 public:
-    RainStormNode(const std::string& server_address); 
+    RainStormNode(); 
     ~RainStormNode() {}
 
     void runHydfs();
     void runServer() { rainstorm_node_server_.wait(); }
     void handleNewStageTask(const rainstorm::NewStageTaskRequest* request);
 
-    void enqueueIncomingData(const std::vector<KVStruct>& data) override;
-    bool dequeueAcks(std::vector<int>& acks) override;
+    void enqueueIncomingData(const std::vector<KVStruct>& data);
+    bool dequeueAcks(std::vector<int>& acks);
 
 private:
     static const std::chrono::seconds ACK_TIMEOUT; 

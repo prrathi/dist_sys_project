@@ -12,11 +12,9 @@
 
 class RainStormLeader;
 class RainStormNode;
-class INodeServerInterface;
 
 class RainStormServer final : public rainstorm::RainstormService::Service {
 public:
-    RainStormServer(const std::string& server_address, INodeServerInterface* node_interface);
     RainStormServer(RainStormNode* node);
     RainStormServer(RainStormLeader* leader);
     ~RainStormServer();
@@ -58,7 +56,6 @@ private:
     std::unique_ptr<grpc::Server> server_;
     std::mutex global_mtx_;
 
-    INodeServerInterface* node_interface_ = nullptr;
     RainStormNode* node_ = nullptr;
     RainStormLeader* leader_node_ = nullptr;
 };

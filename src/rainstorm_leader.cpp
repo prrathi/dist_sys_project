@@ -19,7 +19,7 @@
 #include "rainstorm_leader.h"
 #include "rainstorm_service_client.h"
 
-RainStormLeader::RainStormLeader() : rainstorm_node_server(this) {
+RainStormLeader::RainStormLeader() : rainstorm_node_server_(this) {
     if (std::string(getenv("USER")) == "prathi3" || std::string(getenv("USER")) == "praneet") {
         listener_pipe_path = "/tmp/mp4-leader-prathi3";
     }
@@ -224,11 +224,13 @@ int RainStormLeader::getUnusedPortNumberForVM(const std::string& vm) {
     return initial_port_number + 1;
 }
 
-void RainStormLeader::runHydfsServer() {
+void RainStormLeader::runHydfs() {
     std::thread listener_thread([this](){ this->hydfs.pipeListener(); });
+    std::thread leader_listener_thread([this](){ this->pipeListener(); });
     std::thread swim_thread([this](){ this->hydfs.swim(); });
     std::thread server_thread([this](){ this->hydfs.runServer(); });
     listener_thread.join();
+    leader_listener_thread.join();
     swim_thread.join();
     server_thread.join();
 }

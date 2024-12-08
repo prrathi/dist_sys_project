@@ -2,18 +2,26 @@
 #include <string>
 #include <unistd.h>
 #include "rainstorm_node.h"
+#include "rainstorm_leader.h"
 
-int main() {
-    char hostname[256];
-    if (gethostname(hostname, sizeof(hostname)) != 0) {
-        perror("gethostname");
+int main(int argc, char* argv[]) {
+    if (argc != 2) {
+        std::cerr << "Usage: " << argv[0] << " [leader|node]" << std::endl;
         return 1;
     }
-    std::string server_address = std::string(hostname) + ":8086";
-    
-    RainStormNode node(server_address);
-    node.runHydfs();
-    node.runServer();
 
+    std::string mode = argv[1];
+    if (mode != "leader" && mode != "node") {
+        std::cerr << "Invalid mode. Use 'leader' or 'node'" << std::endl;
+        return 1;
+    } else if (mode == "leader") {
+        RainStormLeader leader;
+        leader.runHydfs();
+        leader.runServer();
+    } else if (mode == "node") {
+        RainStormNode node;
+        node.runHydfs();
+        node.runServer();
+    }
     return 0;
 }

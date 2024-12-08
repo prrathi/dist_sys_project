@@ -16,37 +16,15 @@ using grpc::Status;
 using grpc::ServerContext;
 using grpc::ServerReaderWriter;
 
-RainStormServer::RainStormServer(const std::string& server_address, INodeServerInterface* node_interface)
-    : server_address_(server_address),
-      node_interface_(node_interface),
-      node_(nullptr),
-      leader_node_(nullptr)
-{
-    ServerBuilder builder;
-    grpc::ChannelArguments args;
-    args.SetInt(GRPC_ARG_ALLOW_REUSEPORT, 1);
-    builder.AddListeningPort(server_address_, grpc::InsecureServerCredentials());
-    builder.AddChannelArgument(GRPC_ARG_ALLOW_REUSEPORT, 1);
-    builder.RegisterService(this);
-    server_ = builder.BuildAndStart();
-    if (!server_) {
-        cerr << "Failed to start server on " << server_address_ << endl;
-        exit(1);
-    }
-    cout << "gRPC Server listening on " << server_address_ << endl;
-}
-
 RainStormServer::RainStormServer(RainStormNode* node)
-    : node_interface_(node),
-      node_(node),
+    : node_(node),
       leader_node_(nullptr)
 {
     // node-based constructor
 }
 
 RainStormServer::RainStormServer(RainStormLeader* leader)
-    : node_interface_(nullptr),
-      node_(nullptr),
+    : node_(nullptr),
       leader_node_(leader)
 {
     // leader-based constructor
@@ -123,8 +101,8 @@ void RainStormServer::SendDataChunksReader(ServerReaderWriter<rainstorm::AckData
         for (const auto& data_chunk : chunk.chunks()) {
             if (data_chunk.has_pair()) {
                 KVStruct kv = protoToKVStruct(data_chunk.pair());
-                if (node_interface_) {
-                    node_interface_->enqueueIncomingData({kv});
+                if (node_) {
+                    node_->enqueueIncomingData({kv});
                 }
             }
             // Handle finished if needed
@@ -136,7 +114,7 @@ void RainStormServer::SendDataChunksWriter(ServerReaderWriter<rainstorm::AckData
     while (true) {
         std::vector<int> acks;
         bool got_acks = false;
-        if (node_interface_ && node_interface_->dequeueAcks(acks)) {
+        if (node_ && node_->dequeueAcks(acks)) {
             got_acks = true;
         }
 
