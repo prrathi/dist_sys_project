@@ -1,11 +1,14 @@
 import socket
 import time
 import threading
+import os
+import sys
+
+# simulating sources
 
 HOST = "0.0.0.0"
 PORT_START = 9999  # Starting port for the socket servers
 NUM_SOURCES = 3   # Number of simulated source tasks
-CSV_FILE = "TrafficSigns_10000.csv"
 
 def run_server(port, start_line, end_line):
     """Runs a socket server that sends a portion of the CSV file."""
@@ -35,6 +38,11 @@ def run_server(port, start_line, end_line):
             conn.close()
 
 if __name__ == "__main__":
+    
+    if (len(sys.argv) != 2):
+        print("Usage: socket_server.py <csv_file>")
+        exit(-1)
+    CSV_FILE = sys.argv[1]
     try:
         with open(CSV_FILE, "r") as file:
             total_lines = sum(1 for _ in file) - 1 # Subtract header
