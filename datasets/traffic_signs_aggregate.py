@@ -36,10 +36,18 @@ def stage1_filter_signpost(dstream, sign_post_filter):
     return extracted
 
 def stage2_count_categories(dstream):
-    """Counts categories."""
-    counts = dstream.map(lambda kv: (kv[0], 1)).reduceByKey(lambda x, y: x + y)
-    counts.foreachRDD(lambda rdd: print_stage_output(rdd, "Stage 2"))
-    return counts
+    """Counts categories across the entire lifetime of the Spark Streaming job."""
+
+    def update_counts(new_values, running_count):
+        if running_count is None:
+            running_count = 0
+        return sum(new_values, running_count)
+
+    category_counts = dstream.map(lambda kv: (kv[0], 1)).updateStateByKey(update_counts)
+
+    category_counts.pprint()  # Print the updated counts for each micro-batch
+
+    return category_counts # added so can print end value
 
 def print_stage_output(rdd, stage_name):
     """Prints the contents of an RDD."""
