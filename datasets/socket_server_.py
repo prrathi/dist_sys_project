@@ -35,11 +35,8 @@ def run_server(port, start_line, end_line):
 
             print(f"Socket server on port {port} finished sending {lines_sent} lines.")
             while True:
-                data = conn.recv(1024).decode("utf-8")
-                if data == SHUTDOWN_FLAG:
-                    print(f"Socket server on port {port} received shutdown signal.")
-                    break
-                time.sleep(1)
+                # just busy waiting too lazy, dont want the connection to be closed till evetryhing processsed
+                time.sleep(60)
         except Exception as e:
             print(f"Error in socket server on port {port}: {e}")
         finally:
