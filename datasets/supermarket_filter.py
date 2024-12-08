@@ -25,7 +25,7 @@ def filter_and_extract(dstream, region_filter):
     valid_parsed = parsed.filter(lambda kv: len(kv[1].split(",")) >= 18)
 
     filtered = valid_parsed.filter(lambda kv: region_filter == kv[1].split(",")[12].strip())
-    extracted = filtered.map(lambda kv: (kv[1].split(",")[1].strip(), kv[1].split(",")[17].strip())).repartition(NUM_SOURCES)
+    extracted = filtered.map(lambda kv: (kv[1].split(",")[1].strip(), kv[1].split(",")[17].strip())) # .repartition(NUM_SOURCES) not doing this cuz state 
     extracted.foreachRDD(lambda rdd: print_stage_output(rdd, "Stage 1"))
     return extracted
 
@@ -48,6 +48,7 @@ if __name__ == "__main__":
     sc = SparkContext(master_url, "OrderFilter")
     sc.setLogLevel("ERROR")
     ssc = StreamingContext(sc, 5)
+    ssc.checkpoint("/tmp/checkpoint_filter_order")
 
     streams = []
     for i in range(NUM_SOURCES):
@@ -57,6 +58,5 @@ if __name__ == "__main__":
 
     filter_and_extract(lines, region_filter)
 
-    ssc.checkpoint("/tmp/checkpoint_filter_order")
     ssc.start()
     ssc.awaitTermination()

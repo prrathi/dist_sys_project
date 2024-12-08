@@ -28,7 +28,7 @@ def filter_and_extract(dstream, filter_pattern):
     valid_parsed = parsed.filter(lambda kv: len(kv[1].split(",")) >= 4)
 
     filtered = valid_parsed.filter(lambda kv: filter_pattern in kv[1])
-    extracted = filtered.map(lambda kv: (kv[1].split(",")[2].strip(), kv[1].split(",")[3].strip())).repartition(NUM_SOURCES)
+    extracted = filtered.map(lambda kv: (kv[1].split(",")[2].strip(), kv[1].split(",")[3].strip())) # .repartition(NUM_SOURCES)
     extracted.foreachRDD(lambda rdd: print_stage_output(rdd, "Stage 1"))
     return extracted
 
@@ -51,6 +51,7 @@ if __name__ == "__main__":
     sc = SparkContext(master_url, "TrafficSignsFilter")
     sc.setLogLevel("ERROR")
     ssc = StreamingContext(sc, 5)
+    ssc.checkpoint("/tmp/checkpoint_filter")
 
     streams = []
     for i in range(NUM_SOURCES):
@@ -60,6 +61,6 @@ if __name__ == "__main__":
 
     filter_and_extract(lines, filter_pattern)
 
-    ssc.checkpoint("/tmp/checkpoint_filter")
+
     ssc.start()
     ssc.awaitTermination()
