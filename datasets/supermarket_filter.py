@@ -1,7 +1,7 @@
 from pyspark import SparkContext
 from pyspark.streaming import StreamingContext
 import socket
-import sys
+import sys, time, threading
 
 # https://www.kaggle.com/datasets/aditirai2607/super-market-dataset
 '''
@@ -22,6 +22,25 @@ def send_shutdown_signal(host, port):
             print(f"Sent shutdown signal to {host}:{port}")
     except Exception as e:
         print(f"Error sending shutdown signal to {host}:{port}: {e}")
+
+def stop_on_inactivity():
+    start_time = time.time()  # Record initial time
+    while True:
+        time.sleep(10)  # Check every 10 seconds
+
+        # Get the number of received records in the last timeout duration.
+        # If using a receiver-based stream.
+        received_records = ssc.sparkContext.accumulator(0)
+        lines.foreachRDD(lambda rdd: received_records.add(rdd.count()))
+
+        elapsed_time = time.time() - start_time
+
+        if elapsed_time > timeout_duration and received_records.value == 0:
+            print("No new data received for", timeout_duration, "seconds. Stopping Spark Streaming.")
+            ssc.stop(stopSparkContext=False, stopGraceFully=True)
+            break
+    return
+
 def parse_line(line):
     """Splits each incoming line into a key-value tuple."""
     key, value = line.split(",", 1)
@@ -67,6 +86,11 @@ if __name__ == "__main__":
     lines = ssc.union(*streams)
 
     filter_and_extract(lines, region_filter)
+
+            # Start a separate thread to monitor inactivity
+    timeout_duration = 10
+    inactivity_thread = threading.Thread(target=stop_on_inactivity)
+    inactivity_thread.start()
 
     ssc.start()
     ssc.awaitTermination()
