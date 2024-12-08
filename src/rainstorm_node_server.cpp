@@ -165,14 +165,14 @@ Status RainStormServer::SendDataChunksToLeader(ServerContext* context,
                     }
                     if (data_chunk.has_pair()) {
                         const rainstorm::KV& kv = data_chunk.pair();
-                        if (leader_node_->GetJobInfo(job_id).seen_kv_ids.find(kv.id()) != leader_node_->GetJobInfo(job_id).seen_kv_ids.end()) {
+                        if (leader_node_->getJobInfo(job_id).seen_kv_ids.find(kv.id()) != leader_node_->getJobInfo(job_id).seen_kv_ids.end()) {
                             ack_ids.push_back(kv.id());
                             continue;
                         }
                         std::cout << kv.key() << ":" << kv.value() << "\n";
                         uniq_kvs.push_back({kv.key(), kv.value()});
                         ack_ids.push_back(kv.id());
-                        leader_node_->GetJobInfo(job_id).seen_kv_ids.insert(kv.id());
+                        leader_node_->getJobInfo(job_id).seen_kv_ids.insert(kv.id());
                     }
 
                     if (data_chunk.has_finished()) {
@@ -182,7 +182,7 @@ Status RainStormServer::SendDataChunksToLeader(ServerContext* context,
 
                 if (!uniq_kvs.empty()) {
                     std::ofstream ofs;
-                    ofs.open(leader_node_->GetJobInfo(job_id).dest_file, std::ios::out | std::ios::app); 
+                    ofs.open(leader_node_->getJobInfo(job_id).dest_file, std::ios::out | std::ios::app); 
                     for (const auto& kvp : uniq_kvs) {
                         ofs << kvp.first << ":" << kvp.second << "\n";
                     }
@@ -224,10 +224,10 @@ Status RainStormServer::SendDataChunksToLeader(ServerContext* context,
 
     {
         std::lock_guard<std::mutex> lock(leader_node_->mtx_);
-        if (leader_node_->GetJobInfo(job_id).num_completed_final_task == leader_node_->GetJobInfo(job_id).num_tasks_per_stage) {
-            leader_node_->GetHydfs().createFile(leader_node_->GetJobInfo(job_id).dest_file, leader_node_->GetJobInfo(job_id).dest_file);
+        if (leader_node_->getJobInfo(job_id).num_completed_final_task == leader_node_->getJobInfo(job_id).num_tasks_per_stage) {
+            leader_node_->getHydfs().createFile(leader_node_->getJobInfo(job_id).dest_file, leader_node_->getJobInfo(job_id).dest_file);
         } else {
-            leader_node_->GetJobInfo(job_id).num_completed_final_task++;
+            leader_node_->getJobInfo(job_id).num_completed_final_task++;
         }
     }
 

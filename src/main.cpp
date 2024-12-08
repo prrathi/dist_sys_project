@@ -21,7 +21,6 @@ int main(int argc, char* argv[]) {
     } else if (mode == "node") {
         RainStormNode node;
         node.runHydfs();
-        node.runServer();
     }
     return 0;
 }

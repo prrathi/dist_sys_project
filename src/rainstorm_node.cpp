@@ -21,8 +21,7 @@ const chrono::seconds RainStormNode::ACK_TIMEOUT(30);
 const chrono::seconds RainStormNode::PERSIST_INTERVAL(10);
 
 RainStormNode::RainStormNode()
-    : should_stop_(false)
-    , rainstorm_node_server_(this) {
+    : should_stop_(false) {
 }
 
 void RainStormNode::runHydfs() {
@@ -32,6 +31,26 @@ void RainStormNode::runHydfs() {
     listener_thread.join();
     swim_thread.join();
     server_thread.join();
+}
+
+int RainStormNode::runServer(int port) {
+    if (rainstorm_servers_.find(port) != rainstorm_servers_.end()) {
+        cerr << "Port " << port << " already in use" << endl;
+        return 1;
+    }
+    rainstorm_servers_[port] = make_unique<RainStormServer>(this);
+    thread([server = rainstorm_servers_[port].get()]() {server->wait();}).detach();
+    return 0;
+}
+
+int RainStormNode::removeServer(int port) {
+    if (rainstorm_servers_.find(port) == rainstorm_servers_.end()) {
+        cerr << "Port " << port << " not in use" << endl;
+        return 1;
+    }
+    rainstorm_servers_[port]->shutdown();
+    rainstorm_servers_.erase(port);
+    return 0;
 }
 
 void RainStormNode::handleNewStageTask(const rainstorm::NewStageTaskRequest* request) {

@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package rainstorm_factory;
+
+enum StatusCode {
+  SUCCESS = 0;
+  INVALID = 1;
+  NOT_FOUND = 2;
+  ALREADY_EXISTS = 3;
+}
+
+message OperationStatus {
+  StatusCode status = 1;
+  string message = 2;
+}
+
+// Factory to spin up rainstorm servers, kept outside rainstorm for cleanness
+
+service RainstormFactoryService {
+    rpc NewServer(NewServerRequest) returns (OperationStatus);
+}
+
+message NewServerRequest {
+    int32 port = 1;
+}

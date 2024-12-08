@@ -1,10 +1,12 @@
 #pragma once
 #include <string>
+#include <vector>
 #include <unordered_map>
 #include <unordered_set>
-#include <vector>
 #include <mutex>
+#include <utility>
 #include "rainstorm_service_client.h"
+#include "rainstorm_factory.grpc.pb.h"
 #include "hydfs.h"
 #include "rainstorm_node_server.h"
 
@@ -16,8 +18,9 @@ struct LeaderTaskInfo {
     int stage_index;
     std::string operator_executable;   
     std::string vm;
-    std::vector<int> port_nums;
+    int port_num;
     std::vector<std::string> assigned_nodes; 
+    std::vector<int> assigned_ports; 
 };
 
 struct JobInfo {
@@ -39,29 +42,34 @@ public:
     void runHydfs();
     void runServer() { rainstorm_node_server_.wait(); }
     void submitJob(const std::string &op1, const std::string &op2, const std::string &src_file, const std::string &dest_file, int num_tasks);
-    void HandleNodeFailure(const std::string &failed_node_id);
+    void handleNodeFailure(const std::string &failed_node_id);
     void pipeListener();
 
-    JobInfo& GetJobInfo(const std::string& job_id) { return jobs_[job_id]; }
-    Hydfs& GetHydfs() { return hydfs; }
+    JobInfo& getJobInfo(const std::string& job_id) { return jobs_[job_id]; }
+    Hydfs& getHydfs() { return hydfs; }
 
     std::mutex mtx_;
 
 private:
-    std::vector<std::string> GetAllWorkerVMs();
-    std::string GenerateJobId();
+    std::vector<std::string> getAllWorkerVMs();
+    std::string generateJobId();
     int getUnusedPortNumberForVM(const std::string& vm);
     std::string getNextVM();
-    std::vector<std::string> getTargetNodes(int stage_num, std::vector<LeaderTaskInfo>& tasks, int num_stages);
+    std::pair<std::vector<std::string>, std::vector<int>> getTargetNodes(int stage_num, std::vector<LeaderTaskInfo>& tasks, int num_stages);
 
 private:
     const std::string leader_address = "fa24-cs425-5801.cs.illinois.edu"; 
-    std::unordered_map<std::string, JobInfo> jobs_;
-    Hydfs hydfs;  
     std::string listener_pipe_path = "/tmp/mp4-leader";
+    const int leader_port = 8083;
+    const int node_factory_port = 8083;
+    std::mutex mtx_;
+    std::unordered_map<std::string, JobInfo> jobs_;
     std::unordered_map<std::string, std::unordered_set<int>> used_ports_per_vm;
-    const int initial_port_number = 8083;
     int total_tasks_running_counter = 0;
+    RainStormServer rainstorm_node_server_;
+    Hydfs hydfs;
 
-    RainStormServer rainstorm_node_server_; 
+    // rainstorm factory client methods
+    bool CreateServerOnNode(const std::string& node_address, int port);
+    bool RemoveServerFromNode(const std::string& node_address, int port);
 };

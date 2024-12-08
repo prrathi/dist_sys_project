@@ -9,4 +9,4 @@ python3 cli.py -c join -m prathi3@fa24-cs425-5801.cs.illinois.edu prathi3@fa24-c
 
 *** job 1 ***
 python3 cli.py -c create datasets/TrafficSigns_1000.csv TrafficSigns_1000
-python3 cli.py -r ./datasets/test1_1 ./datasets/test1_2 TrafficSigns_1000 TrafficSigns_1000_Rainstorm 3
+python3 cli.py -c rainstorm -r ./datasets/test1_1 ./datasets/test1_2 TrafficSigns_1000 TrafficSigns_1000_Rainstorm 3

@@ -18,7 +18,8 @@ public:
     ~RainStormNode() {}
 
     void runHydfs();
-    void runServer() { rainstorm_node_server_.wait(); }
+    int runServer(int port);
+    int removeServer(int port);
     void handleNewStageTask(const rainstorm::NewStageTaskRequest* request);
 
     void enqueueIncomingData(const std::vector<KVStruct>& data);
@@ -53,7 +54,7 @@ private:
     std::unordered_map<std::string, int> key_to_aggregate_{};
 
     std::atomic<bool> should_stop_;
-    RainStormServer rainstorm_node_server_;
+    std::unordered_map<int, unique_ptr<RainStormServer>> rainstorm_servers_;
     Hydfs hydfs_;
 
     std::chrono::steady_clock::time_point last_persist_time_;
