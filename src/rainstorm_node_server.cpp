@@ -23,10 +23,17 @@ RainStormServer::RainStormServer(const std::string& server_address, INodeServerI
       leader_node_(nullptr)
 {
     ServerBuilder builder;
+    grpc::ChannelArguments args;
+    args.SetInt(GRPC_ARG_ALLOW_REUSEPORT, 1);
     builder.AddListeningPort(server_address_, grpc::InsecureServerCredentials());
+    builder.AddChannelArgument(GRPC_ARG_ALLOW_REUSEPORT, 1);
     builder.RegisterService(this);
     server_ = builder.BuildAndStart();
-    std::cout << "Server listening on " << server_address_ << std::endl;
+    if (!server_) {
+        cerr << "Failed to start server on " << server_address_ << endl;
+        exit(1);
+    }
+    cout << "gRPC Server listening on " << server_address_ << endl;
 }
 
 RainStormServer::RainStormServer(RainStormNode* node)

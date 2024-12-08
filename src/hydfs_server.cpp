@@ -48,7 +48,10 @@ HydfsServer::HydfsServer() {
     server_address_2_ = hostname_str + ":" + to_string(GRPC_PORT_SERVER_2);
 
     ServerBuilder builder;
+    grpc::ChannelArguments args;
+    args.SetInt(GRPC_ARG_ALLOW_REUSEPORT, 1);
     builder.AddListeningPort(server_address_, grpc::InsecureServerCredentials());
+    builder.AddChannelArgument(GRPC_ARG_ALLOW_REUSEPORT, 1);
     builder.RegisterService(this);
     server_ = builder.BuildAndStart();
     if (!server_) {
@@ -57,7 +60,10 @@ HydfsServer::HydfsServer() {
     }
     cout << "gRPC Server listening on " << server_address_ << endl;
     ServerBuilder builder_2;
+    grpc::ChannelArguments args_2;
+    args_2.SetInt(GRPC_ARG_ALLOW_REUSEPORT, 1);
     builder_2.AddListeningPort(server_address_2_, grpc::InsecureServerCredentials());
+    builder_2.AddChannelArgument(GRPC_ARG_ALLOW_REUSEPORT, 1);
     builder_2.RegisterService(this);
     server_2_ = builder_2.BuildAndStart();
     if (!server_2_) {
