@@ -1,51 +1,76 @@
-from pyspark.sql import SparkSession
-from pyspark.sql.functions import *
-from pyspark.sql.types import *
+from pyspark import SparkContext
+from pyspark.streaming import StreamingContext
 import sys
-
-order_schema = StructType([
-        StructField("Row ID", IntegerType(), True),
-        StructField("Order ID", StringType(), True),
-        StructField("Order Date", StringType(), True),
-        StructField("Ship Date", StringType(), True),
-        StructField("Ship Mode", StringType(), True),
-        StructField("Customer ID", StringType(), True),
-        StructField("Customer Name", StringType(), True),
-        StructField("Segment", StringType(), True),
-        StructField("Country/Region", StringType(), True),
-        StructField("City", StringType(), True),
-        StructField("State/Province", StringType(), True),
-        StructField("Postal Code", IntegerType(), True),  # Assuming postal code is integer, adjust if needed.
-        StructField("Region", StringType(), True),
-        StructField("Product ID", StringType(), True),
-        StructField("Category", StringType(), True),
-        StructField("Sub-Category", StringType(), True),
-        StructField("Product Name", StringType(), True),
-        StructField("Sales", DoubleType(), True),
-        StructField("Quantity", IntegerType(), True),
-        StructField("Discount", DoubleType(), True),
-        StructField("Profit", DoubleType(), True)
-    ])
-
+import socket, time, threading
+# https://www.kaggle.com/datasets/aditirai2607/super-market-dataset
+'''
+spark-submit --master <master_url> order_aggregate.py localhost <socket_host> 9999 "Corporate"
+Stage 1: Filter orders where the Segment is "Corporate" (to analyze corporate customer behavior).
+Stage 2: Count the number of orders for each Category within the "Corporate" segment.
+'''
+PORT_START = 9999
 NUM_SOURCES = 3
 
-def structured_order_aggregation(spark, csv_file_path, segment_filter="Corporate"):
-    df = spark.readStream.schema(order_schema).option("mode", "DROPMALFORMED").csv(csv_file_path, header=True)
-    filtered_df = df.filter(col("Segment") == segment_filter).repartition(NUM_SOURCES) 
-    category_counts = filtered_df.groupBy("Category").count()
+def parse_line(line):
+    """Parses a line of comma separated text."""
+    key, value = line.split(",", 1)
+    return (key, value)
 
-    query = category_counts.writeStream.outputMode("complete").format("console").option("checkpointLocation", "checkpoint_order_agg").start()
+def stage1_filter_segment(dstream, segment_filter):
+    """Filters DStream based on Segment."""
+    parsed = dstream.map(parse_line)
 
-    query.awaitTermination()
+    # Filter out lines that don't have enough fields (at least 15 in this case)
+    valid_parsed = parsed.filter(lambda kv: len(kv[1].split(",")) >= 15)
+
+    filtered = valid_parsed.filter(lambda kv: segment_filter == kv[1].split(",")[7].strip())
+    extracted = filtered.map(lambda kv: (kv[1].split(",")[14].strip(), (kv[1].split(",")[1].strip(), kv[1].split(",")[7].strip(), kv[1].split(",")[14].strip())))
+    extracted.foreachRDD(lambda rdd: print_stage_output(rdd, "Stage 1"))
+    return extracted
+
+def stage2_count_categories(dstream):
+    """Counts categories across the entire lifetime of the Spark Streaming job."""
+
+    def update_counts(new_values, running_count):
+        if running_count is None:
+            running_count = 0
+        return sum(new_values, running_count)
+
+    category_counts = dstream.map(lambda kv: (kv[0], 1)).updateStateByKey(update_counts)
+
+    category_counts.pprint()  # Print the updated counts for each micro-batch
+
+    return category_counts # added so can print end value
+
+def print_stage_output(rdd, stage_name):
+    """Prints the contents of an RDD."""
+    if not rdd.isEmpty():
+        print(f"### {stage_name} Output ###")
+        for record in rdd.collect():
+            print(record)
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        print("Usage: structured_order_aggregation.py <file_path> <segment_filter>")
-        sys.exit(1)
+    if len(sys.argv) != 5:
+        print("Usage: order_aggregate.py <master_url> <socket_host> <socket_port> <segment_filter>", file=sys.stderr)
+        sys.exit(-1)
 
-    file_path = sys.argv[1]
-    segment_filter = sys.argv[2]
+    master_url = sys.argv[1]
+    socket_host = sys.argv[2]
+    segment_filter = sys.argv[4]
 
-    spark = SparkSession.builder.appName("StructuredStreamingOrderAggregation").config("spark.sql.shuffle.partitions", f"{NUM_SOURCES}").getOrCreate()
+    sc = SparkContext(master_url, "OrderAggregate")
+    sc.setLogLevel("ERROR")
+    ssc = StreamingContext(sc, 5)
+    ssc.checkpoint("/tmp/checkpoint_aggregate_order")
 
-    structured_order_aggregation(spark, file_path, segment_filter)
+    streams = []
+    for i in range(NUM_SOURCES):
+        stream = ssc.socketTextStream(socket_host, PORT_START + i)
+        streams.append(stream)
+    lines = ssc.union(*streams)
+
+    stage1_output = stage1_filter_segment(lines, segment_filter)
+    stage2_count_categories(stage1_output)
+
+    ssc.start()
+    ssc.awaitTermination()

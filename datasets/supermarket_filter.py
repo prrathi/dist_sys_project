@@ -1,48 +1,62 @@
-from pyspark.sql import SparkSession
-from pyspark.sql.functions import *
-from pyspark.sql.types import *
-import sys
+from pyspark import SparkContext
+from pyspark.streaming import StreamingContext
+import socket
+import sys, time, threading
 
-order_schema = StructType([
-        StructField("Row ID", IntegerType(), True),
-        StructField("Order ID", StringType(), True),
-        StructField("Order Date", StringType(), True),
-        StructField("Ship Date", StringType(), True),
-        StructField("Ship Mode", StringType(), True),
-        StructField("Customer ID", StringType(), True),
-        StructField("Customer Name", StringType(), True),
-        StructField("Segment", StringType(), True),
-        StructField("Country/Region", StringType(), True),
-        StructField("City", StringType(), True),
-        StructField("State/Province", StringType(), True),
-        StructField("Postal Code", IntegerType(), True),  # Assuming postal code is integer, adjust if needed.
-        StructField("Region", StringType(), True),
-        StructField("Product ID", StringType(), True),
-        StructField("Category", StringType(), True),
-        StructField("Sub-Category", StringType(), True),
-        StructField("Product Name", StringType(), True),
-        StructField("Sales", DoubleType(), True),
-        StructField("Quantity", IntegerType(), True),
-        StructField("Discount", DoubleType(), True),
-        StructField("Profit", DoubleType(), True)
-    ])
+# https://www.kaggle.com/datasets/aditirai2607/super-market-dataset
+'''
+spark-submit --master <master_url> order_filter.py localhost <socket_host> 9999 "West"
+Filter orders where the Region is "West" and extract the Order ID and Sales amount for further analysis of sales in the West region.
+'''
 
+PORT_START = 9999
 NUM_SOURCES = 3
-def structured_order_filter(spark, csv_file_path, region_filter="West"):
-    df = spark.readStream.schema(order_schema).option("mode", "DROPMALFORMED").csv(csv_file_path, header=True)
-    filtered_df = df.filter(col("Region") == region_filter).repartition(NUM_SOURCES) 
-    extracted_df = filtered_df.select("Order ID", "Sales")
 
-    query = extracted_df.writeStream.outputMode("append").format("console").option("checkpointLocation", "checkpoint_order_filter").start()
-    query.awaitTermination()
+def parse_line(line):
+    """Splits each incoming line into a key-value tuple."""
+    key, value = line.split(",", 1)
+    return (key, value)
+
+def filter_and_extract(dstream, region_filter):
+    """Filters by Region and extracts Order ID and Sales."""
+    parsed = dstream.map(parse_line)
+
+    # Filter out lines that don't have enough fields (at least 18 here)
+    valid_parsed = parsed.filter(lambda kv: len(kv[1].split(",")) >= 18)
+
+    filtered = valid_parsed.filter(lambda kv: region_filter == kv[1].split(",")[12].strip())
+    extracted = filtered.map(lambda kv: (kv[1].split(",")[1].strip(), kv[1].split(",")[17].strip())) # .repartition(NUM_SOURCES) not doing this cuz state 
+    extracted.foreachRDD(lambda rdd: print_stage_output(rdd, "Stage 1"))
+    return extracted
+
+def print_stage_output(rdd, stage_name):
+    """Prints the contents of an RDD."""
+    if not rdd.isEmpty():
+        print(f"### {stage_name} Output ###")
+        for record in rdd.collect():
+            print(record)
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        print("Usage: structured_order_filter.py <file_path> <region_filter>")
-        sys.exit(1)
+    if len(sys.argv) != 5:
+        print("Usage: order_filter.py <master_url> <socket_host> <socket_port> <region_filter>", file=sys.stderr)
+        sys.exit(-1)
 
-    file_path = sys.argv[1]
-    region_filter = sys.argv[2]
+    master_url = sys.argv[1]
+    socket_host = sys.argv[2]
+    region_filter = sys.argv[4]
 
-    spark = SparkSession.builder.appName("StructuredStreamingOrderFilter").config("spark.sql.shuffle.partitions", f"{NUM_SOURCES}").getOrCreate()
-    structured_order_filter(spark, file_path, region_filter)
+    sc = SparkContext(master_url, "OrderFilter")
+    sc.setLogLevel("ERROR")
+    ssc = StreamingContext(sc, 5)
+    ssc.checkpoint("/tmp/checkpoint_filter_order")
+
+    streams = []
+    for i in range(NUM_SOURCES):
+        stream = ssc.socketTextStream(socket_host, PORT_START + i)
+        streams.append(stream)
+    lines = ssc.union(*streams)
+
+    filter_and_extract(lines, region_filter)
+
+    ssc.start()
+    ssc.awaitTermination()
