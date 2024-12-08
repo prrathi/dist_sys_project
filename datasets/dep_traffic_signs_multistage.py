@@ -1,6 +1,7 @@
 from pyspark import SparkContext
 from pyspark.streaming import StreamingContext
 import sys
+import logging
 
 def parse_line(line):
     """Parse a CSV line into a tuple."""
@@ -14,13 +15,17 @@ def stage1_filter_and_extract(dstream, filter_pattern):
     filtered = dstream.filter(
         lambda row: filter_pattern in row[1] or filter_pattern in row[3]
     ).map(lambda row: (row[0], row[1], row[2], row[3]))
+    # Repartition to 3 tasks
+    filtered = filtered.repartition(3)
     filtered.foreachRDD(lambda rdd: print_stage_output(rdd, "Stage 1"))
     return filtered
 
 def stage2_filter_signpost_and_count(dstream, sign_post_filter):
     """Stage 2: Filter by Sign_Post type and count categories."""
-    filtered = dstream.filter(lambda t: t[2] == sign_post_filter)  # Filter for matching Sign_Post
-    counts = filtered.map(lambda t: (t[3], 1)).reduceByKey(lambda x, y: x + y)  # Count categories
+    filtered = dstream.filter(lambda t: t[2] == sign_post_filter)
+    counts = filtered.map(lambda t: (t[3], 1)).reduceByKey(lambda x, y: x + y)
+    # Repartition to 3 tasks
+    counts = counts.repartition(3)
     counts.foreachRDD(lambda rdd: print_stage_output(rdd, "Stage 2"))
     return counts
 
@@ -44,12 +49,12 @@ if __name__ == "__main__":
 
     # Spark configuration
     sc = SparkContext(master_url, "TrafficSignsSocket")
-    sc.setLogLevel("ERROR")  # Minimal logging
-    ssc = StreamingContext(sc, 5)  # Batch interval of 5 seconds
+    sc.setLogLevel("ERROR")  # minimal logging
+    ssc = StreamingContext(sc, 5)  # Batch interval of 5 seconds (set higher for slower stuff)
     ssc.checkpoint("/tmp/checkpoint_dir")  # Checkpoint directory for stateful operations
 
     # Read data from the socket
-    lines = ssc.socketTextStream(socket_host, socket_port)
+    lines = ssc.socketTextStream(socket_host, socket_port).repartition(3) # to mimic having 3 sources
 
     # Parse lines
     parsed = lines.map(parse_line)
