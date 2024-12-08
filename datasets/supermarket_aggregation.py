@@ -61,7 +61,6 @@ if __name__ == "__main__":
     sc = SparkContext(master_url, "OrderAggregate")
     sc.setLogLevel("ERROR")
     ssc = StreamingContext(sc, 5)
-    ssc.checkpoint("/tmp/checkpoint_aggregate_order")
 
     streams = []
     for i in range(NUM_SOURCES):
@@ -72,5 +71,6 @@ if __name__ == "__main__":
     stage1_output = stage1_filter_segment(lines, segment_filter)
     stage2_count_categories(stage1_output)
 
+    ssc.checkpoint("/tmp/checkpoint_aggregate_order")
     ssc.start()
     ssc.awaitTermination()

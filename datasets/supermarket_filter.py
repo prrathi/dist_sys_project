@@ -48,7 +48,6 @@ if __name__ == "__main__":
     sc = SparkContext(master_url, "OrderFilter")
     sc.setLogLevel("ERROR")
     ssc = StreamingContext(sc, 5)
-    ssc.checkpoint("/tmp/checkpoint_filter_order")
 
     streams = []
     for i in range(NUM_SOURCES):
@@ -58,5 +57,6 @@ if __name__ == "__main__":
 
     filter_and_extract(lines, region_filter)
 
+    ssc.checkpoint("/tmp/checkpoint_filter_order")
     ssc.start()
     ssc.awaitTermination()

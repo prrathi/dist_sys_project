@@ -68,8 +68,7 @@ if __name__ == "__main__":
     sc = SparkContext(master_url, "TrafficSignsAggregate")
     sc.setLogLevel("ERROR")
     ssc = StreamingContext(sc, 5)
-    ssc.checkpoint("/tmp/checkpoint_aggregate")
-
+    
     streams = []
     for i in range(NUM_SOURCES):
         stream = ssc.socketTextStream(socket_host, PORT_START + i)
@@ -78,6 +77,9 @@ if __name__ == "__main__":
 
     stage1_output = stage1_filter_signpost(lines, sign_post_filter)
     stage2_count_categories(stage1_output)
+
+    ssc.checkpoint("/tmp/checkpoint_aggregate")
+
 
     ssc.start()
     ssc.awaitTermination()

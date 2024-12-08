@@ -51,7 +51,6 @@ if __name__ == "__main__":
     sc = SparkContext(master_url, "TrafficSignsFilter")
     sc.setLogLevel("ERROR")
     ssc = StreamingContext(sc, 5)
-    ssc.checkpoint("/tmp/checkpoint_filter")
 
     streams = []
     for i in range(NUM_SOURCES):
@@ -61,6 +60,6 @@ if __name__ == "__main__":
 
     filter_and_extract(lines, filter_pattern)
 
-
+    ssc.checkpoint("/tmp/checkpoint_filter")
     ssc.start()
     ssc.awaitTermination()
