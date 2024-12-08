@@ -33,6 +33,7 @@ def stage1_filter_signpost(dstream, sign_post_filter):
     filtered = valid_parsed.filter(lambda kv: sign_post_filter == kv[1].split(",")[6].strip())
     extracted = filtered.map(lambda kv: (kv[1].split(",")[8].strip(), (kv[1].split(",")[2].strip(), kv[1].split(",")[6].strip(), kv[1].split(",")[8].strip()))).repartition(NUM_SOURCES)
     extracted.foreachRDD(lambda rdd: print_stage_output(rdd, "Stage 1"))
+    ssc.checkpoint("/tmp/checkpoint_stage1_filter_signpost2")
     return extracted
 
 def stage2_count_categories(dstream):

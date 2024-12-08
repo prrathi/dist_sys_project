@@ -26,6 +26,7 @@ def stage1_filter_segment(dstream, segment_filter):
     filtered = valid_parsed.filter(lambda kv: segment_filter == kv[1].split(",")[7].strip())
     extracted = filtered.map(lambda kv: (kv[1].split(",")[14].strip(), (kv[1].split(",")[1].strip(), kv[1].split(",")[7].strip(), kv[1].split(",")[14].strip()))).repartition(NUM_SOURCES)
     extracted.foreachRDD(lambda rdd: print_stage_output(rdd, "Stage 1"))
+    ssc.checkpoint("/tmp/checkpoint_stage1_filter_segment")
     return extracted
 
 def stage2_count_categories(dstream):
