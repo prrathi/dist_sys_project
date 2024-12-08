@@ -1,5 +1,6 @@
 from pyspark import SparkContext
 from pyspark.streaming import StreamingContext
+import socket
 import sys
 
 # https://www.kaggle.com/datasets/aditirai2607/super-market-dataset
@@ -7,13 +8,20 @@ import sys
 spark-submit --master <master_url> order_filter.py localhost <socket_host> 9999 "West"
 Filter orders where the Region is "West" and extract the Order ID and Sales amount for further analysis of sales in the West region.
 '''
-from pyspark import SparkContext
-from pyspark.streaming import StreamingContext
-import sys
 
+SHUTDOWN_FLAG = "SHUTDOWN"
 PORT_START = 9999
 NUM_SOURCES = 3
 
+def send_shutdown_signal(host, port):
+    """Sends a shutdown signal to the specified socket server."""
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.connect((host, port))
+            s.sendall(SHUTDOWN_FLAG.encode("utf-8"))
+            print(f"Sent shutdown signal to {host}:{port}")
+    except Exception as e:
+        print(f"Error sending shutdown signal to {host}:{port}: {e}")
 def parse_line(line):
     """Splits each incoming line into a key-value tuple."""
     key, value = line.split(",", 1)
@@ -22,9 +30,12 @@ def parse_line(line):
 def filter_and_extract(dstream, region_filter):
     """Filters by Region and extracts Order ID and Sales."""
     parsed = dstream.map(parse_line)
-    filtered = parsed.filter(lambda kv: region_filter == kv[1].split(",")[12].strip())
-    # dont repartition after cuz last
-    extracted = filtered.map(lambda kv: (kv[1].split(",")[1].strip(), kv[1].split(",")[17].strip()))
+
+    # Filter out lines that don't have enough fields (at least 18 here)
+    valid_parsed = parsed.filter(lambda kv: len(kv[1].split(",")) >= 18)
+
+    filtered = valid_parsed.filter(lambda kv: region_filter == kv[1].split(",")[12].strip())
+    extracted = filtered.map(lambda kv: (kv[1].split(",")[1].strip(), kv[1].split(",")[17].strip())).repartition(NUM_SOURCES)
     extracted.foreachRDD(lambda rdd: print_stage_output(rdd, "Stage 1"))
     return extracted
 
@@ -59,3 +70,6 @@ if __name__ == "__main__":
 
     ssc.start()
     ssc.awaitTermination()
+
+    for i in range(NUM_SOURCES):
+        send_shutdown_signal(socket_host, PORT_START + i)

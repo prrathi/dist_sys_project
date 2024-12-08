@@ -5,10 +5,12 @@ import os
 import sys
 
 # simulating sources
-
+SHUTDOWN_FLAG = "SHUTDOWN"
 HOST = "0.0.0.0"
 PORT_START = 9999  # Starting port for the socket servers
 NUM_SOURCES = 3   # Number of simulated source tasks
+
+
 
 def run_server(port, start_line, end_line):
     """Runs a socket server that sends a portion of the CSV file."""
@@ -32,6 +34,12 @@ def run_server(port, start_line, end_line):
                         time.sleep(0.01)  # Adjust as needed
 
             print(f"Socket server on port {port} finished sending {lines_sent} lines.")
+            while True:
+                data = conn.recv(1024).decode("utf-8")
+                if data == SHUTDOWN_FLAG:
+                    print(f"Socket server on port {port} received shutdown signal.")
+                    break
+                time.sleep(1)
         except Exception as e:
             print(f"Error in socket server on port {port}: {e}")
         finally:
