@@ -393,7 +393,7 @@ void Hydfs::pipeListener() {
 }
 
 void Hydfs::runServer() {
-    server.wait();  // Just wait on the already-created server
+    server.wait();
 }
 
 void Hydfs::swim() {

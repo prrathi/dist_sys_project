@@ -12,3 +12,4 @@ hydfs/
 datasets/test1_1
 datasets/test1_2
 .vscode/
+out.log
