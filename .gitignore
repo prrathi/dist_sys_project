@@ -9,4 +9,6 @@ report_dataset_cache
 .DS_Store
 *__pycache__/
 hydfs/
+datasets/test1_1
+datasets/test1_2
 .vscode/

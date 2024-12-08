@@ -1,26 +1,19 @@
 #include <iostream>
-#include <cstdlib> 
 #include <string>
-#include <thread>
-#include <fcntl.h>
 #include <unistd.h>
-#include <sys/stat.h>
-#include <ifaddrs.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <condition_variable>
-#include <mutex>
-#include <algorithm>
-#include <random>
-#include <chrono>
-#include <future>
-#include <ctime>
-
-#include "hydfs.h"
 #include "rainstorm_node.h"
 
 int main() {
+    char hostname[256];
+    if (gethostname(hostname, sizeof(hostname)) != 0) {
+        perror("gethostname");
+        return 1;
+    }
+    std::string server_address = std::string(hostname) + ":8083";
+    
+    RainStormNode node(server_address);
+    node.runHydfs();
+    node.runServer();
 
     return 0;
-
 }

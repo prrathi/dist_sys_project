@@ -315,7 +315,7 @@ void RainStormNode::processData() {
             continue;
         }
 
-        string command = current_task_.operator_executable;
+        string command = current_task_.operator_executable + " ";
         vector<int> to_ack;
 
         for (auto &kv : data) {
@@ -326,10 +326,23 @@ void RainStormNode::processData() {
                 to_ack.push_back(kv.id);
                 continue;
             }
-            command += "]][" + to_string(kv.id) + "]][" + kv.key + "]][" + kv.value + "]][" + to_string(kv.task_index);
+            
+            // Escape special characters and quotes in the value
+            string escaped_value = kv.value;
+            size_t pos = 0;
+            while ((pos = escaped_value.find("\"", pos)) != string::npos) {
+                escaped_value.replace(pos, 1, "\\\"");
+                pos += 2;
+            }
+            
+            // Wrap the value in quotes to preserve structure
+            command += "]][" + to_string(kv.id) + 
+                      "]][" + kv.key + 
+                      "]][\"" + escaped_value + "\"]][" + 
+                      to_string(kv.task_index);
         }
 
-        if (command == current_task_.operator_executable) {
+        if (command == current_task_.operator_executable + " ") {
             if (!to_ack.empty() && !current_task_.ack_queue.empty()) {
                 current_task_.ack_queue[0]->enqueue(to_ack);
             }
@@ -362,8 +375,7 @@ void RainStormNode::processData() {
             size_t current_pos = 0;
             size_t line_length = line.length();
             // Parsing logic: line contains multiple kv records separated by "]][" tokens
-            // Format: id]][key]][value]][task_index
-            // Actually from code: command building was id]][key]][value]][task_index repeated times
+            // Format: id]][key]][value]][task_index]][
 
             while (true) {
                 // find sequences

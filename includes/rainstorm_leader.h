@@ -37,7 +37,7 @@ public:
     ~RainStormLeader();
 
     void runHydfsServer();
-    void SubmitJob(const std::string &op1, const std::string &op2, const std::string &src_file, const std::string &dest_file, int num_tasks);
+    void submitJob(const std::string &op1, const std::string &op2, const std::string &src_file, const std::string &dest_file, int num_tasks);
     void HandleNodeFailure(const std::string &failed_node_id);
     void pipeListener();
 

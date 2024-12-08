@@ -89,11 +89,11 @@ void RainStormLeader::pipeListener() {
         }
 
         std::cout << "op1: " << op1_exe << " op2: " << op2_exe << " src: " << hydfs_src << " dest: " << hydfs_dest << " num_tasks: " << num_tasks << std::endl;
-        SubmitJob(op1_exe, op2_exe, hydfs_src, hydfs_dest, num_tasks);
+        submitJob(op1_exe, op2_exe, hydfs_src, hydfs_dest, num_tasks);
     }
 }
 
-void RainStormLeader::SubmitJob(const std::string &op1, const std::string &op2, const std::string &src_file, const std::string &dest_file, int num_tasks) {
+void RainStormLeader::submitJob(const std::string &op1, const std::string &op2, const std::string &src_file, const std::string &dest_file, int num_tasks) {
     std::lock_guard<std::mutex> lock(mtx_);
     std::string job_id = GenerateJobId();
     JobInfo job;

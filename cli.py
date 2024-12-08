@@ -140,7 +140,6 @@ def list_mem_ids(machines):
         return
     execute_remote_command(machines, "list_mem_ids")
 
-
 # use like: -c multiappend hydfsfilename,vm1,vm2,localfilename1,localfilename2    -> assuming the args are comma separated in this case
 def multiappend(machines, args):
     print("Executing multiappend")
@@ -153,11 +152,10 @@ def multiappend(machines, args):
         print("Calling appendfile with command: " + command + " " + filename)
         appendfile([vm], command + " " + filename)
 
+# MP 4
 
 def submitJob(machine, args):
-    print(machine, args)
-    #execute_local_command("rainstorm " + args + " ")
-
+    execute_local_command("rainstorm " + args + " ")
 
 
 if __name__ == "__main__":
