@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SAFEQUEUE_H
+#define SAFEQUEUE_H
 
 #include <iostream>
 #include <memory>

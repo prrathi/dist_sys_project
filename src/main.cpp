@@ -21,10 +21,6 @@
 
 int main() {
 
-    RainStormNode node;
-
-    node.runHydfs();
-
     return 0;
 
 }

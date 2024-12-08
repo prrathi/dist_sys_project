@@ -9,42 +9,40 @@
 #include <grpcpp/grpcpp.h>
 #include "rainstorm_node_server.h"
 #include "rainstorm_leader.h"
+#include "rainstorm_node.h"
 
-static const int GRPC_PORT_SERVER = 8083;
-
-using namespace std;
-namespace fs = std::filesystem;
-
-using grpc::Server;
 using grpc::ServerBuilder;
-using grpc::ServerContext;
 using grpc::Status;
-using grpc::ServerReader;
-using grpc::ServerWriter;
+using grpc::ServerContext;
 using grpc::ServerReaderWriter;
-using rainstorm::StatusCode;
-using rainstorm::OperationStatus;
-using rainstorm::NewSrcTaskRequest;
-using rainstorm::NewStageTaskRequest;
-using rainstorm::UpdateTaskSndRequest;
-using rainstorm::AckDataChunk;
-using rainstorm::StreamDataChunk;
 
-
-
-RainStormServer::RainStormServer(RainStormNode* node) : node_(node) {};
-RainStormServer::RainStormServer(RainStormLeader* leader) : leader_node_(leader) {};
-
-RainStormServer::RainStormServer() {
-    char hostname[256];
-    if (gethostname(hostname, sizeof(hostname)) != 0) {
-        perror("gethostname");
-        exit(1);
-    }
+RainStormServer::RainStormServer(const std::string& server_address, INodeServerInterface* node_interface)
+    : server_address_(server_address),
+      node_interface_(node_interface),
+      node_(nullptr),
+      leader_node_(nullptr)
+{
     ServerBuilder builder;
     builder.AddListeningPort(server_address_, grpc::InsecureServerCredentials());
     builder.RegisterService(this);
     server_ = builder.BuildAndStart();
+    std::cout << "Server listening on " << server_address_ << std::endl;
+}
+
+RainStormServer::RainStormServer(RainStormNode* node)
+    : node_interface_(node),
+      node_(node),
+      leader_node_(nullptr)
+{
+    // node-based constructor
+}
+
+RainStormServer::RainStormServer(RainStormLeader* leader)
+    : node_interface_(nullptr),
+      node_(nullptr),
+      leader_node_(leader)
+{
+    // leader-based constructor
 }
 
 RainStormServer::~RainStormServer() {
@@ -55,35 +53,42 @@ void RainStormServer::wait() {
     if (server_) server_->Wait();
 }
 
+void RainStormServer::shutdown() {
+    if (server_) server_->Shutdown();
+}
+
 Status RainStormServer::NewSrcTask(ServerContext* context,
-                                          const NewSrcTaskRequest* request,
-                                          OperationStatus* response) {
-    lock_guard<mutex> lock(global_mtx_);
-    cout << "NewSrcTask: " << request->query_id() << " " << request->src_filename() << endl;
-    response->set_status(StatusCode::SUCCESS);
+                                   const rainstorm::NewSrcTaskRequest* request,
+                                   rainstorm::OperationStatus* response) {
+    (void)context; // unused
+    std::lock_guard<std::mutex> lock(global_mtx_);
+    std::cout << "NewSrcTask: " << request->job_id() << " " << request->src_filename() << std::endl;
+    response->set_status(rainstorm::SUCCESS);
     return grpc::Status::OK;
 }
 
-grpc::Status RainStormServer::NewStageTask(grpc::ServerContext* context,
-                                            const NewStageTaskRequest* request,
-                                            OperationStatus* response) {
+Status RainStormServer::NewStageTask(ServerContext* context,
+                                     const rainstorm::NewStageTaskRequest* request,
+                                     rainstorm::OperationStatus* response) {
+    (void)context; // unused
+    std::lock_guard<std::mutex> lock(global_mtx_);
     if (node_) {
-        lock_guard<mutex> lock(global_mtx_);
         node_->handleNewStageTask(request);
-        response->set_status(rainstorm::StatusCode::SUCCESS);
+        response->set_status(rainstorm::SUCCESS);
     } else {
-        response->set_status(rainstorm::StatusCode::INVALID);
+        response->set_status(rainstorm::INVALID);
         response->set_message("Node not initialized");
     }
     return grpc::Status::OK;
 }
 
-grpc::Status RainStormServer::UpdateTaskSnd(grpc::ServerContext* context,
-                                           const UpdateTaskSndRequest* request,
-                                           OperationStatus* response) {
-    lock_guard<mutex> lock(global_mtx_);
-    cout << "UpdateTaskSnd: index=" << request->index() << " addr=" << request->snd_address() << ":" << request->snd_port() << endl;
-    response->set_status(StatusCode::SUCCESS);
+Status RainStormServer::UpdateTaskSnd(ServerContext* context,
+                                      const rainstorm::UpdateTaskSndRequest* request,
+                                      rainstorm::OperationStatus* response) {
+    (void)context; // unused
+    std::lock_guard<std::mutex> lock(global_mtx_);
+    std::cout << "UpdateTaskSnd: index=" << request->index() << " addr=" << request->snd_address() << ":" << request->snd_port() << std::endl;
+    response->set_status(rainstorm::SUCCESS);
     return grpc::Status::OK;
 }
 
@@ -105,56 +110,58 @@ rainstorm::KV RainStormServer::kvStructToProto(const KVStruct& kv) {
     return proto_kv;
 }
 
-void RainStormServer::SendDataChunksReader(grpc::ServerReaderWriter<AckDataChunk, StreamDataChunk>* stream) {
-    StreamDataChunk chunk;
+void RainStormServer::SendDataChunksReader(ServerReaderWriter<rainstorm::AckDataChunk, rainstorm::StreamDataChunk>* stream) {
+    rainstorm::StreamDataChunk chunk;
     while (stream->Read(&chunk)) {
-        if (!chunk.has_pair()) continue;
-
-        KVStruct kv = protoToKVStruct(chunk.pair());
-        if (node_) {
-            node_->enqueueIncomingData({kv});
+        for (const auto& data_chunk : chunk.chunks()) {
+            if (data_chunk.has_pair()) {
+                KVStruct kv = protoToKVStruct(data_chunk.pair());
+                if (node_interface_) {
+                    node_interface_->enqueueIncomingData({kv});
+                }
+            }
+            // Handle finished if needed
         }
     }
 }
 
-void RainStormServer::SendDataChunksWriter(grpc::ServerReaderWriter<AckDataChunk, StreamDataChunk>* stream) {
+void RainStormServer::SendDataChunksWriter(ServerReaderWriter<rainstorm::AckDataChunk, rainstorm::StreamDataChunk>* stream) {
     while (true) {
-        vector<int> acks;
+        std::vector<int> acks;
         bool got_acks = false;
-        
-        // Try to get acks from the task
-        if (node_ && node_->dequeueAcks(acks)) {
+        if (node_interface_ && node_interface_->dequeueAcks(acks)) {
             got_acks = true;
         }
-        
+
         if (got_acks) {
-            AckDataChunk response_chunk;
-            for (const auto& acked_id : acks) {
-                DataChunk* chunk = response_chunk.add_chunks();
-                chunk->set_id(acked_id);
+            rainstorm::AckDataChunk response_chunk;
+            for (auto acked_id : acks) {
+                response_chunk.add_id(acked_id);
             }
             if (!stream->Write(response_chunk)) {
                 return;
             }
         }
-        
-        this_thread::sleep_for(chrono::milliseconds(10));
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 }
 
 Status RainStormServer::SendDataChunks(ServerContext* context,
-                                     ServerReaderWriter<AckDataChunk, StreamDataChunk>* stream) {
-    thread reader_thread(&RainStormServer::SendDataChunksReader, this, stream);
-    thread writer_thread(&RainStormServer::SendDataChunksWriter, this, stream);
-    
+                                       ServerReaderWriter<rainstorm::AckDataChunk, rainstorm::StreamDataChunk>* stream) {
+    (void)context; // unused
+    std::thread reader_thread(&RainStormServer::SendDataChunksReader, this, stream);
+    std::thread writer_thread(&RainStormServer::SendDataChunksWriter, this, stream);
+
     reader_thread.join();
     writer_thread.join();
-    
+
     return Status::OK;
 }
 
-grpc::Status RainStormServer::SendDataChunksToLeader(grpc::ServerContext* context,
-                                                      grpc::ServerReaderWriter<rainstorm::AckDataChunk, rainstorm::StreamDataChunkLeader>* stream) {
+Status RainStormServer::SendDataChunksToLeader(ServerContext* context,
+                                               ServerReaderWriter<rainstorm::AckDataChunk, rainstorm::StreamDataChunkLeader>* stream) {
+    (void)context; // unused
     SafeQueue<std::vector<int>> ack_queue;
     std::atomic<bool> done_reading(false);
 
@@ -163,86 +170,75 @@ grpc::Status RainStormServer::SendDataChunksToLeader(grpc::ServerContext* contex
         rainstorm::StreamDataChunkLeader stream_chunk;
         while (stream->Read(&stream_chunk)) {
             std::vector<int> ack_ids;
-            std::vector<pair<string, string>> uniq_kvs;
-            std::lock_guard<std::mutex> lock(leader_node_->mtx_); // lock for entire loop
-            for (const auto& data_chunk : stream_chunk.chunks()) {
-                if (data_chunk.has_job_id()) {
-                    std::cout << "Leader Recieved Job ID " << data_chunk.job_id() << std::endl;
-                    job_id = data_chunk.job_id();
-                }
-                if (data_chunk.has_pair()) {
-                    const rainstorm::KV& kv = data_chunk.pair();
-
-                    // convert ID to string for consistent storage
-                    // check if the ID has already been processed
-                    if (leader_node_->GetJobInfo(job_id).seen_kv_ids.find(kv.id()) != leader_node_->GetJobInfo(job_id).seen_kv_ids.end()) {
+            std::vector<std::pair<std::string, std::string>> uniq_kvs;
+            {
+                std::lock_guard<std::mutex> lock(leader_node_->mtx_);
+                for (const auto& data_chunk : stream_chunk.chunks()) {
+                    if (data_chunk.has_job_id()) {
+                        job_id = data_chunk.job_id();
+                        std::cout << "Leader Received Job ID: " << job_id << std::endl;
+                    }
+                    if (data_chunk.has_pair()) {
+                        const rainstorm::KV& kv = data_chunk.pair();
+                        if (leader_node_->GetJobInfo(job_id).seen_kv_ids.find(kv.id()) != leader_node_->GetJobInfo(job_id).seen_kv_ids.end()) {
+                            ack_ids.push_back(kv.id());
+                            continue;
+                        }
+                        std::cout << kv.key() << ":" << kv.value() << "\n";
+                        uniq_kvs.push_back({kv.key(), kv.value()});
                         ack_ids.push_back(kv.id());
-                        continue;
+                        leader_node_->GetJobInfo(job_id).seen_kv_ids.insert(kv.id());
                     }
 
-                    // print out to main console and store
-                    std::cout << kv.key() << ":" <<  kv.value() << "\n";
-                    uniq_kvs.push_back({kv.key(), kv.value()});
-                    ack_ids.push_back(kv.id());
-                    leader_node_->GetJobInfo(job_id).seen_kv_ids.insert(kv.id());
+                    if (data_chunk.has_finished()) {
+                        std::cout << "Received 'finished' signal." << std::endl;
+                    }
                 }
-    
-                if (data_chunk.has_finished()) {
-                    std::cout << "Received 'finished' signal." << std::endl;
-                    return;
+
+                if (!uniq_kvs.empty()) {
+                    std::ofstream ofs;
+                    ofs.open(leader_node_->GetJobInfo(job_id).dest_file, std::ios::out | std::ios::app); 
+                    for (const auto& kvp : uniq_kvs) {
+                        ofs << kvp.first << ":" << kvp.second << "\n";
+                    }
+                    ofs.close();
                 }
             }
-            if (!uniq_kvs.empty()) {
-                lock_guard<mutex> lock(leader_node_->mtx_);
-                ofstream ofs;
-                ofs.open(leader_node_->GetJobInfo(job_id).dest_file, ios::out | ios::app); 
-                for (const auto& [key, value] : uniq_kvs) {
-                    ofs << key << ":" << value << "\n";
-                }
-                ofs.close();
-            }
-            // if we got some data store.
+
             if (!ack_ids.empty()) {
                 ack_queue.enqueue(std::move(ack_ids));
             }
         }
 
-        // Indicate that reading is done
         done_reading = true;
         ack_queue.set_finished();
     });
 
-    // Write Thread
     std::thread writer_thread([&]() {
-        vector<int> acks; 
+        std::vector<int> acks; 
         while (ack_queue.dequeue(acks)) {
             rainstorm::AckDataChunk ack_chunk;
-            for (const auto& id : acks) {
+            for (auto id : acks) {
                 ack_chunk.add_id(id);
             }
 
-            // Write the AckDataChunk back to the client
             if (!stream->Write(ack_chunk)) {
                 std::cout << "Failed to write AckDataChunk to the stream." << std::endl;
                 continue;
             }
-            
-            // received finished signal from // 
+
             if (done_reading) {
                 std::cout << "Write thread exiting as reading is done." << std::endl;
                 return;
             }
         }
-
     });
 
-    // Wait for both threads to finish
     reader_thread.join();
     writer_thread.join();
 
-    // write the final file to hydfs when all streams have finished sending data
     {
-        lock_guard<mutex> lock(leader_node_->mtx_);
+        std::lock_guard<std::mutex> lock(leader_node_->mtx_);
         if (leader_node_->GetJobInfo(job_id).num_completed_final_task == leader_node_->GetJobInfo(job_id).num_tasks_per_stage) {
             leader_node_->GetHydfs().createFile(leader_node_->GetJobInfo(job_id).dest_file, leader_node_->GetJobInfo(job_id).dest_file);
         } else {
@@ -250,6 +246,5 @@ grpc::Status RainStormServer::SendDataChunksToLeader(grpc::ServerContext* contex
         }
     }
 
-    // Finalize the stream
     return grpc::Status::OK;
 }

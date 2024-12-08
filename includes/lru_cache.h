@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __LRU_CACHE__
+#define __LRU_CACHE__
 
 #include <list>
 #include <unordered_map>

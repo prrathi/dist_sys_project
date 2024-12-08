@@ -1201,6 +1201,7 @@ class KV final : public ::google::protobuf::Message
     kKeyFieldNumber = 2,
     kValueFieldNumber = 3,
     kIdFieldNumber = 1,
+    kTaskIndexFieldNumber = 4,
   };
   // string key = 2;
   void clear_key() ;
@@ -1244,12 +1245,22 @@ class KV final : public ::google::protobuf::Message
   void _internal_set_id(::int32_t value);
 
   public:
+  // int32 task_index = 4;
+  void clear_task_index() ;
+  ::int32_t task_index() const;
+  void set_task_index(::int32_t value);
+
+  private:
+  ::int32_t _internal_task_index() const;
+  void _internal_set_task_index(::int32_t value);
+
+  public:
   // @@protoc_insertion_point(class_scope:rainstorm.KV)
  private:
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
   static const ::google::protobuf::internal::TcParseTable<
-      2, 3, 0,
+      2, 4, 0,
       29, 2>
       _table_;
 
@@ -1273,6 +1284,7 @@ class KV final : public ::google::protobuf::Message
     ::google::protobuf::internal::ArenaStringPtr key_;
     ::google::protobuf::internal::ArenaStringPtr value_;
     ::int32_t id_;
+    ::int32_t task_index_;
     mutable ::google::protobuf::internal::CachedSize _cached_size_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
@@ -3146,6 +3158,28 @@ inline void KV::set_allocated_value(std::string* value) {
         }
   #endif  // PROTOBUF_FORCE_COPY_DEFAULT_STRING
   // @@protoc_insertion_point(field_set_allocated:rainstorm.KV.value)
+}
+
+// int32 task_index = 4;
+inline void KV::clear_task_index() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.task_index_ = 0;
+}
+inline ::int32_t KV::task_index() const {
+  // @@protoc_insertion_point(field_get:rainstorm.KV.task_index)
+  return _internal_task_index();
+}
+inline void KV::set_task_index(::int32_t value) {
+  _internal_set_task_index(value);
+  // @@protoc_insertion_point(field_set:rainstorm.KV.task_index)
+}
+inline ::int32_t KV::_internal_task_index() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.task_index_;
+}
+inline void KV::_internal_set_task_index(::int32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.task_index_ = value;
 }
 
 // -------------------------------------------------------------------

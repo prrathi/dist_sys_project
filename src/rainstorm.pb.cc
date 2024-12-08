@@ -141,6 +141,7 @@ inline constexpr KV::Impl_::Impl_(
             &::google::protobuf::internal::fixed_address_empty_string,
             ::_pbi::ConstantInitialized()),
         id_{0},
+        task_index_{0},
         _cached_size_{0} {}
 
 template <typename>
@@ -324,6 +325,7 @@ const ::uint32_t
         PROTOBUF_FIELD_OFFSET(::rainstorm::KV, _impl_.id_),
         PROTOBUF_FIELD_OFFSET(::rainstorm::KV, _impl_.key_),
         PROTOBUF_FIELD_OFFSET(::rainstorm::KV, _impl_.value_),
+        PROTOBUF_FIELD_OFFSET(::rainstorm::KV, _impl_.task_index_),
         ~0u,  // no _has_bits_
         PROTOBUF_FIELD_OFFSET(::rainstorm::DataChunk, _internal_metadata_),
         ~0u,  // no _extensions_
@@ -383,11 +385,11 @@ static const ::_pbi::MigrationSchema
         {24, -1, -1, sizeof(::rainstorm::NewStageTaskRequest)},
         {41, -1, -1, sizeof(::rainstorm::UpdateTaskSndRequest)},
         {52, -1, -1, sizeof(::rainstorm::KV)},
-        {63, -1, -1, sizeof(::rainstorm::DataChunk)},
-        {74, -1, -1, sizeof(::rainstorm::StreamDataChunk)},
-        {83, -1, -1, sizeof(::rainstorm::AckDataChunk)},
-        {92, -1, -1, sizeof(::rainstorm::DataChunkLeader)},
-        {104, -1, -1, sizeof(::rainstorm::StreamDataChunkLeader)},
+        {64, -1, -1, sizeof(::rainstorm::DataChunk)},
+        {75, -1, -1, sizeof(::rainstorm::StreamDataChunk)},
+        {84, -1, -1, sizeof(::rainstorm::AckDataChunk)},
+        {93, -1, -1, sizeof(::rainstorm::DataChunkLeader)},
+        {105, -1, -1, sizeof(::rainstorm::StreamDataChunkLeader)},
 };
 static const ::_pb::Message* const file_default_instances[] = {
     &::rainstorm::_OperationStatus_default_instance_._instance,
@@ -415,35 +417,35 @@ const char descriptor_table_protodef_rainstorm_2eproto[] ABSL_ATTRIBUTE_SECTION_
     "ateful\030\006 \001(\010\022\014\n\004last\030\007 \001(\010\022\025\n\rsnd_addres"
     "ses\030\010 \003(\t\022\021\n\tsnd_ports\030\t \003(\005\"L\n\024UpdateTa"
     "skSndRequest\022\r\n\005index\030\001 \001(\005\022\023\n\013snd_addre"
-    "ss\030\002 \001(\t\022\020\n\010snd_port\030\003 \001(\005\",\n\002KV\022\n\n\002id\030\001"
-    " \001(\005\022\013\n\003key\030\002 \001(\t\022\r\n\005value\030\003 \001(\t\"I\n\tData"
-    "Chunk\022\035\n\004pair\030\001 \001(\0132\r.rainstorm.KVH\000\022\022\n\010"
-    "finished\030\002 \001(\010H\000B\t\n\007request\"7\n\017StreamDat"
-    "aChunk\022$\n\006chunks\030\001 \003(\0132\024.rainstorm.DataC"
-    "hunk\"\032\n\014AckDataChunk\022\n\n\002id\030\001 \003(\005\"a\n\017Data"
-    "ChunkLeader\022\020\n\006job_id\030\001 \001(\tH\000\022\035\n\004pair\030\002 "
-    "\001(\0132\r.rainstorm.KVH\000\022\022\n\010finished\030\003 \001(\010H\000"
-    "B\t\n\007request\"C\n\025StreamDataChunkLeader\022*\n\006"
-    "chunks\030\001 \003(\0132\032.rainstorm.DataChunkLeader"
-    "*I\n\nStatusCode\022\013\n\007SUCCESS\020\000\022\013\n\007INVALID\020\001"
-    "\022\r\n\tNOT_FOUND\020\002\022\022\n\016ALREADY_EXISTS\020\0032\230\003\n\020"
-    "RainstormService\022F\n\nNewSrcTask\022\034.rainsto"
-    "rm.NewSrcTaskRequest\032\032.rainstorm.Operati"
-    "onStatus\022J\n\014NewStageTask\022\036.rainstorm.New"
-    "StageTaskRequest\032\032.rainstorm.OperationSt"
-    "atus\022L\n\rUpdateTaskSnd\022\037.rainstorm.Update"
-    "TaskSndRequest\032\032.rainstorm.OperationStat"
-    "us\022I\n\016SendDataChunks\022\032.rainstorm.StreamD"
-    "ataChunk\032\027.rainstorm.AckDataChunk(\0010\001\022W\n"
-    "\026SendDataChunksToLeader\022 .rainstorm.Stre"
-    "amDataChunkLeader\032\027.rainstorm.AckDataChu"
-    "nk(\0010\001b\006proto3"
+    "ss\030\002 \001(\t\022\020\n\010snd_port\030\003 \001(\005\"@\n\002KV\022\n\n\002id\030\001"
+    " \001(\005\022\013\n\003key\030\002 \001(\t\022\r\n\005value\030\003 \001(\t\022\022\n\ntask"
+    "_index\030\004 \001(\005\"I\n\tDataChunk\022\035\n\004pair\030\001 \001(\0132"
+    "\r.rainstorm.KVH\000\022\022\n\010finished\030\002 \001(\010H\000B\t\n\007"
+    "request\"7\n\017StreamDataChunk\022$\n\006chunks\030\001 \003"
+    "(\0132\024.rainstorm.DataChunk\"\032\n\014AckDataChunk"
+    "\022\n\n\002id\030\001 \003(\005\"a\n\017DataChunkLeader\022\020\n\006job_i"
+    "d\030\001 \001(\tH\000\022\035\n\004pair\030\002 \001(\0132\r.rainstorm.KVH\000"
+    "\022\022\n\010finished\030\003 \001(\010H\000B\t\n\007request\"C\n\025Strea"
+    "mDataChunkLeader\022*\n\006chunks\030\001 \003(\0132\032.rains"
+    "torm.DataChunkLeader*I\n\nStatusCode\022\013\n\007SU"
+    "CCESS\020\000\022\013\n\007INVALID\020\001\022\r\n\tNOT_FOUND\020\002\022\022\n\016A"
+    "LREADY_EXISTS\020\0032\230\003\n\020RainstormService\022F\n\n"
+    "NewSrcTask\022\034.rainstorm.NewSrcTaskRequest"
+    "\032\032.rainstorm.OperationStatus\022J\n\014NewStage"
+    "Task\022\036.rainstorm.NewStageTaskRequest\032\032.r"
+    "ainstorm.OperationStatus\022L\n\rUpdateTaskSn"
+    "d\022\037.rainstorm.UpdateTaskSndRequest\032\032.rai"
+    "nstorm.OperationStatus\022I\n\016SendDataChunks"
+    "\022\032.rainstorm.StreamDataChunk\032\027.rainstorm"
+    ".AckDataChunk(\0010\001\022W\n\026SendDataChunksToLea"
+    "der\022 .rainstorm.StreamDataChunkLeader\032\027."
+    "rainstorm.AckDataChunk(\0010\001b\006proto3"
 };
 static ::absl::once_flag descriptor_table_rainstorm_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_rainstorm_2eproto = {
     false,
     false,
-    1374,
+    1394,
     descriptor_table_protodef_rainstorm_2eproto,
     "rainstorm.proto",
     &descriptor_table_rainstorm_2eproto_once,
@@ -1733,7 +1735,13 @@ KV::KV(
   _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
       from._internal_metadata_);
   new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
-  _impl_.id_ = from._impl_.id_;
+  ::memcpy(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, id_),
+           reinterpret_cast<const char *>(&from._impl_) +
+               offsetof(Impl_, id_),
+           offsetof(Impl_, task_index_) -
+               offsetof(Impl_, id_) +
+               sizeof(Impl_::task_index_));
 
   // @@protoc_insertion_point(copy_constructor:rainstorm.KV)
 }
@@ -1746,7 +1754,12 @@ inline PROTOBUF_NDEBUG_INLINE KV::Impl_::Impl_(
 
 inline void KV::SharedCtor(::_pb::Arena* arena) {
   new (&_impl_) Impl_(internal_visibility(), arena);
-  _impl_.id_ = {};
+  ::memset(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, id_),
+           0,
+           offsetof(Impl_, task_index_) -
+               offsetof(Impl_, id_) +
+               sizeof(Impl_::task_index_));
 }
 KV::~KV() {
   // @@protoc_insertion_point(destructor:rainstorm.KV)
@@ -1781,15 +1794,15 @@ KV::GetClassData() const {
   return _data_.base();
 }
 PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
-const ::_pbi::TcParseTable<2, 3, 0, 29, 2> KV::_table_ = {
+const ::_pbi::TcParseTable<2, 4, 0, 29, 2> KV::_table_ = {
   {
     0,  // no _has_bits_
     0, // no _extensions_
-    3, 24,  // max_field_number, fast_idx_mask
+    4, 24,  // max_field_number, fast_idx_mask
     offsetof(decltype(_table_), field_lookup_table),
-    4294967288,  // skipmap
+    4294967280,  // skipmap
     offsetof(decltype(_table_), field_entries),
-    3,  // num_field_entries
+    4,  // num_field_entries
     0,  // num_aux_entries
     offsetof(decltype(_table_), field_names),  // no aux_entries
     &_KV_default_instance_._instance,
@@ -1799,7 +1812,9 @@ const ::_pbi::TcParseTable<2, 3, 0, 29, 2> KV::_table_ = {
     ::_pbi::TcParser::GetTable<::rainstorm::KV>(),  // to_prefetch
     #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
   }, {{
-    {::_pbi::TcParser::MiniParse, {}},
+    // int32 task_index = 4;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(KV, _impl_.task_index_), 63>(),
+     {32, 63, 0, PROTOBUF_FIELD_OFFSET(KV, _impl_.task_index_)}},
     // int32 id = 1;
     {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(KV, _impl_.id_), 63>(),
      {8, 63, 0, PROTOBUF_FIELD_OFFSET(KV, _impl_.id_)}},
@@ -1821,6 +1836,9 @@ const ::_pbi::TcParseTable<2, 3, 0, 29, 2> KV::_table_ = {
     // string value = 3;
     {PROTOBUF_FIELD_OFFSET(KV, _impl_.value_), 0, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // int32 task_index = 4;
+    {PROTOBUF_FIELD_OFFSET(KV, _impl_.task_index_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kInt32)},
   }},
   // no aux_entries
   {{
@@ -1840,7 +1858,9 @@ PROTOBUF_NOINLINE void KV::Clear() {
 
   _impl_.key_.ClearToEmpty();
   _impl_.value_.ClearToEmpty();
-  _impl_.id_ = 0;
+  ::memset(&_impl_.id_, 0, static_cast<::size_t>(
+      reinterpret_cast<char*>(&_impl_.task_index_) -
+      reinterpret_cast<char*>(&_impl_.id_)) + sizeof(_impl_.task_index_));
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
 
@@ -1872,6 +1892,13 @@ PROTOBUF_NOINLINE void KV::Clear() {
     ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
         _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "rainstorm.KV.value");
     target = stream->WriteStringMaybeAliased(3, _s, target);
+  }
+
+  // int32 task_index = 4;
+  if (this->_internal_task_index() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::
+        WriteInt32ToArrayWithField<4>(
+            stream, this->_internal_task_index(), target);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -1910,6 +1937,12 @@ PROTOBUF_NOINLINE void KV::Clear() {
         this->_internal_id());
   }
 
+  // int32 task_index = 4;
+  if (this->_internal_task_index() != 0) {
+    total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
+        this->_internal_task_index());
+  }
+
   return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
 }
 
@@ -1931,6 +1964,9 @@ void KV::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::prot
   if (from._internal_id() != 0) {
     _this->_impl_.id_ = from._impl_.id_;
   }
+  if (from._internal_task_index() != 0) {
+    _this->_impl_.task_index_ = from._impl_.task_index_;
+  }
   _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
 }
 
@@ -1949,7 +1985,12 @@ void KV::InternalSwap(KV* PROTOBUF_RESTRICT other) {
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.key_, &other->_impl_.key_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.value_, &other->_impl_.value_, arena);
-        swap(_impl_.id_, other->_impl_.id_);
+  ::google::protobuf::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(KV, _impl_.task_index_)
+      + sizeof(KV::_impl_.task_index_)
+      - PROTOBUF_FIELD_OFFSET(KV, _impl_.id_)>(
+          reinterpret_cast<char*>(&_impl_.id_),
+          reinterpret_cast<char*>(&other->_impl_.id_));
 }
 
 ::google::protobuf::Metadata KV::GetMetadata() const {

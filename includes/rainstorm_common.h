@@ -4,6 +4,8 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <unordered_map>
+#include <unordered_set>
 #include "safequeue.hpp"
 
 // Basic data structure for key-value pairs
