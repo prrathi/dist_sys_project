@@ -160,14 +160,14 @@ def multiappend(machines, args):
 # MP 4
 
 def submitJob(machine, args):
-    execute_local_command(args, leader=True)
+    execute_local_command("rainstorm " + args, leader=True)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="SWIM Protocol CLI")
     parser.add_argument("-c", "--command", choices=["list_mem", "list_self", "join", "leave", "enable_sus"
                                                     , "disable_sus", "status_sus", "list_suspected", "create", 
-                                                    "get", "append", "merge", "ls", "store", "getfromreplica", "list_mem_ids", "multiappend"])
+                                                    "get", "append", "merge", "ls", "store", "getfromreplica", "list_mem_ids", "multiappend", "failure", "rainstorm"])
     parser.add_argument("-m", "--machines", nargs="*")
     parser.add_argument("-r", "--rainstorm", nargs=5, metavar=('OP1_EXE', 'OP2_EXE', 'HYDFS_SRC', 'HYDFS_DEST', 'NUM_TASKS'))
     parser.add_argument("remaining_args", nargs="*", help="Arguments for the command")
@@ -176,7 +176,11 @@ if __name__ == "__main__":
     extra_args = args.remaining_args
 
     if args.rainstorm != None:
-        submitJob("localhost", " ".join(args.rainstorm))
+        if args.command == "rainstorm":
+            submitJob("localhost", " ".join(args.rainstorm))
+        elif args.command == "failure":
+            # TODO
+            pass
         exit(0)
 
     machine_input = args.machines if args.machines and len(args.machines) > 0 else ["localhost"]
