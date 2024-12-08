@@ -17,9 +17,10 @@ message OperationStatus {
 // Factory to spin up rainstorm servers, kept outside rainstorm for cleanness
 
 service RainstormFactoryService {
-    rpc NewServer(NewServerRequest) returns (OperationStatus);
+    rpc CreateServer(ServerRequest) returns (OperationStatus);
+    rpc RemoveServer(ServerRequest) returns (OperationStatus);
 }
 
-message NewServerRequest {
+message ServerRequest {
     int32 port = 1;
 }

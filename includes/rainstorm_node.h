@@ -7,19 +7,47 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
-
+#include <memory>
+#include <grpcpp/grpcpp.h>
+#include "rainstorm.grpc.pb.h"
+#include "rainstorm_factory.grpc.pb.h"
 #include "hydfs.h"
 #include "rainstorm_common.h"
 #include "rainstorm_node_server.h"
 
+// Error codes for server operations
+enum class ServerError {
+    SUCCESS = 0,
+    PORT_IN_USE,
+    PORT_NOT_FOUND,
+    INTERNAL_ERROR
+};
+
+class RainstormFactoryServiceImpl final : public rainstorm_factory::RainstormFactoryService::Service {
+    RainStormNode* node_;
+public:
+    explicit RainstormFactoryServiceImpl(RainStormNode* node) : node_(node) {}
+    grpc::Status CreateServer(grpc::ServerContext* context, const rainstorm_factory::ServerRequest* request, rainstorm_factory::OperationStatus* response) override;
+    grpc::Status RemoveServer(grpc::ServerContext* context, const rainstorm_factory::ServerRequest* request, rainstorm_factory::OperationStatus* response) override;
+};
+
 class RainStormNode {
 public:
     RainStormNode(); 
-    ~RainStormNode() {}
+    ~RainStormNode() {
+        if (factory_server_) {
+            factory_server_->Shutdown();
+        }
+        for (auto& [port, server] : rainstorm_servers_) {
+            if (server) {
+                server->Shutdown();
+            }
+        }
+    }
 
     void runHydfs();
-    int runServer(int port);
-    int removeServer(int port);
+    ServerError createServer(int port);
+    ServerError removeServer(int port);
     void handleNewStageTask(const rainstorm::NewStageTaskRequest* request);
 
     void enqueueIncomingData(const std::vector<KVStruct>& data);
@@ -54,8 +82,13 @@ private:
     std::unordered_map<std::string, int> key_to_aggregate_{};
 
     std::atomic<bool> should_stop_;
-    std::unordered_map<int, unique_ptr<RainStormServer>> rainstorm_servers_;
+    const int factory_port_;
+    std::mutex servers_mutex_;
+    std::unique_ptr<grpc::Server> factory_server_;
+    std::unordered_map<int, std::unique_ptr<grpc::Server>> rainstorm_servers_;
     Hydfs hydfs_;
+
+    void runFactoryServer();
 
     std::chrono::steady_clock::time_point last_persist_time_;
 };

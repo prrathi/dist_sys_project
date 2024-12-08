@@ -160,6 +160,7 @@ void RainStormLeader::handleNodeFailure(const string& failed_node_id) {
         for (auto &task : job.tasks) {
             if (task.vm == failed_node_id) {
                 cout << "Reassigning Task ID: " << task.task_index << " from VM: " << failed_node_id << endl;
+                removeServerOnNode(task.vm, task.port_num);
                 string new_vm = getNextVM();
                 task.vm = new_vm;
                 task.port_num = getUnusedPortNumberForVM(task.vm);
@@ -237,7 +238,7 @@ bool RainStormLeader::createServerOnNode(const string& node_address, int port) {
     rainstorm_factory::OperationStatus response;
 
     request.set_port(port);
-    grpc::Status status = stub->NewServer(&context, request, &response);
+    grpc::Status status = stub->CreateServer(&context, request, &response);
 
     if (!status.ok() || response.status() != rainstorm_factory::SUCCESS) {
         cerr << "Failed to create server on " << node_address << ":" << port 

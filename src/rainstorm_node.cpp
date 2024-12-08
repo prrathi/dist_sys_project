@@ -9,10 +9,12 @@
 #include <vector>
 #include <fstream>
 #include <filesystem>
+#include <mutex>
 
 #include "rainstorm_node.h"
 #include "rainstorm_node_server.h"
 #include "rainstorm_service_client.h"
+#include "rainstorm_factory_service.h"
 
 using namespace std;
 using namespace chrono;
@@ -20,37 +22,133 @@ using namespace chrono;
 const chrono::seconds RainStormNode::ACK_TIMEOUT(30);
 const chrono::seconds RainStormNode::PERSIST_INTERVAL(10);
 
+enum class ServerError {
+    SUCCESS,
+    PORT_IN_USE,
+    PORT_NOT_FOUND,
+    INTERNAL_ERROR
+};
+
 RainStormNode::RainStormNode()
-    : should_stop_(false) {
+    : should_stop_(false), factory_server_(nullptr), factory_port_(8083) {
+    std::thread factory_thread(&RainStormNode::runFactoryServer, this);
+    factory_thread.detach();
+}
+
+void RainStormNode::runFactoryServer() {
+    std::string server_address = "0.0.0.0:" + std::to_string(factory_port_);
+    RainstormFactoryServiceImpl service(this);
+    
+    grpc::ServerBuilder builder;
+    builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
+    builder.RegisterService(&service);
+    
+    factory_server_ = builder.BuildAndStart();
+    std::cout << "Factory Server listening on port " << factory_port_ << std::endl;
+    factory_server_->Wait();
+}
+
+grpc::Status RainstormFactoryServiceImpl::CreateServer(grpc::ServerContext* context, 
+    const rainstorm_factory::ServerRequest* request, rainstorm_factory::OperationStatus* response) {
+    
+    ServerError result = node_->createServer(request->port());
+    
+    switch (result) {
+        case ServerError::SUCCESS:
+            response->set_status(rainstorm_factory::SUCCESS);
+            response->set_message("Server created successfully");
+            break;
+        case ServerError::PORT_IN_USE:
+            response->set_status(rainstorm_factory::ERROR);
+            response->set_message("Port already in use");
+            break;
+        case ServerError::INTERNAL_ERROR:
+        default:
+            response->set_status(rainstorm_factory::ERROR);
+            response->set_message("Internal error creating server");
+            break;
+    }
+    return grpc::Status::OK;
+}
+
+grpc::Status RainstormFactoryServiceImpl::RemoveServer(grpc::ServerContext* context,
+    const rainstorm_factory::ServerRequest* request, rainstorm_factory::OperationStatus* response) {
+    
+    ServerError result = node_->removeServer(request->port());
+    
+    switch (result) {
+        case ServerError::SUCCESS:
+            response->set_status(rainstorm_factory::SUCCESS);
+            response->set_message("Server removed successfully");
+            break;
+        case ServerError::PORT_NOT_FOUND:
+            response->set_status(rainstorm_factory::ERROR);
+            response->set_message("Server not found on specified port");
+            break;
+        case ServerError::INTERNAL_ERROR:
+        default:
+            response->set_status(rainstorm_factory::ERROR);
+            response->set_message("Internal error removing server");
+            break;
+    }
+    return grpc::Status::OK;
+}
+
+ServerError RainStormNode::createServer(int port) {
+    std::lock_guard<std::mutex> lock(servers_mutex_);
+    
+    if (rainstorm_servers_.find(port) != rainstorm_servers_.end()) {
+        return ServerError::PORT_IN_USE;
+    }
+    
+    try {
+        std::string server_address = "0.0.0.0:" + std::to_string(port);
+        grpc::ServerBuilder builder;
+        builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
+        // Add RainStorm service
+        RainStormServer server(this);
+        builder.RegisterService(&server);
+        
+        auto new_server = builder.BuildAndStart();
+        if (!new_server) {
+            return ServerError::INTERNAL_ERROR;
+        }
+        
+        rainstorm_servers_[port] = std::move(new_server);
+        std::cout << "RainStorm Server started on port " << port << std::endl;
+        return ServerError::SUCCESS;
+    } catch (...) {
+        std::cerr << "Exception while creating server on port " << port << std::endl;
+        return ServerError::INTERNAL_ERROR;
+    }
+}
+
+ServerError RainStormNode::removeServer(int port) {
+    std::lock_guard<std::mutex> lock(servers_mutex_);
+    
+    auto it = rainstorm_servers_.find(port);
+    if (it == rainstorm_servers_.end()) {
+        return ServerError::PORT_NOT_FOUND;
+    }
+    
+    try {
+        if (it->second) {
+            it->second->Shutdown();
+            std::cout << "RainStorm Server on port " << port << " shutdown" << std::endl;
+        }
+        rainstorm_servers_.erase(it);
+        return ServerError::SUCCESS;
+    } catch (...) {
+        std::cerr << "Exception while removing server on port " << port << std::endl;
+        return ServerError::INTERNAL_ERROR;
+    }
 }
 
 void RainStormNode::runHydfs() {
     thread listener_thread([this](){ this->hydfs_.pipeListener(); });
     thread swim_thread([this](){ this->hydfs_.swim(); });
-    thread server_thread([this](){ this->hydfs_.runServer(); });
     listener_thread.join();
     swim_thread.join();
-    server_thread.join();
-}
-
-int RainStormNode::runServer(int port) {
-    if (rainstorm_servers_.find(port) != rainstorm_servers_.end()) {
-        cerr << "Port " << port << " already in use" << endl;
-        return 1;
-    }
-    rainstorm_servers_[port] = make_unique<RainStormServer>(this);
-    thread([server = rainstorm_servers_[port].get()]() {server->wait();}).detach();
-    return 0;
-}
-
-int RainStormNode::removeServer(int port) {
-    if (rainstorm_servers_.find(port) == rainstorm_servers_.end()) {
-        cerr << "Port " << port << " not in use" << endl;
-        return 1;
-    }
-    rainstorm_servers_[port]->shutdown();
-    rainstorm_servers_.erase(port);
-    return 0;
 }
 
 void RainStormNode::handleNewStageTask(const rainstorm::NewStageTaskRequest* request) {
