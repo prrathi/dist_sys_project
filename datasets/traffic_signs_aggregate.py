@@ -12,40 +12,39 @@ from pyspark.sql.types import *
 import sys
 
 traffic_schema = StructType([
-        StructField("Row ID", IntegerType(), True),
-        StructField("Order ID", StringType(), True),
-        StructField("Order Date", StringType(), True),
-        StructField("Ship Date", StringType(), True),
-        StructField("Ship Mode", StringType(), True),
-        StructField("Customer ID", StringType(), True),
-        StructField("Customer Name", StringType(), True),
-        StructField("Segment", StringType(), True),
-        StructField("Country/Region", StringType(), True),
-        StructField("City", StringType(), True),
-        StructField("State/Province", StringType(), True),
-        StructField("Postal Code", IntegerType(), True),
-        StructField("Region", StringType(), True),
-        StructField("Product ID", StringType(), True),
+        StructField("X", DoubleType(), True),
+        StructField("Y", DoubleType(), True),
+        StructField("OBJECTID", IntegerType(), True),
+        StructField("Sign_Type", StringType(), True),
+        StructField("Size_", StringType(), True),
+        StructField("Supplement", StringType(), True),
+        StructField("Sign_Post", StringType(), True),
+        StructField("Year_Insta", StringType(), True), # Could also be IntegerType if data is clean.
         StructField("Category", StringType(), True),
-        StructField("Sub-Category", StringType(), True),
-        StructField("Product Name", StringType(), True),
-        StructField("Sales", DoubleType(), True),
-        StructField("Quantity", IntegerType(), True),
-        StructField("Discount", DoubleType(), True),
-        StructField("Profit", DoubleType(), True)
+        StructField("Notes", StringType(), True),
+        StructField("MUTCD", StringType(), True),
+        StructField("Ownership", StringType(), True),
+        StructField("FACILITYID", StringType(), True),  # Might be IntegerType, adjust if needed
+        StructField("Schools", StringType(), True),
+        StructField("Location_Adjusted", StringType(), True),
+        StructField("Replacement_Zone", StringType(), True), # Might be IntegerType, adjust if needed
+        StructField("Sign_Text", StringType(), True),
+        StructField("Set_ID", IntegerType(), True),
+        StructField("FieldVerifiedDate", StringType(), True), # Might be TimestampType or DateType, but parsing strings is safer.
+        StructField("GlobalID", StringType(), True)
     ])
 
 NUM_SOURCES = 3
 
-def structured_traffic_aggregation(spark, csv_file_path, sign_post_filter="MUTCD Signpost"):
+def structured_traffic_aggregation(spark, csv_file_path, sign_post_filter="Traffic Signal Mast Arm"): # Example filter
+    df = spark.readStream.schema(traffic_schema).option("mode", "DROPMALFORMED").csv(csv_file_path, header=True)
 
-    df = spark.readStream.schema(traffic_schema).csv(csv_file_path, header=True)
-
-    filtered_df = df.filter(col("Sign Post") == sign_post_filter).repartition(NUM_SOURCES) 
+    filtered_df = df.filter(col("Sign_Post") == sign_post_filter).repartition(2)
     category_counts = filtered_df.groupBy("Category").count()
 
     query = category_counts.writeStream.outputMode("complete").format("console").option("checkpointLocation", "checkpoint_traffic_agg").start()
     query.awaitTermination()
+
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:

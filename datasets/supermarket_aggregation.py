@@ -30,7 +30,7 @@ order_schema = StructType([
 NUM_SOURCES = 3
 
 def structured_order_aggregation(spark, csv_file_path, segment_filter="Corporate"):
-    df = spark.readStream.schema(order_schema).csv(csv_file_path, header=True)
+    df = spark.readStream.schema(order_schema).option("mode", "DROPMALFORMED").csv(csv_file_path, header=True)
     filtered_df = df.filter(col("Segment") == segment_filter).repartition(NUM_SOURCES) 
     category_counts = filtered_df.groupBy("Category").count()
 

@@ -12,38 +12,35 @@ import sys
 
 
 traffic_schema = StructType([
-        StructField("Row ID", IntegerType(), True),
-        StructField("Order ID", StringType(), True),
-        StructField("Order Date", StringType(), True),
-        StructField("Ship Date", StringType(), True),
-        StructField("Ship Mode", StringType(), True),
-        StructField("Customer ID", StringType(), True),
-        StructField("Customer Name", StringType(), True),
-        StructField("Segment", StringType(), True),
-        StructField("Country/Region", StringType(), True),
-        StructField("City", StringType(), True),
-        StructField("State/Province", StringType(), True),
-        StructField("Postal Code", IntegerType(), True),
-        StructField("Region", StringType(), True),
-        StructField("Product ID", StringType(), True),
+        StructField("X", DoubleType(), True),
+        StructField("Y", DoubleType(), True),
+        StructField("OBJECTID", IntegerType(), True),
+        StructField("Sign_Type", StringType(), True),
+        StructField("Size_", StringType(), True),
+        StructField("Supplement", StringType(), True),
+        StructField("Sign_Post", StringType(), True),
+        StructField("Year_Insta", StringType(), True), # Could also be IntegerType if data is clean.
         StructField("Category", StringType(), True),
-        StructField("Sub-Category", StringType(), True),
-        StructField("Product Name", StringType(), True),
-        StructField("Sales", DoubleType(), True),
-        StructField("Quantity", IntegerType(), True),
-        StructField("Discount", DoubleType(), True),
-        StructField("Profit", DoubleType(), True)
+        StructField("Notes", StringType(), True),
+        StructField("MUTCD", StringType(), True),
+        StructField("Ownership", StringType(), True),
+        StructField("FACILITYID", StringType(), True),  # Might be IntegerType, adjust if needed
+        StructField("Schools", StringType(), True),
+        StructField("Location_Adjusted", StringType(), True),
+        StructField("Replacement_Zone", StringType(), True), # Might be IntegerType, adjust if needed
+        StructField("Sign_Text", StringType(), True),
+        StructField("Set_ID", IntegerType(), True),
+        StructField("FieldVerifiedDate", StringType(), True), # Might be TimestampType or DateType, but parsing strings is safer.
+        StructField("GlobalID", StringType(), True)
     ])
 
 NUM_SOURCES = 3
 
-def structured_traffic_filter(spark, csv_file_path, filter_pattern="Stop"):
-    # ... (Same traffic_schema as before)
+def structured_traffic_filter(spark, csv_file_path, filter_pattern="Streetname"):  # Example filter
+    df = spark.readStream.schema(traffic_schema).option("mode", "DROPMALFORMED").csv(csv_file_path, header=True)
 
-    df = spark.readStream.schema(traffic_schema).csv(csv_file_path, header=True)
-
-    filtered_df = df.filter(col("Sign Type").contains(filter_pattern)).repartition(NUM_SOURCES) #
-    extracted_df = filtered_df.select("OBJECTID", "Sign Type")
+    filtered_df = df.filter(col("Sign_Type").contains(filter_pattern)).repartition(2)
+    extracted_df = filtered_df.select("OBJECTID", "Sign_Type")
 
     query = extracted_df.writeStream.outputMode("append").format("console").option("checkpointLocation", "checkpoint_traffic_filter").start()
     query.awaitTermination()

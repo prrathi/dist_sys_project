@@ -29,8 +29,7 @@ order_schema = StructType([
 
 NUM_SOURCES = 3
 def structured_order_filter(spark, csv_file_path, region_filter="West"):
-
-    df = spark.readStream.schema(order_schema).csv(csv_file_path, header=True)
+    df = spark.readStream.schema(order_schema).option("mode", "DROPMALFORMED").csv(csv_file_path, header=True)
     filtered_df = df.filter(col("Region") == region_filter).repartition(NUM_SOURCES) 
     extracted_df = filtered_df.select("Order ID", "Sales")
 
