@@ -34,18 +34,15 @@ vector<string> parseCSV(const string& line) {
 
 int main(int argc, char* argv[]) {
     if (argc != 2) {
-        cerr << "Usage: " << argv[0] << " <pattern>" << endl;
+        cerr << "Usage: " << argv[0] << " <sign post type>" << endl;
         return 1;
     }
-    string pattern = argv[1];
-    
-    // Read the entire input at once
+    string sign_post_type = argv[1];
     string input;
     char ch;
     while (cin.get(ch)) {
         input += ch;
     }
-    
     if (input.empty()) {
         return 0;
     }
@@ -57,6 +54,7 @@ int main(int argc, char* argv[]) {
     if (input.substr(0, delimiter.length()) == delimiter) {
         input = input.substr(delimiter.length());
     }
+    
     while ((pos = input.find(delimiter)) != string::npos) {
         if (pos == 0) {
             input = input.substr(delimiter.length());
@@ -75,11 +73,10 @@ int main(int argc, char* argv[]) {
         }
         
         vector<string> fields = parseCSV(value);
-        if (fields.size() >= 4) {
-            string objectid = fields[2]; 
-            string sign_type = fields[3];
-            cout << tokens[i] << "]][" << tokens[i + 1] << "]][";
-            if (value.find(pattern) != string::npos) {
+        if (fields.size() >= 9) {
+            string sign_post = fields[6];
+            cout << tokens[i] << "]][" << tokens[i+1] << "]][";
+            if (sign_post == sign_post_type) {
                 cout << tokens[i + 2];
             } else {
                 cout << "FILTERED_OUT";

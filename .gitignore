@@ -11,5 +11,7 @@ report_dataset_cache
 hydfs/
 datasets/test1_1
 datasets/test1_2
+datasets/test2_1
+datasets/test2_2
 .vscode/
 out.log

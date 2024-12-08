@@ -10,7 +10,6 @@ vector<string> parseCSV(const string& line) {
     vector<string> fields;
     string field;
     bool in_quotes = false;
-    
     for (size_t i = 0; i < line.length(); i++) {
         char ch = line[i];
         
@@ -34,16 +33,18 @@ vector<string> parseCSV(const string& line) {
 }
 
 int main(int argc, char* argv[]) {
-    if (argc != 2) {
-        cerr << "Usage: " << argv[0] << " <sign post type>" << endl;
+    if (argc != 1) {
+        cerr << "Usage: " << argv[0] << endl;
         return 1;
     }
-    string sign_post_type = argv[1];
+    
+    // Read the entire input at once
     string input;
     char ch;
     while (cin.get(ch)) {
         input += ch;
     }
+    
     if (input.empty()) {
         return 0;
     }
@@ -55,7 +56,6 @@ int main(int argc, char* argv[]) {
     if (input.substr(0, delimiter.length()) == delimiter) {
         input = input.substr(delimiter.length());
     }
-    
     while ((pos = input.find(delimiter)) != string::npos) {
         if (pos == 0) {
             input = input.substr(delimiter.length());
@@ -74,16 +74,10 @@ int main(int argc, char* argv[]) {
         }
         
         vector<string> fields = parseCSV(value);
-        if (fields.size() >= 9) {
-            string sign_post = fields[6];
-            string category = fields[8]; 
-            cout << tokens[i] << "]][" << category << "]][";
-            if (sign_post == sign_post_type) {
-                cout << "1";
-            } else {
-                cout << "0";
-            }
-            cout << "]][" << tokens[i + 3] << "]][" << endl;
+        if (fields.size() >= 4) {
+            string objectid = fields[2]; 
+            string sign_type = fields[3];
+            cout << tokens[i] << "]][" << tokens[i + 1] << "]][" << objectid << "," << sign_type << "]][" << tokens[i + 3] << "]][" << endl;
         }
     }
     
