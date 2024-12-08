@@ -5,18 +5,23 @@ import time
 import argparse
 import subprocess
 import socket
-
-FIFO = '/tmp/mp4'  # Named pipe path. The server should have already made this pipe when it starts (check if already exists)
 import os
+
 user = os.getenv("USER")
+FIFO = '/tmp/mp4'  # Named pipe path. The server should have already made this pipe when it starts (check if already exists)
+LEADER_FIFO = '/tmp/mp4-leader'
 if user in ["praneet", "prathi3"]:
     FIFO = '/tmp/mp4-prathi3'
+    LEADER_FIFO = '/tmp/mp4-leader-prathi3'
 
 # the server should read from pipe and execute whatever command it recieves
 
-def execute_local_command(command):
-    print(command)
-    ssh_command = f"echo {command} > {FIFO}"
+def execute_local_command(command, leader=False):
+    ssh_command = f"echo {command} > "
+    if leader:
+        ssh_command += LEADER_FIFO
+    else:
+        ssh_command += FIFO
     subprocess.run(ssh_command, shell=True, check=True)
     print(f"Sent {command} to local pipe")
 
@@ -155,7 +160,7 @@ def multiappend(machines, args):
 # MP 4
 
 def submitJob(machine, args):
-    execute_local_command("rainstorm " + args + " ")
+    execute_local_command(args, leader=True)
 
 
 if __name__ == "__main__":
