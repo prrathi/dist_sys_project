@@ -9,7 +9,7 @@ int main() {
         perror("gethostname");
         return 1;
     }
-    std::string server_address = std::string(hostname) + ":8083";
+    std::string server_address = std::string(hostname) + ":8086";
     
     RainStormNode node(server_address);
     node.runHydfs();
