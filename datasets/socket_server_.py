@@ -26,7 +26,7 @@ def run_server(port, start_line, end_line):
                         message = f"{key},{value}\n"
                         conn.sendall(message.encode("utf-8"))
                         lines_sent += 1
-                        time.sleep(0.1)  # Adjust as needed
+                        time.sleep(0.01)  # Adjust as needed
 
             print(f"Socket server on port {port} finished sending {lines_sent} lines.")
         except Exception as e:
