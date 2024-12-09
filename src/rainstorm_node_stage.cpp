@@ -117,26 +117,42 @@ bool RainstormNodeStage::dequeueAcks(vector<int>& acks, int task_index) {
 
 void RainstormNodeStage::checkPendingAcks() {
     lock_guard<mutex> lock(pending_ack_mtx_);
-    cout << "got here checkPendingAcks" << endl; // Keep your debug logging!
-
+    cout << "got here checkPendingAcks" << endl;
     auto now = steady_clock::now();
+    vector<int> to_retry;
 
     for (auto it = pending_acked_dict_.begin(); it != pending_acked_dict_.end();) {
-        int pending_id = (it->second.data.empty()) ? -1 : it->second.data.front().id;
+        if (it->second.data.empty()) {
+            // Log a warning and erase the entry as it's invalid
+            cerr << "Warning: Pending ack entry with empty data. Erasing entry." << endl;
+            it = pending_acked_dict_.erase(it);
+            continue;
+        }
 
+        int pending_id = it->second.data.front().id;
         if (new_acked_ids_.count(pending_id)) {
-            // Ack received, erase from pending
-            it = pending_acked_dict_.erase(it); 
+            it = pending_acked_dict_.erase(it);
         } else if (now - it->second.timestamp > ACK_TIMEOUT) {
-            // Timeout, retry data *before* erasing
-            retryPendingData(it->second);
-            it->second.timestamp = now; // Update timestamp for next check
-            ++it; // Move to the next item
+            to_retry.push_back(pending_id);
+            it->second.timestamp = now;
+            ++it;
         } else {
-            ++it; // Move to the next item
+            ++it;
+        }
+    }
+
+    // Use a more efficient method to retry pending acknowledgments
+    // For example, use a direct lookup if possible
+    for (int id : to_retry) {
+        auto found = pending_acked_dict_.find(id);
+        if (found != pending_acked_dict_.end() && !found->second.data.empty()) {
+            retryPendingData(found->second);
+        } else {
+            cerr << "Error: Failed to find pending ack with id " << id << " for retry." << endl;
         }
     }
 }
+
 
 void RainstormNodeStage::retryPendingData(const PendingAck& pending) {
     cout << "Retrying data for ID " << pending.data[0].id << endl;
