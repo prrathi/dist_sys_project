@@ -562,6 +562,7 @@ void RainstormNodeStage::sendData(size_t downstream_node_index) {
         to_string(SERVER_PORT), 
         grpc::InsecureChannelCredentials()
     ));
+    cout << "Sending stage data chunks to " << downstream_addresses_[downstream_node_index] << ":" << SERVER_PORT << "from task " << task_index_ << endl;
     
     if (stage_index_ == 2) {
         client.SendDataChunksLeader(
