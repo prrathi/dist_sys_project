@@ -79,7 +79,8 @@ void RainstormNodeSrc::processData() {
     if (!file_read_) {
         string temp_input = "temp_" + input_file_;
         cout << "temp_input: " << temp_input << endl;
-        hydfs_.getFile(input_file_, temp_input, true);
+        //hydfs_.getFile(input_file_, temp_input, true); fuck me
+        hydfs_.getFile(temp_input, input_file_, true);
         cout << "temp_input: " << temp_input << " " << input_file_ << endl;
         ifstream file(temp_input);
         if (!file.is_open()) {
