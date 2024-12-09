@@ -23,6 +23,11 @@ public:
     void swim();
     void pipeListener();
     void runServer();
+    void getFile(const std::string& filename, const std::string& hydfs_filename, bool avoid_cache = false);
+    void createFile(const std::string& filename, const std::string& hydfs_filename);
+    void appendFile(const std::string& filename, const std::string& hydfs_filename);
+    vector<string> getVMs();
+    
 private:
     void handleCommand(const std::string& command);
     void handleClientRequests(const std::string& command);
@@ -37,7 +42,7 @@ private:
 private:
     LRUCache lru_cache;
     const std::string introducerHostname = "fa24-cs425-5801.cs.illinois.edu";
-    std::string FIFO_PATH = "/tmp/mp3";
+    std::string FIFO_PATH = "/tmp/mp4";
     FullNode currNode;
     std::condition_variable condVar;
     std::mutex globalMtx;   

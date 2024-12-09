@@ -35,7 +35,7 @@ bool FileTransferClient::CreateFile(const string& hydfs_filename, int order) {
     request.set_order(order);
     
     chrono::system_clock::time_point deadline = 
-        chrono::system_clock::now() + chrono::milliseconds(TIMEOUT_MS);
+        chrono::system_clock::now() + chrono::milliseconds(1000);
     context.set_deadline(deadline);
     
     int max_retries = 3;
@@ -43,20 +43,25 @@ bool FileTransferClient::CreateFile(const string& hydfs_filename, int order) {
     Status rpc_status;
     
     while (retry_count < max_retries) {
-        rpc_status = stub_->CreateFile(&context, request, &status);
-        if (rpc_status.ok()) break;
+        try {
+            rpc_status = stub_->CreateFile(&context, request, &status);
+            if (rpc_status.ok()) break;
+        } catch (const std::exception& e) {
+            cerr << "Exception in CreateFile: " << e.what() << endl;
+        }
         retry_count++;
-        this_thread::sleep_for(chrono::milliseconds(100));
+        if (retry_count < max_retries) {
+            this_thread::sleep_for(chrono::milliseconds(100));
+        }
     }
     
     if (rpc_status.ok() && status.status() == StatusCode::SUCCESS) {
-        cout << "File created successfully: " << status.message() << endl;
         return true;
     } else if (status.status() == StatusCode::ALREADY_EXISTS) {
         cout << "File already exists: " << hydfs_filename << endl;
         return false;
     } else {
-        cout << "Failed to create file: " << status.message() << endl;
+        cerr << "Failed to create file after " << max_retries << " retries" << endl;
         return false;
     }
 }
@@ -159,7 +164,6 @@ bool FileTransferClient::GetFile(const string& hydfs_filename, const string& loc
     
     if (response.has_status()) {
         if (response.status().status() == StatusCode::NOT_FOUND) {
-            cerr << "File not found: " << response.status().message() << endl;
             return false;
         } else if (response.status().status() == StatusCode::SUCCESS) {
             return true;

@@ -13,7 +13,6 @@
 static const int GRPC_PORT_SERVER = 8081;
 static const int GRPC_PORT_SERVER_2 = 8082;
 static const size_t BUFFER_SIZE = 1024 * 1024;  // 1MB buffer
-static const int SERVER_TIMEOUT_MS = 5000;  // 5 second server timeout
 static const int MAX_RETRIES = 3;
 static const int RETRY_DELAY_MS = 100;
 
@@ -48,16 +47,29 @@ HydfsServer::HydfsServer() {
     server_address_2_ = hostname_str + ":" + to_string(GRPC_PORT_SERVER_2);
 
     ServerBuilder builder;
+    grpc::ChannelArguments args;
+    args.SetInt(GRPC_ARG_ALLOW_REUSEPORT, 1);
     builder.AddListeningPort(server_address_, grpc::InsecureServerCredentials());
+    builder.AddChannelArgument(GRPC_ARG_ALLOW_REUSEPORT, 1);
     builder.RegisterService(this);
     server_ = builder.BuildAndStart();
-
+    if (!server_) {
+        cerr << "Failed to start server on " << server_address_ << endl;
+        exit(1);
+    }
+    cout << "gRPC Server listening on " << server_address_ << endl;
     ServerBuilder builder_2;
+    grpc::ChannelArguments args_2;
+    args_2.SetInt(GRPC_ARG_ALLOW_REUSEPORT, 1);
     builder_2.AddListeningPort(server_address_2_, grpc::InsecureServerCredentials());
+    builder_2.AddChannelArgument(GRPC_ARG_ALLOW_REUSEPORT, 1);
     builder_2.RegisterService(this);
     server_2_ = builder_2.BuildAndStart();
-
-    cout << "gRPC Server listening on " << server_address_ << endl;
+    if (!server_2_) {
+        server_->Shutdown();
+        cerr << "Failed to start server on " << server_address_2_ << endl;
+        exit(1);
+    }
     cout << "gRPC Server 2 listening on " << server_address_2_ << endl;
     if (filesystem::exists("hydfs/")) {
        filesystem::remove_all("hydfs/");

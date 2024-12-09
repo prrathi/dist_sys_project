@@ -5,18 +5,23 @@ import time
 import argparse
 import subprocess
 import socket
-
-FIFO = '/tmp/mp3'  # Named pipe path. The server should have already made this pipe when it starts (check if already exists)
 import os
+
 user = os.getenv("USER")
+FIFO = '/tmp/mp4'  # Named pipe path. The server should have already made this pipe when it starts (check if already exists)
+LEADER_FIFO = '/tmp/mp4-leader'
 if user in ["praneet", "prathi3"]:
-    FIFO = '/tmp/mp3-prathi3'
+    FIFO = '/tmp/mp4-prathi3'
+    LEADER_FIFO = '/tmp/mp4-leader-prathi3'
 
 # the server should read from pipe and execute whatever command it recieves
 
-def execute_local_command(command):
-    print(command)
-    ssh_command = f"echo {command} > {FIFO}"
+def execute_local_command(command, leader=False):
+    ssh_command = f"echo {command} > "
+    if leader:
+        ssh_command += LEADER_FIFO
+    else:
+        ssh_command += FIFO
     subprocess.run(ssh_command, shell=True, check=True)
     print(f"Sent {command} to local pipe")
 
@@ -140,7 +145,6 @@ def list_mem_ids(machines):
         return
     execute_remote_command(machines, "list_mem_ids")
 
-
 # use like: -c multiappend hydfsfilename,vm1,vm2,localfilename1,localfilename2    -> assuming the args are comma separated in this case
 def multiappend(machines, args):
     print("Executing multiappend")
@@ -153,17 +157,31 @@ def multiappend(machines, args):
         print("Calling appendfile with command: " + command + " " + filename)
         appendfile([vm], command + " " + filename)
 
+# MP 4
+
+def submitJob(machine, args):
+    execute_local_command("rainstorm " + args, leader=True)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="SWIM Protocol CLI")
     parser.add_argument("-c", "--command", choices=["list_mem", "list_self", "join", "leave", "enable_sus"
                                                     , "disable_sus", "status_sus", "list_suspected", "create", 
-                                                    "get", "append", "merge", "ls", "store", "getfromreplica", "list_mem_ids", "multiappend"])
+                                                    "get", "append", "merge", "ls", "store", "getfromreplica", "list_mem_ids", "multiappend", "failure", "rainstorm"])
     parser.add_argument("-m", "--machines", nargs="*")
+    parser.add_argument("-r", "--rainstorm", nargs=5, metavar=('OP1_EXE', 'OP2_EXE', 'HYDFS_SRC', 'HYDFS_DEST', 'NUM_TASKS'))
     parser.add_argument("remaining_args", nargs="*", help="Arguments for the command")
 
     args = parser.parse_args()
     extra_args = args.remaining_args
+
+    if args.rainstorm != None:
+        if args.command == "rainstorm":
+            submitJob("localhost", " ".join(args.rainstorm))
+        elif args.command == "failure":
+            # TODO
+            pass
+        exit(0)
 
     machine_input = args.machines if args.machines and len(args.machines) > 0 else ["localhost"]
     print(args.command)

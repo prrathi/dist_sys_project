@@ -16,6 +16,5 @@ std::string HostToIp(const std::string& host);
 
 bool checkIfMinVM(const std::string& currNodeId, const std::unordered_set<std::string>& nodeIds, size_t modulus);
 
-
 std::vector<std::pair<std::string, std::pair<size_t, size_t>>> findSuccessors(const std::string& failed_node_id, const std::unordered_set<std::string>& nodeIds, size_t modulus);
 std::pair<std::string, std::string> find2Predecessor(const std::string& failed_node_id, const std::unordered_set<std::string>& nodeIds, size_t modulus);

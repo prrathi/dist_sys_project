@@ -8,14 +8,6 @@
 #include "lru_cache.h"
 using namespace std;
 
-std::vector<char> readFileIntoVector(const std::string& filename) {
-    std::ifstream file(filename, std::ios::binary); 
-    if (!file) {
-        std::cout << "Failed to open file: " << filename << "\n";
-        return std::vector<char>(); 
-    }
-    return std::vector<char>(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
-}
 
 LRUCache::LRUCache(int cache_capacity): cache_size(0), cache_capacity(cache_capacity) {}
 void LRUCache::clean(){

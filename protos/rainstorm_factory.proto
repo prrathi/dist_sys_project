@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package rainstorm_factory;
+
+enum StatusCode {
+  SUCCESS = 0;
+  INVALID = 1;
+  NOT_FOUND = 2;
+  ALREADY_EXISTS = 3;
+}
+
+enum NodeType {
+  SRC_NODE = 0;
+  STAGE_NODE = 1;
+}
+
+message OperationStatus {
+  StatusCode status = 1;
+  string message = 2;
+}
+
+service RainstormFactoryService {
+    rpc CreateServer(ServerRequest) returns (OperationStatus);
+    rpc RemoveServer(ServerRequest) returns (OperationStatus);
+}
+
+message ServerRequest {
+    int32 port = 1;
+    NodeType node_type = 2;
+}

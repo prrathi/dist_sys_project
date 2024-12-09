@@ -1,3 +1,6 @@
+#ifndef __LRU_CACHE__
+#define __LRU_CACHE__
+
 #include <list>
 #include <unordered_map>
 #include <assert.h>
@@ -5,7 +8,6 @@
 #include <string>
 #include <iostream>
 
-std::vector<char> readFileIntoVector(const std::string& filename);
 class LRUCache{
 public:
         LRUCache(int cache_capacity);
@@ -23,3 +25,5 @@ private:
         size_t cache_size;
         size_t cache_capacity; // in bytes
 };
+
+#endif

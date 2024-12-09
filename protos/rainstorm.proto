@@ -1,0 +1,96 @@
+syntax = "proto3";
+
+package rainstorm;
+
+enum StatusCode {
+  SUCCESS = 0;
+  INVALID = 1;
+  NOT_FOUND = 2;
+  ALREADY_EXISTS = 3;
+}
+
+message OperationStatus {
+  StatusCode status = 1;
+  string message = 2;
+}
+
+// I guess run executables with popen + args .. need to limit calls to 32k-64k bytes .. kinda slow?
+// each connection between task has 2 uni-directional streams 
+// - 1 client side stream from src to server, 1 client side stream from server to src 
+// - src streams data to server, server copies it somewhere and at some point executes program on data chunk, stream ack to src, and stores the resultant data 
+// would copy k,v data to some buffer associated with task, then at some point send to next stage associated with task 
+
+service RainstormService {
+    rpc NewSrcTask(NewSrcTaskRequest) returns (OperationStatus); // tell node to start being src node.
+    rpc NewStageTask(NewStageTaskRequest) returns (OperationStatus); // tell node to start being stage task node (check if existing log files in hydfs)
+    rpc UpdateTaskSnd(UpdateTaskSndRequest) returns (OperationStatus); // tell node to start new grpc stream for task (state) to new next node
+    rpc SendDataChunks(stream StreamDataChunk) returns (stream AckDataChunk); // make sure to gracefully exit if connection lost
+    rpc SendDataChunksToLeader(stream StreamDataChunkLeader) returns (stream AckDataChunk); // only called for leader, handle everything serverside
+}
+
+message NewSrcTaskRequest {
+    int32 port = 1;
+    string job_id = 2;
+    int32 task_index = 3;
+    int32 task_count = 4;
+    string src_filename = 5;
+    string snd_address = 6;  
+    int32 snd_port = 7;
+}
+
+message NewStageTaskRequest {
+    int32 port = 1;
+    string job_id = 2;
+    int32 stage_index = 3;
+    int32 task_index = 4;
+    int32 task_count = 5;
+    string executable = 6;
+    bool stateful = 7;
+    bool last = 8;
+    repeated string snd_addresses = 9;
+    repeated int32 snd_ports = 10;
+}
+
+message UpdateTaskSndRequest {
+    int32 port = 1;
+    int32 index = 2; // among the snd_addresses
+    string snd_address = 3;
+    int32 snd_port = 4;
+}
+
+// id is the identification for the key, value pair cuz the key and value could be pretty large
+message KV {
+    int32 id = 1; // can be != key if key is big
+    string key = 2;
+    string value = 3;
+    int32 task_index = 4;
+}
+
+message DataChunk {
+    oneof request {
+        int32 port = 1;
+        int32 task_index = 2;
+        KV pair = 3;
+        bool finished = 4;
+    }
+}
+
+message StreamDataChunk {
+    repeated DataChunk chunks = 1;
+}
+
+message AckDataChunk { 
+    repeated int32 id = 1;
+}
+
+message DataChunkLeader {
+    oneof request {
+        string job_id = 1;
+        KV pair = 2;
+        bool finished = 3;
+    }
+}
+
+message StreamDataChunkLeader {
+    repeated DataChunkLeader chunks = 1;
+}

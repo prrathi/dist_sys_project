@@ -1,0 +1,14 @@
+*** compile and run ***
+protoc -I=protos/ --cpp_out=src/ --grpc_out=src/ --plugin=protoc-gen-grpc=/home/prathi3/.local/bin/grpc_cpp_plugin protos/rainstorm.proto protos/hydfs.proto protos/rainstorm_factory.proto && mv src/rainstorm.grpc.pb.h includes/rainstorm.grpc.pb.h && mv src/rainstorm.pb.h includes/rainstorm.pb.h && mv src/hydfs.grpc.pb.h includes/hydfs.grpc.pb.h && mv src/hydfs.pb.h includes/hydfs.pb.h && mv src/rainstorm_factory.grpc.pb.h includes/rainstorm_factory.grpc.pb.h && mv src/rainstorm_factory.pb.h includes/rainstorm_factory.pb.h
+rm -rf build; mkdir -p build; cd build; cmake ..; cmake --build .; cd ..
+cd datasets; make; cd ..
+./build/Rainstorm
+
+*** join ***
+python3 cli.py -c join -m prathi3@fa24-cs425-5801.cs.illinois.edu prathi3@fa24-cs425-5802.cs.illinois.edu prathi3@fa24-cs425-5803.cs.illinois.edu prathi3@fa24-cs425-5804.cs.illinois.edu prathi3@fa24-cs425-5805.cs.illinois.edu 
+
+for later - prathi3@fa24-cs425-5806.cs.illinois.edu prathi3@fa24-cs425-5807.cs.illinois.edu prathi3@fa24-cs425-5808.cs.illinois.edu prathi3@fa24-cs425-5809.cs.illinois.edu prathi3@fa24-cs425-5810.cs.illinois.edu
+
+*** job 1 ***
+python3 cli.py -c create datasets/TrafficSigns_1000.csv TrafficSigns_1000
+python3 cli.py -c rainstorm -r ./datasets/test1_1 ./datasets/test1_2 TrafficSigns_1000 TrafficSigns_1000_Rainstorm 3
