@@ -173,16 +173,19 @@ bool RainStormClient::SendDataChunksLeader(shared_ptr<SafeQueue<vector<KVStruct>
 
     // Writer thread
     thread writer_thread([&] {
+        try {
         {
             rainstorm::StreamDataChunkLeader init_chunk;
             auto* first_chunk = init_chunk.add_chunks();
             first_chunk->set_job_id(job_id);
+            cout << "here 1" << endl;
             if (!stream->Write(init_chunk)) {
                 cerr << "Initial Write failed." << endl;
                 return;
             }
         }
 
+        cout << "here 2" << endl;
         while (true) {
             vector<KVStruct> kv_pairs;
             if (queue->dequeue(kv_pairs)) {
@@ -210,6 +213,9 @@ bool RainStormClient::SendDataChunksLeader(shared_ptr<SafeQueue<vector<KVStruct>
         }
 
         stream->WritesDone();
+        } catch (const std::exception& e) {
+            std::cout << "writer thread exception: " << e.what() << std::endl;
+        }
     });
 
     // Reader thread
