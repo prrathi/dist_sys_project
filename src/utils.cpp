@@ -88,7 +88,7 @@ std::string HostToIp(const std::string& host) {
 
 bool checkIfMinVM(const string& currNodeId, const unordered_set<string>& nodeIds, size_t modulus) {
     string curr_node_hostname = currNodeId.substr(0, currNodeId.rfind("-"));
-    if (curr_node_hostname == "fa24-cs425-5801.cs.illinois.edu") return true;
+    if (curr_node_hostname == "fa24-cs425-5806.cs.illinois.edu") return true;
     return false;
     // size_t min = hashString(curr_node_hostname, modulus);
     // for (const auto& nodeId : nodeIds) {
