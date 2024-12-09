@@ -248,15 +248,22 @@ bool RainStormLeader::CreateServerOnNode(const string& node_address, int port, i
     args.SetInt(GRPC_ARG_KEEPALIVE_PERMIT_WITHOUT_CALLS, 1);
     
     string target_address = node_address + ":" + to_string(FACTORY_PORT);
+    cout << "Attempting to connect to factory at: " << target_address << endl;
+    
     auto channel = grpc::CreateCustomChannel(
         target_address, 
         grpc::InsecureChannelCredentials(),
         args
     );
-    if (!channel->WaitForConnected(std::chrono::system_clock::now() + std::chrono::seconds(5))) {
-        cerr << "Failed to connect to factory service at " << target_address << endl;
+    
+    cout << "Channel created, waiting for connection..." << endl;
+    auto deadline = std::chrono::system_clock::now() + std::chrono::seconds(5);
+    if (!channel->WaitForConnected(deadline)) {
+        cerr << "Failed to connect to factory service at " << target_address << " within 5 seconds" << endl;
         return false;
     }
+    
+    cout << "Connected to factory service, creating stub..." << endl;
     auto stub = rainstorm_factory::RainstormFactoryService::NewStub(channel);
     
     grpc::ClientContext context;
@@ -265,20 +272,25 @@ bool RainStormLeader::CreateServerOnNode(const string& node_address, int port, i
     request.set_port(port);
     if (stage_index == 0) {
         request.set_node_type(rainstorm_factory::SRC_NODE);
+        cout << "Creating SRC_NODE on port " << port << endl;
     } else {
         request.set_node_type(rainstorm_factory::STAGE_NODE);
+        cout << "Creating STAGE_NODE on port " << port << endl;
     }
     rainstorm_factory::OperationStatus response;
+    
+    cout << "Sending CreateServer request..." << endl;
     grpc::Status status = stub->CreateServer(&context, request, &response);
 
     if (!status.ok()) {
-        cerr << "RPC failed: " << status.error_message() << endl;
+        cerr << "RPC failed: " << status.error_message() << " (code: " << status.error_code() << ")" << endl;
         return false;
     }
     if (response.status() != rainstorm_factory::SUCCESS) {
         cerr << "Failed to create server: " << response.message() << endl;
         return false;
     }
+    cout << "Successfully created server on " << node_address << ":" << port << endl;
     return true;
 }
 
