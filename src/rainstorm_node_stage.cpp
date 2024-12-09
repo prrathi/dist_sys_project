@@ -29,6 +29,7 @@ void RainstormNodeStage::handleNewStageTask(const rainstorm::NewStageTaskRequest
     upstream_queue_ = make_shared<SafeQueue<vector<KVStruct>>>();
     stateful_ = request->stateful();
     last_ = request->last();
+    cout << job_id_ << " " << stage_index_ << " " << task_index_ << " " << task_count_ << " " << operator_executable_ << " " << stateful_ << " " << last_ << endl;
     if (stage_index_ == 0) {
         prev_task_count_ = 1;
     } else {
@@ -590,9 +591,8 @@ void RainstormNodeStage::sendData(size_t downstream_node_index) {
     ));
 
     if (last_) { // not sure about the input
-        cout << "sending data to leader" << endl;
-        client.SendDataChunksLeader(
-            downstream_queues_[downstream_node_index], new_acked_ids_, acked_ids_mtx_, job_id_);
+        cout << "sending data to leader" << job_id_ << endl;
+        client.SendDataChunksLeader(downstream_queues_[downstream_node_index], new_acked_ids_, acked_ids_mtx_, job_id_);
     } else {
         cout << "sending data to downstream node" << endl;
         client.SendDataChunks(

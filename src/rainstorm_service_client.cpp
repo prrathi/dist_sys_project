@@ -178,7 +178,7 @@ bool RainStormClient::SendDataChunksLeader(shared_ptr<SafeQueue<vector<KVStruct>
             rainstorm::StreamDataChunkLeader init_chunk;
             auto* first_chunk = init_chunk.add_chunks();
             first_chunk->set_job_id(job_id);
-            cout << "here 1" << endl;
+            cout << "here 1" << job_id << endl;
             if (!stream->Write(init_chunk)) {
                 cerr << "Initial Write failed." << endl;
                 return;
@@ -191,6 +191,7 @@ bool RainStormClient::SendDataChunksLeader(shared_ptr<SafeQueue<vector<KVStruct>
             if (queue->dequeue(kv_pairs)) {
                 rainstorm::StreamDataChunkLeader data_chunk_msg;
                 for (const auto& kv : kv_pairs) {
+                    cout << kv.id << ":" << kv.key << ":" << kv.value  << ":" << kv.task_index << endl;
                     auto* chunk = data_chunk_msg.add_chunks();
                     auto* pair = chunk->mutable_pair();
                     pair->set_id(kv.id);
