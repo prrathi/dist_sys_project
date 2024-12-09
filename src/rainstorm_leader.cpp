@@ -505,23 +505,23 @@ void RainStormLeader::jobCompletionChecker() {
 bool RainStormLeader::isJobCompleted(const std::string& job_id) {
     const auto& job = jobs_[job_id];
     int last_stage = job.num_stages - 1; // off by 1?
-
-    for (int task_index = 0; task_index < job.num_tasks_per_stage; task_index++) {
-        std::string fin_file = job_id + "_" + std::to_string(last_stage) + "_" + std::to_string(task_index) + "_fin.log";
-        std::string temp_fin = "temp_" + fin_file;
-        hydfs.getFile(fin_file, temp_fin, true);
-        if (!std::filesystem::exists(temp_fin)) {
-            return false; 
-        }
+    // temp remove this.
+    // for (int task_index = 0; task_index < job.num_tasks_per_stage; task_index++) {
+    //     std::string fin_file = job_id + "_" + std::to_string(last_stage) + "_" + std::to_string(task_index) + "_fin.log";
+    //     std::string temp_fin = "temp_" + fin_file;
+    //     hydfs.getFile(fin_file, temp_fin, true);
+    //     if (!std::filesystem::exists(temp_fin)) {
+    //         return false; 
+    //     }
         
-        std::ifstream fin(temp_fin);
-        std::string content;
-        std::getline(fin, content);
-        fin.close();
-        std::filesystem::remove(temp_fin);
-        if (content != "1") {
-            return false;
-        }
-    }
+    //     std::ifstream fin(temp_fin);
+    //     std::string content;
+    //     std::getline(fin, content);
+    //     fin.close();
+    //     std::filesystem::remove(temp_fin);
+    //     if (content != "1") {
+    //         return false;
+    //     }
+    // }
     return true;
 }
