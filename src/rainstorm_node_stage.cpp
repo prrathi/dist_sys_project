@@ -563,11 +563,20 @@ void RainstormNodeStage::sendData(size_t downstream_node_index) {
         grpc::InsecureChannelCredentials()
     ));
     
-    client.SendDataChunks(
-        downstream_ports_[downstream_node_index],
-        downstream_queues_[downstream_node_index],
-        new_acked_ids_,
-        acked_ids_mtx_,
-        task_index_
-    );
+    if (stage_index_ == 2) {
+        client.SendDataChunksLeader(
+            downstream_queues_[downstream_node_index],
+            new_acked_ids_,
+            acked_ids_mtx_,
+            job_id_
+        );
+    } else {
+        client.SendDataChunks(
+            downstream_ports_[downstream_node_index],
+            downstream_queues_[downstream_node_index],
+            new_acked_ids_,
+            acked_ids_mtx_,
+            task_index_
+        );
+    }
 }
