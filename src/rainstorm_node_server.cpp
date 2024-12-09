@@ -252,18 +252,21 @@ Status RainStormServer::SendDataChunks(ServerContext* context,
                                        ServerReaderWriter<rainstorm::AckDataChunk, rainstorm::StreamDataChunk>* stream) {
     rainstorm::StreamDataChunk initial_msg;
     if (!stream->Read(&initial_msg)) {
+        std::cout << "Failed to read initial message" << std::endl;
         return Status(grpc::StatusCode::INVALID_ARGUMENT, "Failed to read initial message");
     }
 
     if (initial_msg.chunks_size() == 0 || 
         !initial_msg.chunks(0).has_port() || 
         !initial_msg.chunks(0).has_task_index()) {
+        cout << "Initial message missing port or task_index" << endl;
         return Status(grpc::StatusCode::INVALID_ARGUMENT, "Initial message missing port or task_index");
     }
     int port = initial_msg.chunks(0).port();
     int task_index = initial_msg.chunks(0).task_index();
     if (factory_) {
         if (!factory_->getNode(port)) {
+            cout << "Node not found for port: " << port << endl;
             return Status(grpc::StatusCode::NOT_FOUND, "Node not found for port: " + std::to_string(port));
         }
     }
