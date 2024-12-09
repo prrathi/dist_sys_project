@@ -155,28 +155,26 @@ void RainStormLeader::submitJob(const string &op1, const string &op2, const stri
             continue;
         }
         
-        thread([this, task, job]() {
-            try {
-                cout << "Creating gRPC channel to " << task.vm << ":" << task.port_num << endl;
-                auto channel = grpc::CreateChannel(
-                    task.vm + ":" + to_string(SERVER_PORT),
-                    grpc::InsecureChannelCredentials()
-                );
-                
-                cout << "Waiting for channel connection..." << endl;
-                if (!channel->WaitForConnected(std::chrono::system_clock::now() + std::chrono::seconds(5))) {
-                    cerr << "Failed to connect to task server at " << task.vm << ":" << task.port_num << endl;
-                    return;
-                }
-                
-                cout << "Creating RainStorm client..." << endl;
-                RainStormClient client(channel);
-                cout << "Submitting task..." << endl;
-                submitSingleTask(client, task, job);
-            } catch (const exception& e) {
-                cerr << "Exception in task " << task.task_index << ": " << e.what() << endl;
+        try {
+            cout << "Creating gRPC channel to " << task.vm << ":" << task.port_num << endl;
+            auto channel = grpc::CreateChannel(
+                task.vm + ":" + to_string(SERVER_PORT),
+                grpc::InsecureChannelCredentials()
+            );
+            
+            cout << "Waiting for channel connection..." << endl;
+            if (!channel->WaitForConnected(std::chrono::system_clock::now() + std::chrono::seconds(5))) {
+                cerr << "Failed to connect to task server at " << task.vm << ":" << task.port_num << endl;
+                return;
             }
-        }).detach();
+            
+            cout << "Creating RainStorm client..." << endl;
+            RainStormClient client(channel);
+            cout << "Submitting task..." << endl;
+            submitSingleTask(client, task, job);
+        } catch (const exception& e) {
+            cerr << "Exception in task " << task.task_index << ": " << e.what() << endl;
+        }
     }
     cout << "=== Job submission complete ===\n" << endl;
 }
@@ -502,7 +500,7 @@ bool RainStormLeader::isJobCompleted(const std::string& job_id) {
     for (int task_index = 0; task_index < job.num_tasks_per_stage; task_index++) {
         std::string fin_file = job_id + "_" + std::to_string(last_stage) + "_" + std::to_string(task_index) + "_fin.log";
         std::string temp_fin = "temp_" + fin_file;
-        hydfs.getFile(fin_file, temp_fin, true);
+        hydfs.getFile(temp_fin, fin_file, true);
         if (!std::filesystem::exists(temp_fin)) {
             return false; 
         }

@@ -327,10 +327,6 @@ void RainstormNodeStage::enqueueAcks(const vector<vector<int>>& acks) {
 void RainstormNodeStage::processData() {
     loadIds(processed_file_, processed_ids_);
     recoverDataState();
-    vector<thread> sender_threads;
-    for (int i = 0; i < task_count_; i++) {
-        sender_threads.emplace_back(&RainstormNodeStage::sendData, this, i);
-    }
 
     while (!should_stop_) {
         checkPendingAcks();
@@ -548,8 +544,8 @@ void RainstormNodeStage::processData() {
         this_thread::sleep_for(milliseconds(100));
     }
     
-    for (auto& thread : sender_threads) {
-        thread.join();
+    for (auto& thread : send_threads_) {
+        thread->join();
     }
 }
 

@@ -218,7 +218,7 @@ Status HydfsServer::AppendFile(ServerContext* context, ServerReader<AppendReques
 
 Status HydfsServer::GetFile(ServerContext* context, const FileRequest* request, ServerWriter<GetResponse>* writer) {
     string filename = request->filename();
-    cout << "Received read request for " << filename << " at " << server_address_ << endl;
+    // cout << "Received read request for " << filename << " at " << server_address_ << endl;
     vector<string> chunk_files;
     
     auto it = file_map_.find(filename);
