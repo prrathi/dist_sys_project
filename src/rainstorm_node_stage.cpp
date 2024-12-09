@@ -353,6 +353,7 @@ void RainstormNodeStage::processData() {
         }
 
         if (!data.empty()) {
+            cout << "Processing data for stage " << stage_index_ << " task " << task_index_ << endl;
             string input_data;
             vector<vector<int>> to_ack(prev_task_count_);
 
@@ -555,7 +556,7 @@ void RainstormNodeStage::processData() {
                 }
             }
         }
-        this_thread::sleep_for(milliseconds(10));
+        this_thread::sleep_for(milliseconds(100));
     }
     
     for (auto& thread : sender_threads) {
