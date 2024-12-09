@@ -100,14 +100,21 @@ void RainStormLeader::pipeListener() {
 void RainStormLeader::submitJob(const string &op1, const string &op2, const string &src_file, const string &dest_file, int num_tasks) {
     lock_guard<mutex> lock(mtx);
     string job_id = generateJobId();
+    cout << "\n=== Starting new job " << job_id << " ===" << endl;
+    cout << "Source file: " << src_file << endl;
+    cout << "Destination file: " << dest_file << endl;
+    cout << "Number of tasks per stage: " << num_tasks << endl;
+    cout << "Operators: " << op1 << ", " << op2 << endl;
+
     JobInfo job;
     job.job_id = job_id;
     job.src_file = src_file;
     job.dest_file = dest_file;
     job.num_tasks_per_stage = num_tasks;
 
-    // we have single port per task including all receiving from previous stage. this is distinct from fixed port per vm to spin up new rainstormserver for new task
+    cout << "\n=== Creating task assignments ===" << endl;
     for (int stage = 0; stage < job.num_stages; stage++) {
+        cout << "\nStage " << stage << ":" << endl;
         for (int t = 0; t < num_tasks; t++) {
             LeaderTaskInfo task;
             task.stage_index = stage;
@@ -121,45 +128,136 @@ void RainStormLeader::submitJob(const string &op1, const string &op2, const stri
             }
             task.vm = getNextVM();
             task.port_num = getUnusedPortNumberForVM(task.vm);
+            cout << "  Task " << task.task_index << ": VM=" << task.vm << " Port=" << task.port_num << endl;
             job.tasks.push_back(task);
         }
     }
+
+    cout << "\n=== Assigning target nodes ===" << endl;
     for (auto& task : job.tasks) {
         auto assigned = getTargetNodes(task.stage_index, job.tasks, job.num_stages);
         task.assigned_nodes = assigned.first;
         task.assigned_ports = assigned.second;
+        cout << "Task " << task.task_index << " (Stage " << task.stage_index << ") targets:" << endl;
+        for (size_t i = 0; i < task.assigned_nodes.size(); i++) {
+            cout << "  -> " << task.assigned_nodes[i] << ":" << task.assigned_ports[i] << endl;
+        }
     }
 
     jobs_[job.job_id] = job;
 
+    cout << "\n=== Starting task creation ===" << endl;
     for (const auto& task : job.tasks) {
-        cout << "Starting task " << task.task_index << " for job " << job.job_id << " on VM: " << task.vm << " with port: " << task.port_num << endl;
+        cout << "\n--- Task " << task.task_index << " (Stage " << task.stage_index << ") ---" << endl;
         if (!CreateServerOnNode(task.vm, task.port_num, task.stage_index)) {
             cerr << "Failed to create server for task " << task.task_index << endl;
             continue;
         }
         
         thread([this, task, job]() {
-            string target_Address = task.vm + ":" + to_string(task.port_num);
-            RainStormClient client(grpc::CreateChannel(target_Address, grpc::InsecureChannelCredentials()));
             try {
+                cout << "Creating gRPC channel to " << task.vm << ":" << task.port_num << endl;
+                auto channel = grpc::CreateChannel(
+                    task.vm + ":" + to_string(task.port_num),
+                    grpc::InsecureChannelCredentials()
+                );
+                
+                cout << "Waiting for channel connection..." << endl;
+                if (!channel->WaitForConnected(std::chrono::system_clock::now() + std::chrono::seconds(5))) {
+                    cerr << "Failed to connect to task server at " << task.vm << ":" << task.port_num << endl;
+                    return;
+                }
+                
+                cout << "Creating RainStorm client..." << endl;
+                RainStormClient client(channel);
+                cout << "Submitting task..." << endl;
                 submitSingleTask(client, task, job);
             } catch (const exception& e) {
                 cerr << "Exception in task " << task.task_index << ": " << e.what() << endl;
             }
         }).detach();
     }
+    cout << "=== Job submission complete ===\n" << endl;
 }
 
 void RainStormLeader::submitSingleTask(RainStormClient& client, const LeaderTaskInfo& task, const JobInfo& job) {
+    cout << "Attempting to create task on " << task.vm << ":" << task.port_num << endl;
     if (task.stage_index == 0) {
-        client.NewSrcTask(task.port_num, job.job_id, task.task_index % job.num_tasks_per_stage, job.num_tasks_per_stage, job.src_file, task.vm, task.assigned_ports[task.task_index]);
+        cout << "Creating source task with params: " << endl
+             << "  port: " << task.port_num << endl
+             << "  job_id: " << job.job_id << endl
+             << "  task_idx: " << task.task_index % job.num_tasks_per_stage << endl
+             << "  task_count: " << job.num_tasks_per_stage << endl
+             << "  src_file: " << job.src_file << endl
+             << "  assigned_vm: " << task.vm << endl
+             << "  assigned_port: " << task.assigned_ports[task.task_index] << endl;
+        
+        bool success = client.NewSrcTask(
+            task.port_num, 
+            job.job_id, 
+            task.task_index % job.num_tasks_per_stage, 
+            job.num_tasks_per_stage, 
+            job.src_file, 
+            task.vm, 
+            task.assigned_ports[task.task_index]
+        );
+        if (!success) {
+            cerr << "NewSrcTask failed for task " << task.task_index << " on " << task.vm << ":" << task.port_num << endl;
+        }
     } else if (task.stage_index == 1) {
         bool is_agg = is_exec_agg_.find(task.operator_executable) != is_exec_agg_.end() ? is_exec_agg_.at(task.operator_executable) : false;
-        client.NewStageTask(task.port_num, job.job_id, task.stage_index, task.task_index % job.num_tasks_per_stage, job.num_tasks_per_stage, task.operator_executable, is_agg, false, task.assigned_nodes, task.assigned_ports);
+        cout << "Creating stage 1 task with params: " << endl
+             << "  port: " << task.port_num << endl
+             << "  job_id: " << job.job_id << endl
+             << "  stage_idx: " << task.stage_index << endl
+             << "  task_idx: " << task.task_index % job.num_tasks_per_stage << endl
+             << "  task_count: " << job.num_tasks_per_stage << endl
+             << "  executable: " << task.operator_executable << endl
+             << "  is_agg: " << is_agg << endl
+             << "  assigned_nodes: " << task.assigned_nodes.size() << " nodes" << endl;
+        
+        bool success = client.NewStageTask(
+            task.port_num, 
+            job.job_id, 
+            task.stage_index, 
+            task.task_index % job.num_tasks_per_stage, 
+            job.num_tasks_per_stage, 
+            task.operator_executable, 
+            is_agg, 
+            false, 
+            task.assigned_nodes, 
+            task.assigned_ports
+        );
+        if (!success) {
+            cerr << "NewStageTask failed for task " << task.task_index << " on " << task.vm << ":" << task.port_num << endl;
+        }
     } else if (task.stage_index == 2) {
         bool is_agg = is_exec_agg_.find(task.operator_executable) != is_exec_agg_.end() ? is_exec_agg_.at(task.operator_executable) : false;
-        client.NewStageTask(task.port_num, job.job_id, task.stage_index, task.task_index % job.num_tasks_per_stage, job.num_tasks_per_stage, task.operator_executable, is_agg, true, task.assigned_nodes, task.assigned_ports);
+        cout << "Creating stage 2 task with params: " << endl
+             << "  port: " << task.port_num << endl
+             << "  job_id: " << job.job_id << endl
+             << "  stage_idx: " << task.stage_index << endl
+             << "  task_idx: " << task.task_index % job.num_tasks_per_stage << endl
+             << "  task_count: " << job.num_tasks_per_stage << endl
+             << "  executable: " << task.operator_executable << endl
+             << "  is_agg: " << is_agg << endl
+             << "  assigned_nodes: " << task.assigned_nodes.size() << " nodes" << endl;
+        
+        bool success = client.NewStageTask(
+            task.port_num, 
+            job.job_id, 
+            task.stage_index, 
+            task.task_index % job.num_tasks_per_stage, 
+            job.num_tasks_per_stage, 
+            task.operator_executable, 
+            is_agg, 
+            true, 
+            task.assigned_nodes, 
+            task.assigned_ports
+        );
+        if (!success) {
+            cerr << "NewStageTask failed for task " << task.task_index << " on " << task.vm << ":" << task.port_num << endl;
+        }
     }
 }
 
@@ -344,25 +442,38 @@ void RainStormLeader::runHydfs() {
 
 string RainStormLeader::getNextVM() {
     vector<string> vms = getAllWorkerVMs();
+    cout << "Available VMs: ";
+    for (const auto& vm : vms) {
+        cout << vm << " ";
+    }
+    cout << endl;
+    
     string vm;
     do {
         vm = vms[total_tasks_running_counter_ % vms.size()];
+        cout << "Trying VM: " << vm << " (counter=" << total_tasks_running_counter_ << ")" << endl;
         total_tasks_running_counter_++;
     } while (vm == leader_address);
+    cout << "Selected VM: " << vm << endl;
     return vm;
 }
 
 pair<vector<string>, vector<int>> RainStormLeader::getTargetNodes(int stage_num, vector<LeaderTaskInfo>& tasks, int num_stages) {
     int targetStage = (stage_num + 1) % num_stages;
+    cout << "Getting targets for stage " << stage_num << " -> " << targetStage << endl;
+    
     if (targetStage == 0) {
+        cout << "Target is leader stage, returning leader address" << endl;
         return {vector<string>{leader_address}, vector<int>{getUnusedPortNumberForVM(leader_address)}};
     }
+    
     vector<string> target_nodes;
     vector<int> target_ports;
     for (const auto& task : tasks) {
         if (task.stage_index == targetStage) {
             target_nodes.push_back(task.vm);
             target_ports.push_back(task.port_num);
+            cout << "Added target: " << task.vm << ":" << task.port_num << endl;
         }
     }
     return {target_nodes, target_ports};

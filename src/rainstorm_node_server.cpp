@@ -71,45 +71,87 @@ void RainStormServer::shutdown() {
 Status RainStormServer::NewSrcTask(ServerContext* context,
                                    const rainstorm::NewSrcTaskRequest* request,
                                    rainstorm::OperationStatus* response) {
+    cout << "\n=== RainStormServer NewSrcTask Request ===" << endl;
+    cout << "Peer: " << context->peer() << endl;
+    cout << "Port: " << request->port() << endl;
+    cout << "Job ID: " << request->job_id() << endl;
+    cout << "Task Index: " << request->task_index() << endl;
+    cout << "Task Count: " << request->task_count() << endl;
+    cout << "Source File: " << request->src_filename() << endl;
+    cout << "Send Address: " << request->snd_address() << endl;
+    cout << "Send Port: " << request->snd_port() << endl;
+
     std::lock_guard<std::mutex> lock(global_mtx_);
     if (factory_) {
         cout << "NewSrcTask: inside factory for port: " << request->port() << "on node: " << server_address_ << endl;
         if (auto node = dynamic_cast<RainstormNodeSrc*>(factory_->getNode(request->port()))) {
+            cout << "Found source node, handling task" << endl;
             node->handleNewSrcTask(request);
             response->set_status(rainstorm::SUCCESS);
         } else {
+            cout << "Node not found or not a source node" << endl;
             response->set_status(rainstorm::INVALID);
             response->set_message("Node not found or not a source node");
         }
     } else if (leader_) {
+        cout << "Leader not used here" << endl;
         response->set_status(rainstorm::INVALID);
         response->set_message("Leader not used here");
     } else {
+        cout << "Server not properly initialized" << endl;
         response->set_status(rainstorm::INVALID);
         response->set_message("Server not properly initialized");
     }
+    cout << "=== End NewSrcTask Request ===\n" << endl;
     return Status::OK;
 }
 
 Status RainStormServer::NewStageTask(ServerContext* context,
                                      const rainstorm::NewStageTaskRequest* request,
                                      rainstorm::OperationStatus* response) {
+    cout << "\n=== RainStormServer NewStageTask Request ===" << endl;
+    cout << "Peer: " << context->peer() << endl;
+    cout << "Port: " << request->port() << endl;
+    cout << "Job ID: " << request->job_id() << endl;
+    cout << "Stage Index: " << request->stage_index() << endl;
+    cout << "Task Index: " << request->task_index() << endl;
+    cout << "Task Count: " << request->task_count() << endl;
+    cout << "Executable: " << request->executable() << endl;
+    cout << "Is Stateful: " << request->stateful() << endl;
+    cout << "Is Last: " << request->last() << endl;
+    cout << "Send Addresses: ";
+    for (const auto& addr : request->snd_addresses()) {
+        cout << addr << " ";
+    }
+    cout << endl;
+    cout << "Send Ports: ";
+    for (const auto& port : request->snd_ports()) {
+        cout << port << " ";
+    }
+    cout << endl;
+
     std::lock_guard<std::mutex> lock(global_mtx_);
     if (factory_) {
+        cout << "Looking up stage node for port " << request->port() << endl;
         if (auto node = dynamic_cast<RainstormNodeStage*>(factory_->getNode(request->port()))) {
+            cout << "Found stage node, handling task" << endl;
             node->handleNewStageTask(request);
             response->set_status(rainstorm::SUCCESS);
         } else {
+            cout << "Node not found or not a stage node" << endl;
             response->set_status(rainstorm::INVALID);
             response->set_message("Node not found or not a stage node");
         }
     } else if (leader_) {
+        cout << "Leader not used here" << endl;
         response->set_status(rainstorm::INVALID);
         response->set_message("Leader not used here");
     } else {
+        cout << "Server not properly initialized" << endl;
         response->set_status(rainstorm::INVALID);
         response->set_message("Server not properly initialized");
     }
+    cout << "=== End NewStageTask Request ===\n" << endl;
     return Status::OK;
 }
 
