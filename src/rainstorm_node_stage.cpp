@@ -122,14 +122,8 @@ void RainstormNodeStage::checkPendingAcks() {
     vector<int> to_retry;
 
     for (auto it = pending_acked_dict_.begin(); it != pending_acked_dict_.end();) {
-        if (it->second.data.empty()) {
-            // Log a warning and erase the entry as it's invalid
-            cerr << "Warning: Pending ack entry with empty data. Erasing entry." << endl;
-            it = pending_acked_dict_.erase(it);
-            continue;
-        }
-
-        int pending_id = it->second.data.front().id;
+        cout << "inner:" << it->first << " " << it->second.data.size() << endl;
+        int pending_id = (it->second.data.empty()) ? -1 : it->second.data.front().id;
         if (new_acked_ids_.count(pending_id)) {
             it = pending_acked_dict_.erase(it);
         } else if (now - it->second.timestamp > ACK_TIMEOUT) {
@@ -141,14 +135,12 @@ void RainstormNodeStage::checkPendingAcks() {
         }
     }
 
-    // Use a more efficient method to retry pending acknowledgments
-    // For example, use a direct lookup if possible
     for (int id : to_retry) {
-        auto found = pending_acked_dict_.find(id);
-        if (found != pending_acked_dict_.end() && !found->second.data.empty()) {
-            retryPendingData(found->second);
-        } else {
-            cerr << "Error: Failed to find pending ack with id " << id << " for retry." << endl;
+        for (auto &kv : pending_acked_dict_) {
+            if (!kv.second.data.empty() && kv.second.data.front().id == id) {
+                retryPendingData(kv.second);
+                break;
+            }
         }
     }
 }
