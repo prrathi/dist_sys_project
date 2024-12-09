@@ -215,10 +215,8 @@ bool RainStormClient::SendDataChunksLeader(shared_ptr<SafeQueue<vector<KVStruct>
     // Reader thread
     thread reader_thread([&] {
         rainstorm::AckDataChunk server_chunk;
-        cout << "leader reader 1" << endl;
         while (stream->Read(&server_chunk)) {
             lock_guard<mutex> lock(acked_ids_mutex);
-             cout << "leader reader 2" << endl;
             for (auto id : server_chunk.id()) {
                 acked_ids.insert(id);
             }

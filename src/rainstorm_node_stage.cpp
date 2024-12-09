@@ -74,7 +74,7 @@ void RainstormNodeStage::handleNewStageTask(const rainstorm::NewStageTaskRequest
     downstream_ports_.resize(request->snd_ports_size());
     ack_queues_.resize(request->snd_addresses_size());
     send_threads_.resize(request->snd_addresses_size());
-
+    cout << "send address size: " << request->snd_addresses_size() << endl;
     for (int i = 0; i < request->snd_addresses_size(); i++) {
         downstream_queues_[i] = make_shared<SafeQueue<vector<KVStruct>>>();
         ack_queues_[i] = make_shared<SafeQueue<vector<int>>>();
@@ -588,12 +588,19 @@ void RainstormNodeStage::sendData(size_t downstream_node_index) {
         to_string(downstream_ports_[downstream_node_index]), 
         grpc::InsecureChannelCredentials()
     ));
-    
-    client.SendDataChunks(
+
+    if (last_) { // not sure about the input
+        cout << "sending data to leader" << endl;
+        client.SendDataChunksLeader(
+            downstream_queues_[downstream_node_index], new_acked_ids_, acked_ids_mtx_, job_id_);
+    } else {
+        cout << "sending data to downstream node" << endl;
+        client.SendDataChunks(
         downstream_ports_[downstream_node_index],
         downstream_queues_[downstream_node_index],
         new_acked_ids_,
         acked_ids_mtx_,
         task_index_
     );
+    }
 }
