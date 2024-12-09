@@ -119,7 +119,10 @@ bool RainStormClient::SendDataChunks(int32_t port, shared_ptr<SafeQueue<vector<K
         auto* chunk = initial_msg.add_chunks();
         chunk->set_port(port);
         chunk->set_task_index(task_index);
-        stream->Write(initial_msg);
+        if (!stream->Write(initial_msg)) {
+            cerr << "Failed to write initial message" << endl;
+            std::this_thread::sleep_for(std::chrono::milliseconds(50000));
+        }
         cout << "after initial write" << endl;
         while (true) {
             vector<KVStruct> kv_pairs;

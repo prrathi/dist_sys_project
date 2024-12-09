@@ -222,9 +222,10 @@ void RainstormNodeSrc::sendData() {
 
     while (!should_stop_) {
         RainStormClient client(grpc::CreateChannel(
-            downstream_address_ + ":" + to_string(8084), 
+            downstream_address_ + ":" + to_string(downstream_port_), 
             grpc::InsecureChannelCredentials()
         ));
+
         cout << "Source Sending data to downstream node" << downstream_address_ + ":" + to_string(downstream_port_) << endl;
         client.SendDataChunks(
             downstream_port_, 
