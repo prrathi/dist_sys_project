@@ -285,7 +285,7 @@ void RainStormLeader::handleNodeFailure(const string& failed_node_id) {
                     cerr << "Failed to create server for replacement task " << task.task_index << endl;
                     continue;
                 }
-                string target_Address = task.vm + ":" + to_string(task.port_num);
+                string target_Address = task.vm + ":" + to_string(SERVER_PORT);
                 RainStormClient client(grpc::CreateChannel(target_Address, grpc::InsecureChannelCredentials()));
 
                 if (task.stage_index == 0) {
@@ -303,7 +303,7 @@ void RainStormLeader::handleNodeFailure(const string& failed_node_id) {
         for (auto &task : job.tasks) {
             auto it_target = find(task.assigned_nodes.begin(), task.assigned_nodes.end(), failed_node_id);
             if (it_target != task.assigned_nodes.end()) {
-                string target_Address = task.vm + ":" + to_string(task.port_num);
+                string target_Address = task.vm + ":" + to_string(SERVER_PORT);
                 RainStormClient client(grpc::CreateChannel(target_Address, grpc::InsecureChannelCredentials()));
                 int diff_index = (int)distance(task.assigned_nodes.begin(), it_target);
                 int new_task_index = (task.stage_index + 1) * job.num_tasks_per_stage + diff_index;
@@ -501,7 +501,7 @@ bool RainStormLeader::isJobCompleted(const std::string& job_id) {
     for (int task_index = 0; task_index < job.num_tasks_per_stage; task_index++) {
         std::string fin_file = job_id + "_" + std::to_string(last_stage) + "_" + std::to_string(task_index) + "_fin.log";
         std::string temp_fin = "temp_" + fin_file;
-        hydfs.getFile(fin_file, temp_fin);
+        hydfs.getFile(fin_file, temp_fin, true);
         if (!std::filesystem::exists(temp_fin)) {
             return false; 
         }

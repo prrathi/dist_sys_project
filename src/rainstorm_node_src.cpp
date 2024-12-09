@@ -68,7 +68,7 @@ void RainstormNodeSrc::persistNewOutput(const vector<KVStruct>& batch) {
 void RainstormNodeSrc::processData() {
     unordered_set<int> next_ids;
     string temp_next = "temp_" + next_processed_file_;
-    hydfs_.getFile(next_processed_file_, temp_next);
+    hydfs_.getFile(next_processed_file_, temp_next, true);
     if (filesystem::exists(temp_next)) {
         loadIds(temp_next, next_ids);
         filesystem::remove(temp_next);
@@ -76,7 +76,7 @@ void RainstormNodeSrc::processData() {
 
     if (!file_read_) {
         string temp_input = "temp_" + input_file_;
-        hydfs_.getFile(input_file_, temp_input);
+        hydfs_.getFile(input_file_, temp_input, true);
         ifstream file(temp_input);
         string line;
         int id = 0;
@@ -168,7 +168,7 @@ void RainstormNodeSrc::processData() {
             downstream_queue_->enqueue(to_retry);
         }
 
-        hydfs_.getFile(next_processed_file_, temp_next);
+        hydfs_.getFile(next_processed_file_, temp_next, true);
         next_ids.clear();
         if (filesystem::exists(temp_next)) {
             loadIds(temp_next, next_ids);

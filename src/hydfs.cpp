@@ -484,9 +484,9 @@ FullNode Hydfs::initNode() {
 }
 
 
-void Hydfs::getFile(const string& filename, const string& hydfs_filename) {
+void Hydfs::getFile(const string& filename, const string& hydfs_filename, bool avoid_cache) {
     string targetHost = getTarget(hydfs_filename) + ":" + to_string(GRPC_PORT_SERVER);
-    handleGet(filename, hydfs_filename, targetHost, false);
+    handleGet(filename, hydfs_filename, targetHost, avoid_cache);
 }
 
 void Hydfs::createFile(const string& filename, const string& hydfs_filename) {

@@ -54,9 +54,9 @@ void RainstormNodeStage::handleNewStageTask(const rainstorm::NewStageTaskRequest
     }
     hydfs_.createFile(state_output_file_, state_output_file_);
 
-    hydfs_.getFile(processed_file_, processed_file_);
-    hydfs_.getFile(filtered_file_, filtered_file_);
-    hydfs_.getFile(state_output_file_, state_output_file_);
+    hydfs_.getFile(processed_file_, processed_file_, true);
+    hydfs_.getFile(filtered_file_, filtered_file_, true);
+    hydfs_.getFile(state_output_file_, state_output_file_, true);
 
     for (int i = 0; i < request->snd_addresses_size(); i++) {
         downstream_addresses_.push_back(request->snd_addresses(i));
@@ -207,7 +207,7 @@ void RainstormNodeStage::recoverDataState() {
     for (int task_index = 0; task_index < downstream_addresses_.size(); task_index++) {
         string next_stage_file = job_id_ + "_" + to_string(stage_index_ + 1) + "_" + to_string(task_index) + "_processed.log";
         string temp_file = "temp_" + next_stage_file;
-        hydfs_.getFile(next_stage_file, temp_file);
+        hydfs_.getFile(next_stage_file, temp_file, true);
         if (filesystem::exists(temp_file)) {
             loadIds(temp_file, next_stage_processed);
             filesystem::remove(temp_file);
@@ -497,7 +497,7 @@ void RainstormNodeStage::processData() {
                 string fin_file = job_id_ + "_" + to_string(stage_index_ - 1) + "_" + to_string(prev_task) + "_fin.log";
                 string temp_fin = "temp_" + fin_file;
                 
-                hydfs_.getFile(fin_file, temp_fin);
+                hydfs_.getFile(fin_file, temp_fin, true);
                 if (!filesystem::exists(temp_fin)) {
                     all_prev_complete = false;
                     break;
@@ -522,7 +522,7 @@ void RainstormNodeStage::processData() {
                     string next_processed_file = job_id_ + "_" + to_string(stage_index_ + 1) + "_" + to_string(next_task) + "_processed.log";
                     string temp_next = "temp_" + next_processed_file;
                     
-                    hydfs_.getFile(next_processed_file, temp_next);
+                    hydfs_.getFile(next_processed_file, temp_next, true);
                     if (filesystem::exists(temp_next)) {
                         unordered_set<int> next_ids;
                         loadIds(temp_next, next_ids);

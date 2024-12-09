@@ -23,7 +23,7 @@ public:
     void swim();
     void pipeListener();
     void runServer();
-    void getFile(const std::string& filename, const std::string& hydfs_filename);
+    void getFile(const std::string& filename, const std::string& hydfs_filename, bool avoid_cache = false);
     void createFile(const std::string& filename, const std::string& hydfs_filename);
     void appendFile(const std::string& filename, const std::string& hydfs_filename);
     vector<string> getVMs();
