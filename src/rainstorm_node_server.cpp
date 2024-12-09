@@ -296,6 +296,7 @@ Status RainStormServer::SendDataChunks(ServerContext* context,
     }
     std::atomic<bool> is_done(false);
     
+    cout << "Starting writer and reader threads for port " << port << " task_index " << task_index << endl;
     std::thread reader_thread(&RainStormServer::SendDataChunksReader, this, stream, port, &is_done);
     std::thread writer_thread(&RainStormServer::SendDataChunksWriter, this, stream, task_index, port, &is_done);
 

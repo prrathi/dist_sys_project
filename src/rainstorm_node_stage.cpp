@@ -323,7 +323,6 @@ void RainstormNodeStage::enqueueAcks(const vector<vector<int>>& acks) {
 }
 
 void RainstormNodeStage::processData() {
-    cout << "Processing data for stage " << stage_index_ << " task " << task_index_ << endl;
     loadIds(processed_file_, processed_ids_);
     recoverDataState();
 
@@ -543,8 +542,10 @@ void RainstormNodeStage::processData() {
                     should_stop_ = true;
                 }
             }
+        } else {
+            cout << "No data to process for stage " << stage_index_ << " task " << task_index_ << endl;
         }
-        this_thread::sleep_for(milliseconds(100));
+        this_thread::sleep_for(milliseconds(10));
     }
     
     for (auto& thread : send_threads_) {

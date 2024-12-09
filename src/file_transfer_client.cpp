@@ -119,7 +119,6 @@ bool FileTransferClient::AppendFile(const string& file_path, const string& hydfs
 
     Status rpc_status = writer->Finish();
     if (rpc_status.ok() && status.status() == StatusCode::SUCCESS) {
-        cout << "File uploaded successfully: " << status.message() << endl;
         return true;
     } else if (rpc_status.error_code() == grpc::StatusCode::DEADLINE_EXCEEDED) {
         cout << "File upload failed due to timeout: " << rpc_status.error_message() << endl;
