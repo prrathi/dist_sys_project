@@ -329,12 +329,15 @@ void RainstormNodeStage::processData() {
     while (!should_stop_) {
         cout << "Processing data for stage " << stage_index_ << " task " << task_index_ << endl;
         checkPendingAcks();
+        cout << "Finished checking pending acks for stage " << stage_index_ << " task " << task_index_ << endl;
 
         vector<KVStruct> data;
         {
             lock_guard<mutex> lock(state_mtx_);
+            cout << "Dequeuing data for stage " << stage_index_ << " task " << task_index_ << endl;
             upstream_queue_->dequeue(data);
         }
+        cout << "Finished dequeuing data for stage " << stage_index_ << " task " << task_index_ << endl;
 
         if (!data.empty()) {
             cout << "Data not empty for stage " << stage_index_ << " task " << task_index_ << endl;
