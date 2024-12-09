@@ -70,6 +70,13 @@ void RainstormNodeStage::handleNewStageTask(const rainstorm::NewStageTaskRequest
     //     ack_queues_.push_back(make_shared<SafeQueue<vector<int>>>());
     // }
 
+
+    /*
+
+    making multiple send data 
+    
+    */
+
     downstream_queues_.resize(request->snd_addresses_size());
     downstream_addresses_.resize(request->snd_addresses_size());
     downstream_ports_.resize(request->snd_ports_size());
@@ -354,9 +361,19 @@ void RainstormNodeStage::processData() {
     loadIds(processed_file_, processed_ids_);
     recoverDataState();
     vector<thread> sender_threads;
-    for (int i = 0; i < task_count_; i++) {
-        sender_threads.emplace_back(&RainstormNodeStage::sendData, this, i);
-    }
+    /* 
+    from above
+        for (int i = 0; i < request->snd_addresses_size(); i++) {
+        downstream_queues_[i] = make_shared<SafeQueue<vector<KVStruct>>>();
+        ack_queues_[i] = make_shared<SafeQueue<vector<int>>>();
+        downstream_addresses_[i] = request->snd_addresses(i);
+        downstream_ports_[i] = request->snd_ports(i);
+        send_threads_[i] = make_unique<thread>(&RainstormNodeStage::sendData, this, i);
+    }*/
+    // why  have both these make 50 send data thread idk which one u want
+    // for (int i = 0; i < task_count_; i++) {
+    //     sender_threads.emplace_back(&RainstormNodeStage::sendData, this, i);
+    // }
 
     while (!should_stop_) {
         checkPendingAcks();
