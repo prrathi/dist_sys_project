@@ -127,11 +127,8 @@ void Hydfs::handleAppend(const string& filename, const string& hydfs_filename) {
     for (size_t i = 0; i < 3; i++) {
         string targetHost = successors[i] + ":" + to_string(GRPC_PORT_SERVER); 
         FileTransferClient client(grpc::CreateChannel(targetHost, grpc::InsecureChannelCredentials()));
-        cout << "Append called, Target: " << targetHost << "\n";
         bool res = client.AppendFile(filename, hydfs_filename);
-        if (res) {
-            cout << "Append Successful: " << targetHost << "\n";
-        } else {
+        if (!res) {
             cout << "Append Failed on target: " << targetHost << endl;
             return;
         }

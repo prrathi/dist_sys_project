@@ -250,15 +250,16 @@ void RainStormServer::SendDataChunksWriter(ServerReaderWriter<rainstorm::AckData
 
 Status RainStormServer::SendDataChunks(ServerContext* context,
                                        ServerReaderWriter<rainstorm::AckDataChunk, rainstorm::StreamDataChunk>* stream) {
-    cout << "Received initial message from " << context->peer() << endl;
     rainstorm::StreamDataChunk initial_msg;
     if (!stream->Read(&initial_msg)) {
+        cout << "Failed to read initial message from " << context->peer() << endl;
         return Status(grpc::StatusCode::INVALID_ARGUMENT, "Failed to read initial message");
     }
 
     if (initial_msg.chunks_size() == 0 || 
         !initial_msg.chunks(0).has_port() || 
         !initial_msg.chunks(0).has_task_index()) {
+        cout << "Initial message missing port or task_index from " << context->peer() << endl;
         return Status(grpc::StatusCode::INVALID_ARGUMENT, "Initial message missing port or task_index");
     }
     int port = initial_msg.chunks(0).port();
