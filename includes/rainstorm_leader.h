@@ -56,7 +56,7 @@ private:
     std::pair<std::vector<std::string>, std::vector<int>> getTargetNodes(int stage_num, std::vector<LeaderTaskInfo>& tasks, int num_stages);
     void jobCompletionChecker();
     bool isJobCompleted(const std::string& job_id);
-    bool CreateServerOnNode(const std::string& node_address, int port);
+    bool CreateServerOnNode(const std::string& node_address, int port, int stage_index);
     bool RemoveServerFromNode(const std::string& node_address, int port);
 
 private:

@@ -133,13 +133,13 @@ void RainStormLeader::submitJob(const string &op1, const string &op2, const stri
     jobs_[job.job_id] = job;
 
     for (const auto& task : job.tasks) {
-        if (!CreateServerOnNode(task.vm, task.port_num)) {
+        cout << "Starting task " << task.task_index << " for job " << job.job_id << " on VM: " << task.vm << " with port: " << task.port_num << endl;
+        if (!CreateServerOnNode(task.vm, task.port_num, task.stage_index)) {
             cerr << "Failed to create server for task " << task.task_index << endl;
             continue;
         }
         
         thread([this, task, job]() {
-            cout << "Starting task " << task.task_index << " for job " << job.job_id << " on VM: " << task.vm << " with port: " << task.port_num << endl;
             string target_Address = task.vm + ":" + to_string(task.port_num);
             RainStormClient client(grpc::CreateChannel(target_Address, grpc::InsecureChannelCredentials()));
             try {
@@ -241,7 +241,7 @@ int RainStormLeader::getUnusedPortNumberForVM(const string& vm) {
     return FACTORY_PORT + 1;
 }
 
-bool RainStormLeader::CreateServerOnNode(const string& node_address, int port) {
+bool RainStormLeader::CreateServerOnNode(const string& node_address, int port, int stage_index) {
     grpc::ChannelArguments args;
     args.SetInt(GRPC_ARG_KEEPALIVE_TIME_MS, 10000);
     args.SetInt(GRPC_ARG_KEEPALIVE_TIMEOUT_MS, 5000);
@@ -263,6 +263,11 @@ bool RainStormLeader::CreateServerOnNode(const string& node_address, int port) {
     context.set_deadline(std::chrono::system_clock::now() + std::chrono::seconds(5));
     rainstorm_factory::ServerRequest request;
     request.set_port(port);
+    if (stage_index == 0) {
+        request.set_node_type(rainstorm_factory::SRC_NODE);
+    } else {
+        request.set_node_type(rainstorm_factory::STAGE_NODE);
+    }
     rainstorm_factory::OperationStatus response;
     grpc::Status status = stub->CreateServer(&context, request, &response);
 
