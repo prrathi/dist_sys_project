@@ -159,7 +159,6 @@ bool FileTransferClient::GetFile(const string& hydfs_filename, const string& loc
     
     if (response.has_status()) {
         if (response.status().status() == StatusCode::NOT_FOUND) {
-            cerr << "File not found: " << response.status().message() << endl;
             return false;
         } else if (response.status().status() == StatusCode::SUCCESS) {
             return true;
