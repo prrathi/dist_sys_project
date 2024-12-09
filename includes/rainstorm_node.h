@@ -51,7 +51,7 @@ protected:
 
 class RainstormNodeSrc : public RainstormNodeBase {
 public:
-    explicit RainstormNodeSrc::RainstormNodeSrc(Hydfs& hydfs, int port) : RainstormNodeBase(hydfs) {}
+    explicit RainstormNodeSrc::RainstormNodeSrc(Hydfs& hydfs) : RainstormNodeBase(hydfs) {}
     void handleNewSrcTask(const rainstorm::NewSrcTaskRequest* request);
     void handleUpdateTask(const rainstorm::UpdateTaskSndRequest* request);
 
@@ -86,7 +86,7 @@ private:
 
 class RainstormNodeStage : public RainstormNodeBase {
 public:
-    explicit RainstormNodeStage::RainstormNodeStage(Hydfs& hydfs, int port) : RainstormNodeBase(hydfs) {}
+    explicit RainstormNodeStage::RainstormNodeStage(Hydfs& hydfs) : RainstormNodeBase(hydfs) {}
     void handleNewStageTask(const rainstorm::NewStageTaskRequest* request);
     void handleUpdateTask(const rainstorm::UpdateTaskSndRequest* request);
     void enqueueIncomingData(const std::vector<KVStruct>& data);
