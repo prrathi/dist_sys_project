@@ -20,7 +20,7 @@ using namespace chrono;
 
 void RainstormNodeStage::handleNewStageTask(const rainstorm::NewStageTaskRequest* request) {
     lock_guard<mutex> lock(state_mtx_);
-    
+    cout << "got here k1" << endl;
     job_id_ = request->job_id();
     stage_index_ = request->stage_index();
     task_index_ = request->task_index();
@@ -57,7 +57,7 @@ void RainstormNodeStage::handleNewStageTask(const rainstorm::NewStageTaskRequest
     hydfs_.getFile(processed_file_, processed_file_, true);
     hydfs_.getFile(filtered_file_, filtered_file_, true);
     hydfs_.getFile(state_output_file_, state_output_file_, true);
-
+    cout << "got here k2" << endl;
     for (int i = 0; i < request->snd_addresses_size(); i++) {
         downstream_addresses_.push_back(request->snd_addresses(i));
         downstream_ports_.push_back(request->snd_ports(i));
@@ -67,11 +67,11 @@ void RainstormNodeStage::handleNewStageTask(const rainstorm::NewStageTaskRequest
         ack_queues_.push_back(make_shared<SafeQueue<vector<int>>>());
     }
 
-    downstream_queues_.resize(request->snd_addresses_size());
-    downstream_addresses_.resize(request->snd_addresses_size());
-    downstream_ports_.resize(request->snd_ports_size());
-    ack_queues_.resize(request->snd_addresses_size());
-    send_threads_.resize(request->snd_addresses_size());
+    // downstream_queues_.resize(request->snd_addresses_size());
+    // downstream_addresses_.resize(request->snd_addresses_size());
+    // downstream_ports_.resize(request->snd_ports_size());
+    // ack_queues_.resize(request->snd_addresses_size());
+    // send_threads_.resize(request->snd_addresses_size());
 
     for (int i = 0; i < request->snd_addresses_size(); i++) {
         downstream_queues_[i] = make_shared<SafeQueue<vector<KVStruct>>>();
