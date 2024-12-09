@@ -107,7 +107,7 @@ void RainstormNodeSrc::processData() {
             int partition = partitionData(kv.key, task_count_);
             if (partition == task_index_) {
                 batch.push_back(kv);
-                if (batch.size() >= 100) {
+                if (batch.size() >= 15) { // trying 15 instead of 100
                     PendingAck pending;
                     pending.timestamp = steady_clock::now();
                     pending.data = batch;
