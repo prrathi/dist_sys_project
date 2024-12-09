@@ -416,6 +416,7 @@ void RainstormNodeStage::processData() {
             }
             string command = "echo \"" + input_data + "\" | " + operator_executable_;
             
+            cout << "command: " << command << endl;
             FILE* pipe = popen(command.c_str(), "r");
             if (!pipe) {
                 cerr << "Error opening pipe for command: " << command << endl;
