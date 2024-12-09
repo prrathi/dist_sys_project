@@ -147,6 +147,7 @@ void RainStormLeader::submitJob(const string &op1, const string &op2, const stri
     jobs_[job.job_id] = job;
 
     cout << "\n=== Starting task creation ===" << endl;
+    cout << "START TIME IS " << chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count() << endl;
     for (const auto& task : job.tasks) {
         cout << "\n--- Task " << task.task_index << " (Stage " << task.stage_index << ") ---" << endl;
         if (!CreateServerOnNode(task.vm, task.port_num, task.stage_index)) {

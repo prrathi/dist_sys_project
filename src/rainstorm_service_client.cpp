@@ -83,6 +83,7 @@ bool RainStormClient::NewStageTask(int port,
     grpc::Status status = stub_->NewStageTask(&context, request, &response);
 
     if (status.ok() && response.status() == rainstorm::SUCCESS) {
+        cout << "END TIME IS " << chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count() << endl;
         std::cout << "NewStageTask succeeded for stage " << stage_index << " task " << task_index << std::endl;
         return true;
     } else {
