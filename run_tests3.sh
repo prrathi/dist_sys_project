@@ -13,7 +13,7 @@ TARGET_VMS=(
 )
 
 # path to executable make sure right
-RAINSTORM_PATH="~/cs425MPs/g58_mp4/build/Rainstorm/Rainstorm"
+RAINSTORM_PATH="~/cs425MPs/g58_mp4/build/Rainstorm"
 
 # Iterate over each target VM and start RainStorm
 for VM in "${TARGET_VMS[@]}"; do
