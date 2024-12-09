@@ -371,12 +371,14 @@ Status RainStormServer::SendDataChunksToLeader(ServerContext* context,
                                               ServerReaderWriter<rainstorm::AckDataChunk, rainstorm::StreamDataChunkLeader>* stream) {
     SafeQueue<std::vector<int>> ack_queue;
     std::atomic<bool> done_reading(false);
-    
+    cout << "Data got to leader" << endl;
     rainstorm::StreamDataChunkLeader initial_msg;
     if (!stream->Read(&initial_msg)) {
+        std::cout << "Failed to read initial message with job_id" << std::endl;
         return Status(grpc::StatusCode::INVALID_ARGUMENT, "Failed to read initial message with job_id");
     }
     if (initial_msg.chunks_size() == 0 || !initial_msg.chunks(0).has_job_id()) {
+        std::cout << "Initial message missing job_id" << std::endl;
         return Status(grpc::StatusCode::INVALID_ARGUMENT, "Initial message missing job_id");
     }
     std::string job_id = initial_msg.chunks(0).job_id();

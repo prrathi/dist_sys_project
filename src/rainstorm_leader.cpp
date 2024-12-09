@@ -179,6 +179,7 @@ void RainStormLeader::submitJob(const string &op1, const string &op2, const stri
             RainStormClient client(channel);
             cout << "Submitting task..." << endl;
             submitSingleTask(client, task, job);
+            sleep(0.5);
         } catch (const exception& e) {
             cerr << "Exception in task " << task.task_index << ": " << e.what() << endl;
         }

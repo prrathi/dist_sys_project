@@ -211,7 +211,7 @@ bool RainStormClient::SendDataChunksLeader(shared_ptr<SafeQueue<vector<KVStruct>
                 break;
             }
         }
-
+        cout << "stream writes done" << endl;
         stream->WritesDone();
         } catch (const std::exception& e) {
             std::cout << "writer thread exception: " << e.what() << std::endl;
