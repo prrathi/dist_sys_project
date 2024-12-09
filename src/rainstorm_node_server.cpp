@@ -297,10 +297,41 @@ Status RainStormServer::SendDataChunks(ServerContext* context,
     std::atomic<bool> is_done(false);
     
     cout << "Starting writer and reader threads for port " << port << " task_index " << task_index << endl;
-    std::thread reader_thread(&RainStormServer::SendDataChunksReader, this, stream, port, &is_done);
+    // std::thread reader_thread(&RainStormServer::SendDataChunksReader, this, stream, port, &is_done);
     std::thread writer_thread(&RainStormServer::SendDataChunksWriter, this, stream, task_index, port, &is_done);
+    rainstorm::StreamDataChunk chunk;
+    while (stream->Read(&chunk)) {
+        cout << "Received chunk from " << port << endl;
+        std::vector<KVStruct> batch;
+        bool finished = false;
+        for (const auto& data_chunk : chunk.chunks()) {
+            if (data_chunk.has_pair()) {
+                KVStruct kv = protoToKVStruct(data_chunk.pair());
+                batch.push_back(kv);
+            }
+            if (data_chunk.has_finished()) {
+                finished = true;
+            }
+        }
+        if (!batch.empty()) {
+            bool success = false;
+            if (factory_) {
+                if (auto node = dynamic_cast<RainstormNodeStage*>(factory_->getNode(port))) {
+                    cout << "Enqueuing batch of size " << batch.size() << " to stage node " << port << endl;
+                    node->enqueueIncomingData(batch);
+                    success = true;
+                }
+            } else if (leader_) {
+                cerr << "Leader not used here" << endl; 
+            }
+        }
+        if (finished) {
+            break;
+        }
+    }
+    is_done.store(true);
 
-    reader_thread.join();
+    // reader_thread.join();
     writer_thread.join();
 
     return Status::OK;
