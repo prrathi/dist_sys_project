@@ -15,6 +15,8 @@ public:
     RainstormFactory() : rainstorm_node_server_(this) {}
     ~RainstormFactory();
 
+    void runHydfs();
+    void runServer() { rainstorm_node_server_.wait(); }
     grpc::Status CreateServer(grpc::ServerContext* context, 
         const rainstorm_factory::ServerRequest* request, 
         rainstorm_factory::OperationStatus* response) override;
@@ -24,7 +26,6 @@ public:
 
     void run(int port);
     void stop();
-    void runHydfs();
     RainstormNodeBase* getNode(int port) {
         std::lock_guard<std::mutex> lock(servers_mutex_);
         auto it = active_servers_.find(port);

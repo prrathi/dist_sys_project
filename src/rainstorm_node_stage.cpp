@@ -353,7 +353,7 @@ void RainstormNodeStage::processData() {
         }
 
         if (!data.empty()) {
-            string command = operator_executable_ + " ";
+            string input_data;
             vector<vector<int>> to_ack(prev_task_count_);
 
             for (auto &kv : data) {
@@ -371,17 +371,18 @@ void RainstormNodeStage::processData() {
                     escaped_value.replace(pos, 1, "\\\"");
                     pos += 2;
                 }
-                command += "]][" + to_string(kv.id) + 
-                          "]][" + kv.key + 
-                          "]][\"" + escaped_value + "\"]][" + 
-                          to_string(kv.task_index);
+                input_data += "]][" + to_string(kv.id) + 
+                             "]][" + kv.key + 
+                             "]][" + escaped_value + 
+                             "]][" + to_string(kv.task_index);
             }
 
-            if (command == operator_executable_ + " ") {
+            if (input_data.empty()) {
                 enqueueAcks(to_ack); 
                 continue;
             }
-
+            string command = "echo \"" + input_data + "\" | " + operator_executable_;
+            
             FILE* pipe = popen(command.c_str(), "r");
             if (!pipe) {
                 cerr << "Error opening pipe for command: " << command << endl;
