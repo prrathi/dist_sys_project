@@ -303,6 +303,7 @@ Status RainStormServer::SendDataChunks(ServerContext* context,
     // Reader Logic within the same thread
     rainstorm::StreamDataChunk chunk;
     while (stream->Read(&chunk)) {
+        cout << "Chunk read: " << chunk.chunks_size() << endl;
         std::vector<KVStruct> batch;
         bool finished = false;
         for (const auto& data_chunk : chunk.chunks()) {
