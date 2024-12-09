@@ -58,7 +58,7 @@ void RainstormNodeStage::handleNewStageTask(const rainstorm::NewStageTaskRequest
     // hydfs_.getFile(processed_file_, processed_file_, true);
     // hydfs_.getFile(filtered_file_, filtered_file_, true);
     // hydfs_.getFile(state_output_file_, state_output_file_, true);
-    cout << "got here k2" << endl;
+    // cout << "got here k2" << endl;
 
      // little sus?
     // for (int i = 0; i < request->snd_addresses_size(); i++) {
