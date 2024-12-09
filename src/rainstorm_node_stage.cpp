@@ -18,7 +18,7 @@
 using namespace std;
 using namespace chrono;
 
-#define PATTERN "PUNCHED TELESPAR"
+const string PATTERN = "PUNCHED TELESPAR";
 
 void RainstormNodeStage::handleNewStageTask(const rainstorm::NewStageTaskRequest* request) {
     lock_guard<mutex> lock(state_mtx_);
@@ -418,7 +418,7 @@ void RainstormNodeStage::processData() {
             }
             string command;
             if (stage_index_ == 1) {
-                command = "echo \"" + input_data + "\" | " + operator_executable_ + " " PATTERN;
+                command = "echo \"" + input_data + "\" | " + operator_executable_ + " " + PATTERN;
             } else {
                 command = "echo \"" + input_data + "\" | " + operator_executable_;
             }
