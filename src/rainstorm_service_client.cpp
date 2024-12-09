@@ -159,7 +159,7 @@ void RainStormClient::writeToStream(
         rainstorm::DataChunk task_index_chunk;
         task_index_chunk.set_task_index(task_index);
         initial_msg.add_chunks()->CopyFrom(task_index_chunk);
-        
+
         // Log and send the initial combined message
         std::cout << "Writing initial message with port: " << port 
                   << " and task_index: " << task_index << std::endl;
@@ -178,9 +178,11 @@ void RainStormClient::writeToStream(
             if (queue->dequeue(kv_pairs)) { // Assume dequeue blocks until data is available
                 if (kv_pairs.empty()) {
                     // No data to send; skip
+                    cout << "No data to send; skipping" << endl;
                     continue;
                 }
                 
+                cout << "Sending " << kv_pairs.size() << " KV pairs to task " << task_index << " with port " << port << endl;
                 rainstorm::StreamDataChunk data_chunk_msg;
                 for (const auto& kv : kv_pairs) {
                     // Validate KVStruct fields

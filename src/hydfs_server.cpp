@@ -130,7 +130,7 @@ Status HydfsServer::AppendFile(ServerContext* context, ServerReader<AppendReques
         return Status::OK;
     }
 
-    cout << "Received write request for " << msg.file_request().filename() << " at " << server_address_ << endl;
+    // cout << "Received write request for " << msg.file_request().filename() << " at " << server_address_ << endl;
 
     // first message must contain file request
     if (!msg.has_file_request()) {
@@ -210,7 +210,7 @@ Status HydfsServer::AppendFile(ServerContext* context, ServerReader<AppendReques
 
     file_map_[filename].second.push_back(chunk_filename);
 
-    cout << "Completed write request for " << filename << " at " << server_address_ << endl;
+    // cout << "Completed write request for " << filename << " at " << server_address_ << endl;
     
     response->set_status(StatusCode::SUCCESS);
     return Status::OK;
@@ -218,7 +218,7 @@ Status HydfsServer::AppendFile(ServerContext* context, ServerReader<AppendReques
 
 Status HydfsServer::GetFile(ServerContext* context, const FileRequest* request, ServerWriter<GetResponse>* writer) {
     string filename = request->filename();
-    cout << "Received read request for " << filename << " at " << server_address_ << endl;
+    // cout << "Received read request for " << filename << " at " << server_address_ << endl;
     vector<string> chunk_files;
     
     auto it = file_map_.find(filename);
@@ -292,7 +292,7 @@ Status HydfsServer::GetFile(ServerContext* context, const FileRequest* request, 
         this_thread::sleep_for(chrono::milliseconds(RETRY_DELAY_MS));
     }
 
-    cout << "Completed read request for " << filename << " at " << server_address_ << endl;
+    // cout << "Completed read request for " << filename << " at " << server_address_ << endl;
 
     return Status::OK;
 }

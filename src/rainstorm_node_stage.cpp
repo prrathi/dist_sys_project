@@ -522,6 +522,7 @@ void RainstormNodeStage::processData() {
             }
             for (int i = 0; i < task_count_; i++) {
                 if (!new_pending_acks[(size_t)i].data.empty()) {
+                    cout << "Enqueuing data for stage " << stage_index_ << " task " << task_index_ << " to downstream node " << i << endl;
                     downstream_queues_[(size_t)i]->enqueue(new_pending_acks[(size_t)i].data);
                 }
             }
