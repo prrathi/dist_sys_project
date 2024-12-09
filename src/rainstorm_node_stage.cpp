@@ -427,6 +427,7 @@ void RainstormNodeStage::processData() {
             string all_output;
             while (fgets(buffer, buff_size, pipe) != nullptr) {
                 all_output += buffer;
+                cout << "output from pipe: " << buffer << endl;
             }
             pclose(pipe);
 
@@ -469,6 +470,7 @@ void RainstormNodeStage::processData() {
                         kv.key = key;
                         kv.value = value;
                         kv.task_index = task_index_;
+                        cout << "Processing data" << kv.id << ":" << kv.key << ":" << kv.value << ":" << kv.task_index << endl;
 
                         if (stateful_) {
                             int val = stoi(kv.value);
