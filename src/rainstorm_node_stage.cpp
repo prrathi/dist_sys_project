@@ -608,10 +608,10 @@ void RainstormNodeStage::sendData(size_t downstream_node_index) {
     ));
 
     if (last_) { // not sure about the input
-        cout << "sending data to leader" << job_id_ << endl;
+        cout << "sending data to leader" << downstream_addresses_[downstream_node_index] + ":" +  to_string(downstream_ports_[downstream_node_index]) << endl;
         client.SendDataChunksLeader(downstream_queues_[downstream_node_index], new_acked_ids_, acked_ids_mtx_, job_id_);
     } else {
-        cout << "sending data to downstream node" << endl;
+        cout << "sending data to downstream node" << downstream_addresses_[downstream_node_index] + ":" + to_string(downstream_ports_[downstream_node_index]) << endl;
         client.SendDataChunks(
         downstream_ports_[downstream_node_index],
         downstream_queues_[downstream_node_index],

@@ -270,7 +270,7 @@ Status RainStormServer::SendDataChunks(ServerContext* context,
             return Status(grpc::StatusCode::NOT_FOUND, "Node not found for port: " + std::to_string(port));
         }
     }
-    
+    cout << "in server send data chunks" << endl;
     std::atomic<bool> is_done(false);
     std::mutex write_mutex;
 
@@ -304,6 +304,7 @@ Status RainStormServer::SendDataChunks(ServerContext* context,
     });
 
     // Reader Logic within the same thread
+    cout << "got to reader logic" << endl;
     rainstorm::StreamDataChunk chunk;
     while (stream->Read(&chunk)) {
         cout << "Chunk read: " << chunk.chunks_size() << endl;
@@ -335,7 +336,7 @@ Status RainStormServer::SendDataChunks(ServerContext* context,
     // Signal writer thread to terminate
     is_done.store(true);
     writer_thread.join();
-
+    cout << "should not have reached here" << endl;
     return Status::OK;
 }
 

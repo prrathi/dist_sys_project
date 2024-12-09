@@ -225,7 +225,7 @@ void RainstormNodeSrc::sendData() {
             downstream_address_ + ":" + to_string(downstream_port_), 
             grpc::InsecureChannelCredentials()
         ));
-        cout << "Source Sending data to downstream node" << endl;
+        cout << "Source Sending data to downstream node" << downstream_address_ + ":" + to_string(downstream_port_) << endl;
         client.SendDataChunks(
             downstream_port_, 
             downstream_queue_, 
