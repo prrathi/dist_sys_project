@@ -251,24 +251,31 @@ void RainStormServer::SendDataChunksWriter(ServerReaderWriter<rainstorm::AckData
 Status RainStormServer::SendDataChunks(ServerContext* context,
                                        ServerReaderWriter<rainstorm::AckDataChunk, rainstorm::StreamDataChunk>* stream) {
     rainstorm::StreamDataChunk initial_msg;
-    if (!stream->Read(&initial_msg)) {
-        std::cout << "Failed to read initial message" << std::endl;
-        return Status(grpc::StatusCode::INVALID_ARGUMENT, "Failed to read initial message");
-    }
-
-    if (initial_msg.chunks_size() == 0 || 
-        !initial_msg.chunks(0).has_port() || 
-        !initial_msg.chunks(0).has_task_index()) {
-        cout << "Initial message missing port or task_index" << endl;
-        return Status(grpc::StatusCode::INVALID_ARGUMENT, "Initial message missing port or task_index");
-    }
-    int port = initial_msg.chunks(0).port();
-    int task_index = initial_msg.chunks(0).task_index();
-    if (factory_) {
-        if (!factory_->getNode(port)) {
-            cout << "Node not found for port: " << port << endl;
-            return Status(grpc::StatusCode::NOT_FOUND, "Node not found for port: " + std::to_string(port));
+    bool port_set = false;
+    bool task_index_set = false;
+    int port = 0;
+    int task_index = 0;
+    
+    // Read messages until both port and task_index are received
+    while (stream->Read(&initial_msg)) {
+        for (const auto& chunk : initial_msg.chunks()) {
+            if (chunk.has_port()) {
+                port = chunk.port();
+                port_set = true;
+            }
+            if (chunk.has_task_index()) {
+                task_index = chunk.task_index();
+                task_index_set = true;
+            }
         }
+        if (port_set && task_index_set) {
+            break;
+        }
+    }
+    
+    if (!port_set || !task_index_set) {
+        std::cout << "Initial message missing port or task_index" << std::endl;
+        return Status(grpc::StatusCode::INVALID_ARGUMENT, "Initial message missing port or task_index");
     }
     cout << "in server send data chunks" << endl;
     std::atomic<bool> is_done(false);

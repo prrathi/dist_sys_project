@@ -139,42 +139,40 @@ bool RainStormClient::SendDataChunks(int32_t port,
 }
 
 // Writer function
-void RainStormClient::writeToStream(grpc::ClientReaderWriter<rainstorm::StreamDataChunk, rainstorm::AckDataChunk>* stream,
-                                    int32_t port, int task_index, 
-                                    std::shared_ptr<SafeQueue<std::vector<KVStruct>>> queue) {
+// Writer function
+void RainStormClient::writeToStream(
+    grpc::ClientReaderWriter<rainstorm::StreamDataChunk, rainstorm::AckDataChunk>* stream,
+    int32_t port, 
+    int task_index, 
+    std::shared_ptr<SafeQueue<std::vector<KVStruct>>> queue) {
+    
     try {
-        // Create StreamDataChunk message
+        // Create a single StreamDataChunk message containing both port and task_index
         rainstorm::StreamDataChunk initial_msg;
         
-        // Send port
+        // Add port to the message
         rainstorm::DataChunk port_chunk;
         port_chunk.set_port(port);
         initial_msg.add_chunks()->CopyFrom(port_chunk);
-        std::cout << "Writing port: " << port << std::endl;
-        if (!stream->Write(initial_msg)) {
-            std::cerr << "Failed to write port message." << port << std::endl;
-            return;
-        }
-        std::cout << "Port message written successfully." << std::endl;
         
-        // Clear initial_msg for next use
-        initial_msg.Clear();
-        
-        // Send task_index
+        // Add task_index to the message
         rainstorm::DataChunk task_index_chunk;
         task_index_chunk.set_task_index(task_index);
         initial_msg.add_chunks()->CopyFrom(task_index_chunk);
-        std::cout << "Writing task_index: " << task_index << std::endl;
+        
+        // Log and send the initial combined message
+        std::cout << "Writing initial message with port: " << port 
+                  << " and task_index: " << task_index << std::endl;
         if (!stream->Write(initial_msg)) {
-            std::cerr << "Failed to write task_index message." << task_index << std::endl;
+            std::cerr << "Failed to write initial message with port and task_index." << std::endl;
             return;
         }
-        std::cout << "Task_index message written successfully." << std::endl;
+        std::cout << "Initial message written successfully." << std::endl;
         
-        // Clear initial_msg for next use
+        // Clear initial_msg for reuse
         initial_msg.Clear();
         
-        // Continuously send KV pairs
+        // Continue with sending KV pairs as before
         while (true) {
             std::vector<KVStruct> kv_pairs;
             if (queue->dequeue(kv_pairs)) { // Assume dequeue blocks until data is available
@@ -187,11 +185,13 @@ void RainStormClient::writeToStream(grpc::ClientReaderWriter<rainstorm::StreamDa
                 for (const auto& kv : kv_pairs) {
                     // Validate KVStruct fields
                     if (kv.key.empty()) {
-                        std::cerr << "Warning: KVStruct with empty key detected. ID: " << kv.id << std::endl;
+                        std::cerr << "Warning: KVStruct with empty key detected. ID: " 
+                                  << kv.id << std::endl;
                         continue; // Skip or handle accordingly
                     }
                     if (kv.value.empty()) {
-                        std::cerr << "Warning: KVStruct with empty value detected. ID: " << kv.id << std::endl;
+                        std::cerr << "Warning: KVStruct with empty value detected. ID: " 
+                                  << kv.id << std::endl;
                         continue; // Skip or handle accordingly
                     }
                     
@@ -210,13 +210,14 @@ void RainStormClient::writeToStream(grpc::ClientReaderWriter<rainstorm::StreamDa
                     continue;
                 }
                 
-                std::cout << "Writing " << data_chunk_msg.chunks_size() << " KV pair(s)." << std::endl;
+                std::cout << "Writing " << data_chunk_msg.chunks_size() 
+                          << " KV pair(s)." << std::endl;
                 if (!stream->Write(data_chunk_msg)) {
                     std::cerr << "Failed to write KV pair message(s)." << std::endl;
                     return;
                 }
                 std::cout << "KV pair message(s) written successfully." << std::endl;
-                this_thread::sleep_for(std::chrono::milliseconds(100));
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
             } else {
                 // No more data to send; send final message
                 rainstorm::StreamDataChunk finished_msg;
@@ -241,6 +242,7 @@ void RainStormClient::writeToStream(grpc::ClientReaderWriter<rainstorm::StreamDa
         std::cerr << "Exception in writeToStream: " << e.what() << std::endl;
     }
 }
+
 
 // Reader function
 void RainStormClient::readFromStream(grpc::ClientReaderWriter<rainstorm::StreamDataChunk, rainstorm::AckDataChunk>* stream,
