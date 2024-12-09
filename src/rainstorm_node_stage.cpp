@@ -15,6 +15,8 @@
 #include "rainstorm_node.h"
 #include "rainstorm_service_client.h"
 
+static const int SERVER_PORT = 8083;
+
 using namespace std;
 using namespace chrono;
 
@@ -62,23 +64,10 @@ void RainstormNodeStage::handleNewStageTask(const rainstorm::NewStageTaskRequest
         downstream_addresses_.push_back(request->snd_addresses(i));
         downstream_ports_.push_back(request->snd_ports(i));
         downstream_queues_.push_back(make_shared<SafeQueue<vector<KVStruct>>>());
+        send_threads_.push_back(make_unique<thread>(&RainstormNodeStage::sendData, this, i));
     }
     for (int i = 0; i < prev_task_count_; i++) {
         ack_queues_.push_back(make_shared<SafeQueue<vector<int>>>());
-    }
-
-    downstream_queues_.resize(request->snd_addresses_size());
-    downstream_addresses_.resize(request->snd_addresses_size());
-    downstream_ports_.resize(request->snd_ports_size());
-    ack_queues_.resize(request->snd_addresses_size());
-    send_threads_.resize(request->snd_addresses_size());
-
-    for (int i = 0; i < request->snd_addresses_size(); i++) {
-        downstream_queues_[i] = make_shared<SafeQueue<vector<KVStruct>>>();
-        ack_queues_[i] = make_shared<SafeQueue<vector<int>>>();
-        downstream_addresses_[i] = request->snd_addresses(i);
-        downstream_ports_[i] = request->snd_ports(i);
-        send_threads_[i] = make_unique<thread>(&RainstormNodeStage::sendData, this, i);
     }
 
     process_thread_ = make_unique<thread>(&RainstormNodeStage::processData, this);
@@ -570,7 +559,7 @@ void RainstormNodeStage::sendData(size_t downstream_node_index) {
 
     RainStormClient client(grpc::CreateChannel(
         downstream_addresses_[downstream_node_index] + ":" + 
-        to_string(downstream_ports_[downstream_node_index]), 
+        to_string(SERVER_PORT), 
         grpc::InsecureChannelCredentials()
     ));
     

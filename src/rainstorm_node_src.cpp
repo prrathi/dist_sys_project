@@ -15,6 +15,8 @@
 #include "rainstorm_node.h"
 #include "rainstorm_service_client.h"
 
+static const int SERVER_PORT = 8083;
+
 using namespace std;
 using namespace chrono;
 
@@ -210,7 +212,7 @@ void RainstormNodeSrc::sendData() {
 
     while (!should_stop_) {
         RainStormClient client(grpc::CreateChannel(
-            downstream_address_ + ":" + to_string(downstream_port_), 
+            downstream_address_ + ":" + to_string(SERVER_PORT), 
             grpc::InsecureChannelCredentials()
         ));
         
