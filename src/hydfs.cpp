@@ -55,18 +55,13 @@ void Hydfs::handleCreate(const string& filename, const string& hydfs_filename) {
         cout << "File already exists on hydfs: cache" << endl;
         return;
     }
-    //cout << "create called" << "\n";
     vector<string> successors = getAllSuccessors(hydfs_filename);
     for (size_t i = 0; i < 3; i++) {
         string targetHost = successors[i] + ":" + to_string(GRPC_PORT_SERVER); 
         FileTransferClient client(grpc::CreateChannel(targetHost, grpc::InsecureChannelCredentials()));
-        cout << "Create called, Target: " << targetHost << "\n";
         bool res = client.CreateFile(hydfs_filename, i);
-        if (res) {
-            cout << "Create Successful on " << targetHost << "" << "\n";
-        } else  {
-            cout << "Failed to create file on " << targetHost << "\n";
-            //assume all succeed tbh
+        if (!res) {
+            cerr << "Failed to create file on " << targetHost << endl;
             return;
         }
     }
@@ -74,38 +69,25 @@ void Hydfs::handleCreate(const string& filename, const string& hydfs_filename) {
 }
 
 void Hydfs::handleGet(const string& filename, const string& hydfs_filename, const string& target, bool avoid_cache) {
-
-    // check here whether in cache, only need local consistency which is guaranteed
     if (lru_cache.exist(hydfs_filename) && !avoid_cache) {
         lock_guard<mutex> lock(cacheMtx);
         vector<char> contents = lru_cache.get(hydfs_filename).second;
         ofstream file(filename, ios::binary);
         if (!file) {
-            cout << "Failed to open file: " << filename << "\n";
+            cerr << "Failed to open file: " << filename << endl;
         } else {
-            cout << "writing cached file: " << filename << "\n";
             file.write(contents.data(), contents.size());
         }
         return;
     }
-    cout << "get called" << " target: " << target << "\n";
     FileTransferClient client(grpc::CreateChannel(target, grpc::InsecureChannelCredentials()));
     bool res = client.GetFile(hydfs_filename, filename);
-    if (res) {
-        // assuming stuff .. can fix change later if issues come
-        cout << "Get Successful" << endl;
-        if (avoid_cache) {
-            return;
-        }
-        cout << "Caching" << "\n";
+    if (res && !avoid_cache) {
         vector<char> contents = readFileIntoVector(filename);
-        if (contents.size() > lru_cache.capacity()) {
-            return;
-        }   
-        lock_guard<mutex> lock(cacheMtx);
-        lru_cache.put(hydfs_filename, make_pair(contents.size(), contents));
-    } else {
-        cout << "Get Failed" << endl;
+        if (contents.size() <= lru_cache.capacity()) {
+            lock_guard<mutex> lock(cacheMtx);
+            lru_cache.put(hydfs_filename, make_pair(contents.size(), contents));
+        }
     }
 }
 
@@ -218,63 +200,45 @@ string Hydfs::getTarget(const string& filename) {
 }
 
 void Hydfs::handleClientRequests(const string& command) {
-
-    // parsing a lil scuffed 
     if (command.substr(0, 6) == "create") {
-
         size_t loc_delim = command.find(" ");
         string filename = command.substr(loc_delim + 1, command.find(" ", loc_delim + 1) - loc_delim - 1);
         loc_delim = command.find(" ", loc_delim + 1);
         string hydfs_filename = command.substr(loc_delim + 1, command.find("\n") - loc_delim - 1);
-
-        //cout << "Create" << filename << " hydfs: " << hydfs_filename << " targetHost: " << targetHost << "\n";
         handleCreate(filename, hydfs_filename);
-
     } else if (command.substr(0, 6) == "append") {
-
         size_t loc_delim = command.find(" ");
         string filename = command.substr(loc_delim + 1, command.find(" ", loc_delim + 1) - loc_delim - 1);
         loc_delim = command.find(" ", loc_delim + 1);
         string hydfs_filename = command.substr(loc_delim + 1, command.find("\n") - loc_delim - 1);
-
-        //cout << "Append" << filename << " hydfs: " << hydfs_filename << " targetHost: " << targetHost << "\n";
         handleAppend(filename, hydfs_filename);
-
     } else if (command.substr(0, 4) == "get ") {
-        
         size_t loc_delim = command.find(" ");
         string hydfs_filename = command.substr(loc_delim + 1, command.find(" ", loc_delim + 1) - loc_delim - 1);
         loc_delim = command.find(" ", loc_delim + 1);
         string filename = command.substr(loc_delim + 1, command.find("\n") - loc_delim - 1);
-
-        string targetHost = getTarget(hydfs_filename) + ":" + to_string(GRPC_PORT_SERVER); // use the hydfs filename right?
-
-        cout << "Get" << filename << " hydfs: " << hydfs_filename << " targetHost: " << targetHost << "\n";
+        string targetHost = getTarget(hydfs_filename) + ":" + to_string(GRPC_PORT_SERVER);
         handleGet(filename, hydfs_filename, targetHost, false);
-
     } else if (command.substr(0, 5) == "merge") {
         size_t loc_delim = command.find(" ");
         string hydfs_filename = command.substr(loc_delim + 1, command.find("\n") - loc_delim - 1);
         handleMerge(hydfs_filename);
-
     } else if (command.substr(0, 2) == "ls") {
         size_t loc_delim = command.find(" ");
         string hydfs_filename = command.substr(loc_delim + 1, command.find("\n", loc_delim + 1) - loc_delim - 1);
-        cout << "ls: " << hydfs_filename << "\n";
+        cout << "ls: " << hydfs_filename << endl;
         vector<pair<string, pair<size_t, size_t>>> successors = find3SuccessorsFile(hydfs_filename, currNode.getAllIds(), MODULUS);
         for (const auto& successor : successors) {
-            cout << successor.first << " Node ID: " << successor.second.first <<   "\n";
+            cout << successor.first << " Node ID: " << successor.second.first << endl;
         }
-        cout << "File ID: " << successors[0].second.second << "\n";
-
+        cout << "File ID: " << successors[0].second.second << endl;
     } else if (command.substr(0, 5) == "store") {
         vector<string> fileNames = server.getAllFileNames();
         for (const auto& fileName : fileNames) {
-            cout << "Filename: " << fileName << " ID: " << hashString(fileName, MODULUS) << "\n";
+            cout << "Filename: " << fileName << " ID: " << hashString(fileName, MODULUS) << endl;
         }
         string hostname = currNode.getId().substr(0, currNode.getId().rfind("-"));
-        cout << "VM: " << hostname << " VM ID: " << hashString(hostname, MODULUS) << "\n";
-
+        cout << "VM: " << hostname << " VM ID: " << hashString(hostname, MODULUS) << endl;
     } else if (command.substr(0, 14) == "getfromreplica") {
         size_t loc_delim = command.find(" ");
         string VMaddress = command.substr(loc_delim + 1, command.find(" ", loc_delim + 1) - loc_delim - 1);
@@ -282,14 +246,10 @@ void Hydfs::handleClientRequests(const string& command) {
         string hydfs_filename = command.substr(loc_delim + 1, command.find(" ", loc_delim + 1) - loc_delim - 1);
         loc_delim = command.find(" ", loc_delim + 1);
         string filename = command.substr(loc_delim + 1, command.find("\n") - loc_delim - 1);
-
         string targetHost = VMaddress + ":" + to_string(GRPC_PORT_SERVER); 
-
-        cout << "Getfromreplica" << filename << " hydfs: " << hydfs_filename << " targetHost: " << targetHost << "\n";
-        handleGet(filename, hydfs_filename, targetHost, true);  // should just be like get right
-
+        handleGet(filename, hydfs_filename, targetHost, true);
     } else if (command.substr(0, 12) == "list_mem_ids") {
-        cout << "list_mem_ids" << "\n";
+        cout << "list_mem_ids" << endl;
         vector<pair<size_t, string>> nodes_on_ring; 
         for (const auto& id : currNode.getAllIds()) {
             string hostname = id.substr(0, id.rfind("-"));
@@ -297,24 +257,19 @@ void Hydfs::handleClientRequests(const string& command) {
         }
         sort(nodes_on_ring.begin(), nodes_on_ring.end());
         for (const auto& node : nodes_on_ring) {
-            cout << "VM: " << node.second << " ID: " << node.first << "\n";
+            cout << "VM: " << node.second << " ID: " << node.first << endl;
         }
         cout << "finish list_mem_ids" << endl;
-
-    } else if (command.substr(0, 11) == "multiappend") { 
-        cout << "Should not have reached here: multiappend" << "\n";
-        // i dont think need to implent this here, maybe just do at python calling append multiple times i think better
     } else {
-        cout << "Bad Command" << "\n";
+        cerr << "Bad Command" << endl;
     }
 }
 
 void Hydfs::handleCommand(const string& command) {
-    cout << "COMMAND: " << command << endl;
+    cout << "COMMAND: " << command;
     if (command == "join\n") {
         lock_guard<mutex> lck(globalMtx);
         join = true;
-        // what if this gets dropped, wont be that unlucky right lol
         writeToLog(currNode.getLogFile(), "Attempting to join group: " + currNode.getId());
         condVar.notify_one();
     } else if (command == "leave\n") {
@@ -345,11 +300,7 @@ void Hydfs::handleCommand(const string& command) {
         currNode.setPingTime(NORMAL_PING_PERIOD);
         currNode.setPeriodTime(NORMAL_PERIOD);
     } else if (command == "status_sus\n") {
-        if (currNode.getSusStatus()) {
-            cout << "Sus status: enabled" << endl;
-        } else {
-            cout << "Sus status: disabled" << endl;
-        }
+        cout << "Sus status: " << (currNode.getSusStatus() ? "enabled" : "disabled") << endl;
     } else if (command == "list_suspected\n") {
         for (const auto& id : currNode.getAllIds()) {
             const auto& state = currNode.getState(id);
@@ -358,14 +309,11 @@ void Hydfs::handleCommand(const string& command) {
             }
         }
     } else {
-        // assume client request 
         handleClientRequests(command);
     }
 }
 
 void Hydfs::pipeListener() {
-    // make the named pipe if it doesn't exist
-    //cout << "ASDASD\n";
     if (mkfifo(DEFAULT_FIFO_PATH, 0666) == -1 && errno != EEXIST) {
         perror("mkfifo");
         exit(EXIT_FAILURE);

@@ -98,16 +98,6 @@ grpc::Status RainstormFactory::RemoveServer(grpc::ServerContext* context,
     return grpc::Status::OK;
 }
 
-void RainstormFactory::run(int port) {
-    std::string server_address = "0.0.0.0:" + std::to_string(port);
-    grpc::ServerBuilder builder;
-    builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
-    builder.RegisterService(this);
-    server_ = builder.BuildAndStart();
-    std::cout << "Factory server listening on " << server_address << std::endl;
-    server_->Wait();
-}
-
 void RainstormFactory::runHydfs() {
     std::thread listener_thread([this](){ hydfs_.pipeListener(); });
     std::thread swim_thread([this](){ hydfs_.swim(); });

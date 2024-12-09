@@ -139,6 +139,7 @@ void RainStormLeader::submitJob(const string &op1, const string &op2, const stri
         }
         
         thread([this, task, job]() {
+            cout << "Starting task " << task.task_index << " for job " << job.job_id << " on VM: " << task.vm << " with port: " << task.port_num << endl;
             string target_Address = task.vm + ":" + to_string(task.port_num);
             RainStormClient client(grpc::CreateChannel(target_Address, grpc::InsecureChannelCredentials()));
             try {
@@ -326,8 +327,11 @@ void RainStormLeader::runHydfs() {
 
 string RainStormLeader::getNextVM() {
     vector<string> vms = getAllWorkerVMs();
-    string vm = vms[total_tasks_running_counter_ % vms.size()];
-    total_tasks_running_counter_++;
+    string vm;
+    do {
+        vm = vms[total_tasks_running_counter_ % vms.size()];
+        total_tasks_running_counter_++;
+    } while (vm == leader_address);
     return vm;
 }
 
@@ -351,6 +355,7 @@ void RainStormLeader::jobCompletionChecker() {
     while (true) {
         std::vector<std::string> completed_jobs;
         {
+            std::cout << "Checking for completed jobs" << std::endl;
             std::lock_guard<std::mutex> lock(mtx);
             for (const auto& job_pair : jobs_) {
                 if (isJobCompleted(job_pair.first)) {
@@ -362,7 +367,7 @@ void RainStormLeader::jobCompletionChecker() {
                 jobs_.erase(job_id);
             }
         }
-        std::this_thread::sleep_for(std::chrono::seconds(5));
+        std::this_thread::sleep_for(std::chrono::seconds(10));
     }
 }
 
