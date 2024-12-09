@@ -30,6 +30,11 @@ void RainstormNodeSrc::handleNewSrcTask(const rainstorm::NewSrcTaskRequest* requ
     downstream_address_ = request->snd_address();
     downstream_port_ = request->snd_port();
     processed_file_ = job_id_ + "_0_" + to_string(task_index_) + "_processed.log";
+    hydfs_.getFile(processed_file_, processed_file_, true);
+    if (!filesystem::exists(processed_file_) || filesystem::is_empty(processed_file_)) {
+        ofstream(processed_file_, ios::out | ios::trunc).close();
+        hydfs_.createFile(processed_file_, processed_file_);
+    }
     next_processed_file_ = job_id_ + "_1_" + to_string(task_index_) + "_processed.log";
     downstream_queue_ = make_shared<SafeQueue<vector<KVStruct>>>();
 

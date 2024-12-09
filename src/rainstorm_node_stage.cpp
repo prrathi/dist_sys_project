@@ -41,24 +41,22 @@ void RainstormNodeStage::handleNewStageTask(const rainstorm::NewStageTaskRequest
     filtered_file_ = job_id_ + "_" + to_string(stage_index_) + "_" + to_string(task_index_) + "_filtered.log";
     state_output_file_ = job_id_ + "_" + to_string(stage_index_) + "_" + to_string(task_index_) + "_output.log";
 
-    if (!filesystem::exists(processed_file_)) {
-        ofstream(processed_file_, ios::out | ios::trunc).close();
-    }
-    hydfs_.createFile(processed_file_, processed_file_);
-
-    if (!filesystem::exists(filtered_file_)) {
-        ofstream(filtered_file_, ios::out | ios::trunc).close();
-    }
-    hydfs_.createFile(filtered_file_, filtered_file_);
-
-    if (!filesystem::exists(state_output_file_)) {
-        ofstream(state_output_file_, ios::out | ios::trunc).close();
-    }
-    hydfs_.createFile(state_output_file_, state_output_file_);
-
+    // for now dont worry about restart
     hydfs_.getFile(processed_file_, processed_file_, true);
+    if (!filesystem::exists(processed_file_) || filesystem::is_empty(processed_file_)) {
+        ofstream(processed_file_, ios::out | ios::trunc).close();
+        hydfs_.createFile(processed_file_, processed_file_);
+    }
     hydfs_.getFile(filtered_file_, filtered_file_, true);
+    if (!filesystem::exists(filtered_file_) || filesystem::is_empty(filtered_file_)) {
+        ofstream(filtered_file_, ios::out | ios::trunc).close();
+        hydfs_.createFile(filtered_file_, filtered_file_);
+    }
     hydfs_.getFile(state_output_file_, state_output_file_, true);
+    if (!filesystem::exists(state_output_file_) || filesystem::is_empty(state_output_file_)) {
+        ofstream(state_output_file_, ios::out | ios::trunc).close();
+        hydfs_.createFile(state_output_file_, state_output_file_);
+    }
 
     for (int i = 0; i < request->snd_addresses_size(); i++) {
         downstream_addresses_.push_back(request->snd_addresses(i));
@@ -325,6 +323,7 @@ void RainstormNodeStage::enqueueAcks(const vector<vector<int>>& acks) {
 }
 
 void RainstormNodeStage::processData() {
+    cout << "Processing data for stage " << stage_index_ << " task " << task_index_ << endl;
     loadIds(processed_file_, processed_ids_);
     recoverDataState();
 

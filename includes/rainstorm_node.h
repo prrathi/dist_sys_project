@@ -35,7 +35,7 @@ protected:
         return hash % num_partitions;
     }
 
-    static inline const std::chrono::seconds ACK_TIMEOUT{5};
+    static inline const std::chrono::seconds ACK_TIMEOUT{100};
     std::atomic<bool> should_stop_;
     Hydfs& hydfs_;
 

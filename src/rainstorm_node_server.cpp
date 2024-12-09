@@ -198,6 +198,7 @@ rainstorm::KV RainStormServer::kvStructToProto(const KVStruct& kv) {
 void RainStormServer::SendDataChunksReader(ServerReaderWriter<rainstorm::AckDataChunk, rainstorm::StreamDataChunk>* stream, int port, std::atomic<bool>* is_done) {
     rainstorm::StreamDataChunk chunk;
     while (stream->Read(&chunk)) {
+        cout << "Received chunk from " << port << endl;
         std::vector<KVStruct> batch;
         bool finished = false;
         for (const auto& data_chunk : chunk.chunks()) {
@@ -213,6 +214,7 @@ void RainStormServer::SendDataChunksReader(ServerReaderWriter<rainstorm::AckData
             bool success = false;
             if (factory_) {
                 if (auto node = dynamic_cast<RainstormNodeStage*>(factory_->getNode(port))) {
+                    cout << "Enqueuing batch of size " << batch.size() << " to stage node " << port << endl;
                     node->enqueueIncomingData(batch);
                     success = true;
                 }
