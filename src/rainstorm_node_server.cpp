@@ -215,9 +215,6 @@ void RainStormServer::SendDataChunksReader(ServerReaderWriter<rainstorm::AckData
             } else if (leader_) {
                 cerr << "Leader not used here" << endl; 
             }
-
-            rainstorm::AckDataChunk ack;
-            stream->Write(ack); // ??????????????
         }
     }
 }
