@@ -83,7 +83,7 @@ bool RainStormClient::NewStageTask(int port,
     grpc::Status status = stub_->NewStageTask(&context, request, &response);
 
     if (status.ok() && response.status() == rainstorm::SUCCESS) {
-        std::cout << "NewStageTask succeeded." << std::endl;
+        std::cout << "NewStageTask succeeded for stage " << stage_index << " task " << task_index << std::endl;
         return true;
     } else {
         std::cerr << "NewStageTask failed." << std::endl;

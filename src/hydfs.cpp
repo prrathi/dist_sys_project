@@ -56,16 +56,47 @@ void Hydfs::handleCreate(const string& filename, const string& hydfs_filename) {
         return;
     }
     vector<string> successors = getAllSuccessors(hydfs_filename);
-    for (size_t i = 0; i < 3; i++) {
+    bool any_success = false;
+    vector<string> successful_nodes;
+
+    for (size_t i = 0; i < min(size_t(3), successors.size()); i++) {
         string targetHost = successors[i] + ":" + to_string(GRPC_PORT_SERVER); 
-        FileTransferClient client(grpc::CreateChannel(targetHost, grpc::InsecureChannelCredentials()));
-        bool res = client.CreateFile(hydfs_filename, i);
-        if (!res) {
-            cerr << "Failed to create file on " << targetHost << endl;
-            return;
+        try {
+            FileTransferClient client(grpc::CreateChannel(targetHost, grpc::InsecureChannelCredentials()));
+            bool res = client.CreateFile(hydfs_filename, i);
+            if (res) {
+                any_success = true;
+                successful_nodes.push_back(successors[i]);
+            } else {
+                cerr << "Failed to create file on " << targetHost << endl;
+            }
+        } catch (const std::exception& e) {
+            cerr << "Exception creating file on " << targetHost << ": " << e.what() << endl;
         }
     }
-    handleAppend(filename, hydfs_filename);
+
+    if (!any_success) {
+        cerr << "Failed to create file on any node" << endl;
+        return;
+    }
+
+    // Only append if we successfully created on at least one node
+    try {
+        handleAppend(filename, hydfs_filename);
+    } catch (const std::exception& e) {
+        cerr << "Exception in handleAppend: " << e.what() << endl;
+        // Cleanup created files on failure
+        for (const auto& node : successful_nodes) {
+            try {
+                string targetHost = node + ":" + to_string(GRPC_PORT_SERVER);
+                FileTransferClient client(grpc::CreateChannel(targetHost, grpc::InsecureChannelCredentials()));
+                // TODO: Add DeleteFile RPC if needed
+            } catch (...) {
+                // Ignore cleanup errors
+            }
+        }
+        throw; // Re-throw the exception
+    }
 }
 
 void Hydfs::handleGet(const string& filename, const string& hydfs_filename, const string& target, bool avoid_cache) {
