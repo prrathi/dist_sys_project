@@ -47,11 +47,13 @@ public:
 
 private:
     void SendDataChunksReader(grpc::ServerReaderWriter<rainstorm::AckDataChunk, rainstorm::StreamDataChunk>* stream,
-                              int port);
+                              int port,
+                              std::atomic<bool>* is_done);
     void SendDataChunksWriter(grpc::ServerReaderWriter<rainstorm::AckDataChunk,
                               rainstorm::StreamDataChunk>* stream,
                               int task_index,
-                              int port);
+                              int port,
+                              std::atomic<bool>* is_done);
 
     void SendDataChunksLeaderReader(
         grpc::ServerReaderWriter<rainstorm::AckDataChunk, rainstorm::StreamDataChunkLeader>* stream,

@@ -195,14 +195,18 @@ rainstorm::KV RainStormServer::kvStructToProto(const KVStruct& kv) {
     return proto_kv;
 }
 
-void RainStormServer::SendDataChunksReader(ServerReaderWriter<rainstorm::AckDataChunk, rainstorm::StreamDataChunk>* stream, int port) {
+void RainStormServer::SendDataChunksReader(ServerReaderWriter<rainstorm::AckDataChunk, rainstorm::StreamDataChunk>* stream, int port, std::atomic<bool>* is_done) {
     rainstorm::StreamDataChunk chunk;
     while (stream->Read(&chunk)) {
         std::vector<KVStruct> batch;
+        bool finished = false;
         for (const auto& data_chunk : chunk.chunks()) {
             if (data_chunk.has_pair()) {
                 KVStruct kv = protoToKVStruct(data_chunk.pair());
                 batch.push_back(kv);
+            }
+            if (data_chunk.has_finished()) {
+                finished = true;
             }
         }
         if (!batch.empty()) {
@@ -215,15 +219,16 @@ void RainStormServer::SendDataChunksReader(ServerReaderWriter<rainstorm::AckData
             } else if (leader_) {
                 cerr << "Leader not used here" << endl; 
             }
-
-            rainstorm::AckDataChunk ack;
-            stream->Write(ack);
+        }
+        if (finished) {
+            break;
         }
     }
+    is_done->store(true);
 }
 
-void RainStormServer::SendDataChunksWriter(ServerReaderWriter<rainstorm::AckDataChunk, rainstorm::StreamDataChunk>* stream, int task_index, int port) {
-    while (true) {
+void RainStormServer::SendDataChunksWriter(ServerReaderWriter<rainstorm::AckDataChunk, rainstorm::StreamDataChunk>* stream, int task_index, int port, std::atomic<bool>* is_done) {
+    while (!is_done->load()) {
         std::vector<int> acks;
         bool got_acks = false;
         if (factory_) {
@@ -251,28 +256,46 @@ void RainStormServer::SendDataChunksWriter(ServerReaderWriter<rainstorm::AckData
 Status RainStormServer::SendDataChunks(ServerContext* context,
                                        ServerReaderWriter<rainstorm::AckDataChunk, rainstorm::StreamDataChunk>* stream) {
     rainstorm::StreamDataChunk initial_msg;
+    bool port_set = false;
+    bool task_index_set = false;
+    int port = 0;
+    int task_index = 0;
+    
+    // Read messages until both port and task_index are received
+    while (stream->Read(&initial_msg)) {
+        for (const auto& chunk : initial_msg.chunks()) {
+            if (chunk.has_port()) {
+                port = chunk.port();
+                port_set = true;
+            }
+            if (chunk.has_task_index()) {
+                task_index = chunk.task_index();
+                task_index_set = true;
+            }
+        }
+        if (port_set && task_index_set) {
+            break;
+        }
+    }
+
     if (!stream->Read(&initial_msg)) {
         cout << "Failed to read initial message from " << context->peer() << endl;
         return Status(grpc::StatusCode::INVALID_ARGUMENT, "Failed to read initial message");
     }
 
-    if (initial_msg.chunks_size() == 0 || 
-        !initial_msg.chunks(0).has_port() || 
-        !initial_msg.chunks(0).has_task_index()) {
+    if (!port_set || !task_index_set) {
         cout << "Initial message missing port or task_index from " << context->peer() << endl;
         return Status(grpc::StatusCode::INVALID_ARGUMENT, "Initial message missing port or task_index");
     }
-    int port = initial_msg.chunks(0).port();
-    int task_index = initial_msg.chunks(0).task_index();
-    cout << "Received initial message with port " << port << " and task index " << task_index << endl;
     if (factory_) {
         if (!factory_->getNode(port)) {
             return Status(grpc::StatusCode::NOT_FOUND, "Node not found for port: " + std::to_string(port));
         }
     }
+    std::atomic<bool> is_done(false);
     
-    std::thread reader_thread(&RainStormServer::SendDataChunksReader, this, stream, port);
-    std::thread writer_thread(&RainStormServer::SendDataChunksWriter, this, stream, task_index, port);
+    std::thread reader_thread(&RainStormServer::SendDataChunksReader, this, stream, port, &is_done);
+    std::thread writer_thread(&RainStormServer::SendDataChunksWriter, this, stream, task_index, port, &is_done);
 
     reader_thread.join();
     writer_thread.join();
