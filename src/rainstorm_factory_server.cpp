@@ -116,6 +116,6 @@ grpc::Status RainstormFactory::RemoveServer(grpc::ServerContext* context,
 void RainstormFactory::runHydfs() {
     std::thread listener_thread([this](){ hydfs_.pipeListener(); });
     std::thread swim_thread([this](){ hydfs_.swim(); });
-    listener_thread.join();
-    swim_thread.join();
+    listener_thread.detach();
+    swim_thread.detach();
 }

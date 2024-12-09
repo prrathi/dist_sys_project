@@ -436,10 +436,10 @@ void RainStormLeader::runHydfs() {
     thread leader_listener_thread([this](){ this->pipeListener(); });
     thread swim_thread([this](){ this->hydfs.swim(); });
     thread server_thread([this](){ this->hydfs.runServer(); });
-    listener_thread.join();
-    leader_listener_thread.join();
-    swim_thread.join();
-    server_thread.join();
+    listener_thread.detach();
+    leader_listener_thread.detach();
+    swim_thread.detach();
+    server_thread.detach();
 }
 
 string RainStormLeader::getNextVM() {
