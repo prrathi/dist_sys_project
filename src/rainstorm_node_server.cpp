@@ -262,6 +262,7 @@ Status RainStormServer::SendDataChunks(ServerContext* context,
     }
     int port = initial_msg.chunks(0).port();
     int task_index = initial_msg.chunks(0).task_index();
+    cout << "Received initial message with port " << port << " and task index " << task_index << endl;
     if (factory_) {
         if (!factory_->getNode(port)) {
             return Status(grpc::StatusCode::NOT_FOUND, "Node not found for port: " + std::to_string(port));
