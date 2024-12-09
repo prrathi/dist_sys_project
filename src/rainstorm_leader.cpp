@@ -206,7 +206,8 @@ void RainStormLeader::submitSingleTask(RainStormClient& client, const LeaderTask
             task.task_index % job.num_tasks_per_stage, 
             job.num_tasks_per_stage, 
             job.src_file, 
-            task.vm, 
+            task.assigned_nodes[task.task_index], // do need modulo? also bruh
+            //task.vm, 
             task.assigned_ports[task.task_index]
         );
         if (!success) {
