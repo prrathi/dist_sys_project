@@ -7,6 +7,9 @@
 
 #include "rainstorm_factory_server.h"
 
+static const int SERVER_PORT = 8083;
+static const int FACTORY_PORT = 8084;
+
 using grpc::ServerBuilder;
 using grpc::ServerContext;
 using grpc::Status;
@@ -14,8 +17,32 @@ using rainstorm_factory::ServerRequest;
 using rainstorm_factory::OperationStatus;
 using rainstorm_factory::StatusCode;
 
+RainstormFactory::RainstormFactory() : rainstorm_node_server_(this, SERVER_PORT){
+    char hostname[256];
+    if (gethostname(hostname, sizeof(hostname)) != 0) {
+        perror("gethostname");
+        exit(1);
+    }
+    string hostname_str = hostname;
+    server_address_ = hostname_str + ":" + to_string(FACTORY_PORT);
+
+    ServerBuilder builder;
+    grpc::ChannelArguments args;
+    args.SetInt(GRPC_ARG_ALLOW_REUSEPORT, 1);
+    builder.AddListeningPort(server_address_, grpc::InsecureServerCredentials());
+    builder.AddChannelArgument(GRPC_ARG_ALLOW_REUSEPORT, 1);
+    builder.RegisterService(this);
+    server_ = builder.BuildAndStart();
+    if (!server_) {
+        cerr << "Failed to start factory server on " << server_address_ << endl;
+        exit(1);
+    }
+    cout << "Factory gRPC Server listening on " << server_address_ << endl;
+}
+
 RainstormFactory::~RainstormFactory() {
-    stop();
+    if (server_) server_->Shutdown();
+    active_servers_.clear();
 }
 
 grpc::Status RainstormFactory::CreateServer(grpc::ServerContext* context,
@@ -79,14 +106,6 @@ void RainstormFactory::run(int port) {
     server_ = builder.BuildAndStart();
     std::cout << "Factory server listening on " << server_address << std::endl;
     server_->Wait();
-}
-
-void RainstormFactory::stop() {
-    if (server_) {
-        server_->Shutdown();
-        server_->Wait();
-    }
-    active_servers_.clear();
 }
 
 void RainstormFactory::runHydfs() {

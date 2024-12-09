@@ -21,14 +21,39 @@ using rainstorm::OperationStatus;
 using rainstorm::StreamDataChunk;
 using rainstorm::AckDataChunk;
 
-RainStormServer::RainStormServer(RainstormFactory* factory) 
-    : factory_(factory), leader_(nullptr)
+RainStormServer::RainStormServer(RainstormFactory* factory, int server_port) 
+    : factory_(factory), leader_(nullptr), server_port_(server_port)
 {
+    initializeServer();
 }
 
-RainStormServer::RainStormServer(RainStormLeader* leader)
-    : factory_(nullptr), leader_(leader)
+RainStormServer::RainStormServer(RainStormLeader* leader, int server_port)
+    : factory_(nullptr), leader_(leader), server_port_(server_port)
 {
+    initializeServer();
+}
+
+void RainStormServer::initializeServer() {
+    char hostname[256];
+    if (gethostname(hostname, sizeof(hostname)) != 0) {
+        perror("gethostname");
+        exit(1);
+    }
+    std::string hostname_str = hostname;
+    server_address_ = hostname_str + ":" + std::to_string(server_port_);
+
+    ServerBuilder builder;
+    grpc::ChannelArguments args;
+    args.SetInt(GRPC_ARG_ALLOW_REUSEPORT, 1);
+    builder.AddListeningPort(server_address_, grpc::InsecureServerCredentials());
+    builder.AddChannelArgument(GRPC_ARG_ALLOW_REUSEPORT, 1);
+    builder.RegisterService(this);
+    server_ = builder.BuildAndStart();
+    if (!server_) {
+        std::cerr << "Failed to start rainstorm server on " << server_address_ << std::endl;
+        exit(1);
+    }
+    std::cout << "Rainstorm gRPC Server listening on " << server_address_ << std::endl;
 }
 
 RainStormServer::~RainStormServer() {

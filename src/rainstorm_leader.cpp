@@ -19,9 +19,12 @@
 #include "rainstorm_leader.h"
 #include "rainstorm_service_client.h"
 
+static const int SERVER_PORT = 8083;
+static const int FACTORY_PORT = 8084;
+
 using namespace std;
 
-RainStormLeader::RainStormLeader() : rainstorm_node_server_(this) {
+RainStormLeader::RainStormLeader() : rainstorm_node_server_(this, SERVER_PORT) {
     if (string(getenv("USER")) == "prathi3" || string(getenv("USER")) == "praneet") {
         listener_pipe_path = "/tmp/mp4-leader-prathi3";
     }
@@ -225,7 +228,7 @@ int RainStormLeader::getUnusedPortNumberForVM(const string& vm) {
         used_ports_per_vm_[vm] = {};
     }
 
-    for (int i = node_factory_port + 1; i < 65000; ++i) {
+    for (int i = FACTORY_PORT + 1; i < 65000; ++i) {
         if (used_ports_per_vm_[vm].find(i) == used_ports_per_vm_[vm].end()) {
             used_ports_per_vm_[vm].insert(i);
             return i;
@@ -233,8 +236,8 @@ int RainStormLeader::getUnusedPortNumberForVM(const string& vm) {
     }
 
     cout << "Ran out of ports?" << endl; 
-    used_ports_per_vm_[vm].insert(node_factory_port + 1);
-    return node_factory_port + 1;
+    used_ports_per_vm_[vm].insert(FACTORY_PORT + 1);
+    return FACTORY_PORT + 1;
 }
 
 bool RainStormLeader::CreateServerOnNode(const string& node_address, int port) {
@@ -243,7 +246,7 @@ bool RainStormLeader::CreateServerOnNode(const string& node_address, int port) {
     args.SetInt(GRPC_ARG_KEEPALIVE_TIMEOUT_MS, 5000);
     args.SetInt(GRPC_ARG_KEEPALIVE_PERMIT_WITHOUT_CALLS, 1);
     
-    string target_address = node_address + ":" + to_string(node_factory_port);
+    string target_address = node_address + ":" + to_string(FACTORY_PORT);
     auto channel = grpc::CreateCustomChannel(
         target_address, 
         grpc::InsecureChannelCredentials(),
@@ -279,7 +282,7 @@ bool RainStormLeader::RemoveServerFromNode(const string& node_address, int port)
     args.SetInt(GRPC_ARG_KEEPALIVE_TIMEOUT_MS, 5000);
     args.SetInt(GRPC_ARG_KEEPALIVE_PERMIT_WITHOUT_CALLS, 1);
     
-    string target_address = node_address + ":" + to_string(node_factory_port);
+    string target_address = node_address + ":" + to_string(FACTORY_PORT);
     auto channel = grpc::CreateCustomChannel(
         target_address, 
         grpc::InsecureChannelCredentials(),

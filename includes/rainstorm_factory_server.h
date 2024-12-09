@@ -12,9 +12,10 @@
 
 class RainstormFactory : public rainstorm_factory::RainstormFactoryService::Service {
 public:
-    RainstormFactory() : rainstorm_node_server_(this) {}
+    RainstormFactory();
     ~RainstormFactory();
 
+    void wait();
     void runHydfs();
     void runServer() { rainstorm_node_server_.wait(); }
     grpc::Status CreateServer(grpc::ServerContext* context, 
@@ -25,7 +26,6 @@ public:
         rainstorm_factory::OperationStatus* response) override;
 
     void run(int port);
-    void stop();
     RainstormNodeBase* getNode(int port) {
         std::lock_guard<std::mutex> lock(servers_mutex_);
         auto it = active_servers_.find(port);
@@ -33,6 +33,7 @@ public:
     }
 
 private:
+    std::string server_address_;
     std::unique_ptr<grpc::Server> server_;
     std::unordered_map<int, std::unique_ptr<RainstormNodeBase>> active_servers_;
     RainStormServer rainstorm_node_server_;

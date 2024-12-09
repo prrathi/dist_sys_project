@@ -17,10 +17,11 @@ class RainStormNodeBase;
 
 class RainStormServer final : public rainstorm::RainstormService::Service {
 public:
-    explicit RainStormServer(RainstormFactory* factory);
-    explicit RainStormServer(RainStormLeader* leader);
+    explicit RainStormServer(RainstormFactory* factory, int server_port);
+    explicit RainStormServer(RainStormLeader* leader, int server_port);
     ~RainStormServer();
 
+    void initializeServer();
     void wait();
     void shutdown();
 
@@ -68,6 +69,7 @@ private:
 
 private:
     std::string server_address_;
+    int server_port_;
     std::unique_ptr<grpc::Server> server_;
     std::mutex global_mtx_;
 

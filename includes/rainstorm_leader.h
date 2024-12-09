@@ -62,7 +62,6 @@ private:
 private:
     const std::string leader_address = "fa24-cs425-5801.cs.illinois.edu"; 
     std::string listener_pipe_path = "/tmp/mp4-leader";
-    const int node_factory_port = 8083;
     std::unordered_map<std::string, JobInfo> jobs_;
     std::unordered_map<std::string, std::unordered_set<int>> used_ports_per_vm_;
     int total_tasks_running_counter_ = 0;
