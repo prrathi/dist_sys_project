@@ -33,6 +33,12 @@ RainStormLeader::RainStormLeader() : rainstorm_node_server_(this, SERVER_PORT) {
     for (const auto& vm : vms) {
         used_ports_per_vm_[vm] = {};
     }
+    char hostname[256];
+    if (gethostname(hostname, sizeof(hostname)) != 0) {
+      perror("gethostname");
+      exit(1);
+    }
+    used_ports_per_vm_[hostname].insert(SERVER_PORT);
     std::thread(&RainStormLeader::jobCompletionChecker, this).detach();
 }
 
@@ -117,7 +123,7 @@ void RainStormLeader::submitJob(const string &op1, const string &op2, const stri
         cout << "\nStage " << stage << ":" << endl;
         for (int t = 0; t < num_tasks; t++) {
             LeaderTaskInfo task;
-            task.stage_index = stage;
+            task.stage_index = stage; // 0 -> src, 1 -> op1, 2 -> op2
             task.task_index = stage * num_tasks + t;
             if (stage == 0) {
                 task.operator_executable = "";
@@ -129,7 +135,8 @@ void RainStormLeader::submitJob(const string &op1, const string &op2, const stri
             task.vm = getNextVM();
             task.port_num = getUnusedPortNumberForVM(task.vm);
             cout << "  Task " << task.task_index << ": VM=" << task.vm << " Port=" << task.port_num << endl;
-            job.tasks.push_back(task);
+            //job.tasks.push_back(task);
+            job.tasks.insert(job.tasks.begin(), task); 
         }
     }
 
@@ -154,29 +161,28 @@ void RainStormLeader::submitJob(const string &op1, const string &op2, const stri
             cerr << "Failed to create server for task " << task.task_index << endl;
             continue;
         }
-        
-        thread([this, task, job]() {
-            try {
-                cout << "Creating gRPC channel to " << task.vm << ":" << task.port_num << endl;
-                auto channel = grpc::CreateChannel(
-                    task.vm + ":" + to_string(SERVER_PORT),
-                    grpc::InsecureChannelCredentials()
-                );
-                
-                cout << "Waiting for channel connection..." << endl;
-                if (!channel->WaitForConnected(std::chrono::system_clock::now() + std::chrono::seconds(5))) {
-                    cerr << "Failed to connect to task server at " << task.vm << ":" << task.port_num << endl;
-                    return;
-                }
-                
-                cout << "Creating RainStorm client..." << endl;
-                RainStormClient client(channel);
-                cout << "Submitting task..." << endl;
-                submitSingleTask(client, task, job);
-            } catch (const exception& e) {
-                cerr << "Exception in task " << task.task_index << ": " << e.what() << endl;
+        //thread([this, task, job]() {
+        try {
+            cout << "Creating gRPC channel to " << task.vm << ":" << task.port_num << endl;
+            auto channel = grpc::CreateChannel(
+                task.vm + ":" + to_string(SERVER_PORT),
+                grpc::InsecureChannelCredentials()
+            );
+            
+            cout << "Waiting for channel connection..." << endl;
+            if (!channel->WaitForConnected(std::chrono::system_clock::now() + std::chrono::seconds(5))) {
+                cerr << "Failed to connect to task server at " << task.vm << ":" << task.port_num << endl;
+                return;
             }
-        }).detach();
+            
+            cout << "Creating RainStorm client..." << endl;
+            RainStormClient client(channel);
+            cout << "Submitting task..." << endl;
+            submitSingleTask(client, task, job);
+        } catch (const exception& e) {
+            cerr << "Exception in task " << task.task_index << ": " << e.what() << endl;
+        }
+        //}).detach();
     }
     cout << "=== Job submission complete ===\n" << endl;
 }
@@ -457,14 +463,14 @@ string RainStormLeader::getNextVM() {
 pair<vector<string>, vector<int>> RainStormLeader::getTargetNodes(int stage_num, vector<LeaderTaskInfo>& tasks, int num_stages) {
     int targetStage = (stage_num + 1) % num_stages;
     cout << "Getting targets for stage " << stage_num << " -> " << targetStage << endl;
-    
-    if (targetStage == 0) {
-        cout << "Target is leader stage, returning leader address" << endl;
-        return {vector<string>{leader_address}, vector<int>{getUnusedPortNumberForVM(leader_address)}};
-    }
-    
+
     vector<string> target_nodes;
     vector<int> target_ports;
+
+    if (targetStage == 0) { // Final stage sends to leader
+        return {{leader_address}, {SERVER_PORT}}; // consistent leader port (should not find) ****
+    }
+
     for (const auto& task : tasks) {
         if (task.stage_index == targetStage) {
             target_nodes.push_back(task.vm);
@@ -472,6 +478,7 @@ pair<vector<string>, vector<int>> RainStormLeader::getTargetNodes(int stage_num,
             cout << "Added target: " << task.vm << ":" << task.port_num << endl;
         }
     }
+
     return {target_nodes, target_ports};
 }
 
@@ -497,7 +504,7 @@ void RainStormLeader::jobCompletionChecker() {
 
 bool RainStormLeader::isJobCompleted(const std::string& job_id) {
     const auto& job = jobs_[job_id];
-    int last_stage = job.num_stages;
+    int last_stage = job.num_stages - 1; // off by 1?
 
     for (int task_index = 0; task_index < job.num_tasks_per_stage; task_index++) {
         std::string fin_file = job_id + "_" + std::to_string(last_stage) + "_" + std::to_string(task_index) + "_fin.log";

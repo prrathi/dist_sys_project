@@ -6,13 +6,13 @@
 
 int main(int argc, char* argv[]) {
     if (argc != 2) {
-        std::cerr << "Usage: " << argv[0] << " [leader|node]" << std::endl;
+        std::cerr << "Usage: " << argv[0] << " [leader|factory]" << std::endl;
         return 1;
     }
 
     std::string mode = argv[1];
     if (mode != "leader" && mode != "factory") {
-        std::cerr << "Invalid mode. Use 'leader' or 'node'" << std::endl;
+        std::cerr << "Invalid mode. Use 'leader' or 'factory'" << std::endl;
         return 1;
     } else if (mode == "leader") {
         RainStormLeader leader;
