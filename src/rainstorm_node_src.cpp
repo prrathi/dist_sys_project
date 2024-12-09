@@ -66,18 +66,21 @@ void RainstormNodeSrc::persistNewOutput(const vector<KVStruct>& batch) {
 }
 
 void RainstormNodeSrc::processData() {
-    cout << "Processing data called at src: " << input_file_ << endl;
+    cout << "Processing data called at src: " << input_file_ << file_read_ << endl;
     unordered_set<int> next_ids;
     string temp_next = "temp_" + next_processed_file_;
     hydfs_.getFile(next_processed_file_, temp_next, true);
     if (filesystem::exists(temp_next)) {
+        cout << "Loading next ids" << endl;
         loadIds(temp_next, next_ids);
         filesystem::remove(temp_next);
     }
 
     if (!file_read_) {
         string temp_input = "temp_" + input_file_;
+        cout << "temp_input: " << temp_input << endl;
         hydfs_.getFile(input_file_, temp_input, true);
+        cout << "temp_input: " << temp_input << " " << input_file_ << endl;
         ifstream file(temp_input);
         string line;
         int id = 0;
