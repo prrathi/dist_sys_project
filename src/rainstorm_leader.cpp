@@ -505,6 +505,7 @@ void RainStormLeader::jobCompletionChecker() {
 bool RainStormLeader::isJobCompleted(const std::string& job_id) {
     const auto& job = jobs_[job_id];
     int last_stage = job.num_stages - 1; // off by 1?
+    return false;
     // temp remove this.
     // for (int task_index = 0; task_index < job.num_tasks_per_stage; task_index++) {
     //     std::string fin_file = job_id + "_" + std::to_string(last_stage) + "_" + std::to_string(task_index) + "_fin.log";

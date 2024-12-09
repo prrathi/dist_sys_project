@@ -38,7 +38,7 @@ void RainstormNodeStage::handleNewStageTask(const rainstorm::NewStageTaskRequest
     processed_file_ = job_id_ + "_" + to_string(stage_index_) + "_" + to_string(task_index_) + "_processed.log";
     filtered_file_ = job_id_ + "_" + to_string(stage_index_) + "_" + to_string(task_index_) + "_filtered.log";
     state_output_file_ = job_id_ + "_" + to_string(stage_index_) + "_" + to_string(task_index_) + "_output.log";
-
+    // remove cuz seems to be causing issues ...
     // if (!filesystem::exists(processed_file_)) {
     //     ofstream(processed_file_, ios::out | ios::trunc).close();
     // }
@@ -103,6 +103,7 @@ void RainstormNodeStage::handleUpdateTask(const rainstorm::UpdateTaskSndRequest*
 
 void RainstormNodeStage::enqueueIncomingData(const vector<KVStruct>& data) {
     lock_guard<mutex> lock(upstream_mtx_);
+    cout << "got here enqueueIncomingData" << endl;
     if (upstream_queue_) {
         upstream_queue_->enqueue(data);
     }
@@ -110,11 +111,13 @@ void RainstormNodeStage::enqueueIncomingData(const vector<KVStruct>& data) {
 
 bool RainstormNodeStage::dequeueAcks(vector<int>& acks, int task_index) {
     lock_guard<mutex> lock(acked_ids_mtx_);
+    cout << "got here dequeueAcks" << endl;
     return ack_queues_[task_index]->dequeue(acks);
 }
 
 void RainstormNodeStage::checkPendingAcks() {
     lock_guard<mutex> lock(pending_ack_mtx_);
+    cout << "got here checkPendingAcks" << endl;
     auto now = steady_clock::now();
     vector<int> to_retry;
 
@@ -142,6 +145,7 @@ void RainstormNodeStage::checkPendingAcks() {
 }
 
 void RainstormNodeStage::retryPendingData(const PendingAck& pending) {
+    cout << "Retrying data for ID " << pending.data[0].id << endl;
     if (pending.data.empty()) return;
     int partition = partitionData(pending.data[0].key, task_count_);
     cerr << "Retrying data for ID " << pending.data[0].id 
@@ -152,6 +156,7 @@ void RainstormNodeStage::retryPendingData(const PendingAck& pending) {
 }
 
 void RainstormNodeStage::loadIds(string filename, unordered_set<int>& ids) {
+    cout << "got here loadIds" << endl;
     lock_guard<mutex> lock(state_mtx_);
     ifstream processed_file(filename);
     string line;
@@ -161,6 +166,7 @@ void RainstormNodeStage::loadIds(string filename, unordered_set<int>& ids) {
 }
 
 void RainstormNodeStage::storeIds(string filename, unordered_set<int>& ids) {
+    cout << "got here storeIds" << endl;
     lock_guard<mutex> lock(state_mtx_);
     ofstream processed_file(filename);
     for (int id : ids) {
@@ -170,6 +176,7 @@ void RainstormNodeStage::storeIds(string filename, unordered_set<int>& ids) {
 }
 
 void RainstormNodeStage::persistNewIds() {
+    cout << "got here persistNewIds" << endl;
     lock_guard<mutex> lock(state_mtx_);
     storeIds("temp_processed_ids.txt", new_processed_ids_);
     processed_ids_.merge(new_processed_ids_);
@@ -184,6 +191,7 @@ void RainstormNodeStage::persistNewIds() {
 }
 
 void RainstormNodeStage::persistNewOutput(const vector<PendingAck>& new_pending_acks) {
+    cout << "got here persistNewOutput" << endl;
     ofstream temp_stream("temp_state_output.txt");
     for (const auto& pending : new_pending_acks) {
         if (pending.data.empty()) continue;
@@ -200,6 +208,7 @@ void RainstormNodeStage::persistNewOutput(const vector<PendingAck>& new_pending_
 }
 
 void RainstormNodeStage::recoverDataState() {
+    cout << "got here recoverDataState" << endl;
     // Load filtered IDs
     unordered_set<int> filtered_ids;
     loadIds(filtered_file_, filtered_ids);
@@ -330,6 +339,7 @@ void RainstormNodeStage::recoverDataState() {
 }
 
 void RainstormNodeStage::enqueueAcks(const vector<vector<int>>& acks) {
+    lock_guard<mutex> lock(acked_ids_mtx_);
     for (int i = 0; i < prev_task_count_; i++) {
         if (!acks.empty()) {
             ack_queues_[i]->enqueue(acks[i]);
@@ -338,6 +348,7 @@ void RainstormNodeStage::enqueueAcks(const vector<vector<int>>& acks) {
 }
 
 void RainstormNodeStage::processData() {
+    cout << "got here processData" << endl;
     loadIds(processed_file_, processed_ids_);
     recoverDataState();
     vector<thread> sender_threads;
@@ -567,6 +578,7 @@ void RainstormNodeStage::processData() {
 }
 
 void RainstormNodeStage::sendData(size_t downstream_node_index) {
+    // Enable cancellation
     pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, nullptr);
     pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, nullptr);
 
