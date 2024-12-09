@@ -117,29 +117,23 @@ bool RainstormNodeStage::dequeueAcks(vector<int>& acks, int task_index) {
 
 void RainstormNodeStage::checkPendingAcks() {
     lock_guard<mutex> lock(pending_ack_mtx_);
-    cout << "got here checkPendingAcks" << endl;
+    cout << "got here checkPendingAcks" << endl; // Keep your debug logging!
+
     auto now = steady_clock::now();
-    vector<int> to_retry;
 
     for (auto it = pending_acked_dict_.begin(); it != pending_acked_dict_.end();) {
         int pending_id = (it->second.data.empty()) ? -1 : it->second.data.front().id;
-        if (new_acked_ids_.count(pending_id)) {
-            it = pending_acked_dict_.erase(it);
-        } else if (now - it->second.timestamp > ACK_TIMEOUT) {
-            to_retry.push_back(pending_id);
-            it->second.timestamp = now;
-            ++it;
-        } else {
-            ++it;
-        }
-    }
 
-    for (int id : to_retry) {
-        for (auto &kv : pending_acked_dict_) {
-            if (!kv.second.data.empty() && kv.second.data.front().id == id) {
-                retryPendingData(kv.second);
-                break;
-            }
+        if (new_acked_ids_.count(pending_id)) {
+            // Ack received, erase from pending
+            it = pending_acked_dict_.erase(it); 
+        } else if (now - it->second.timestamp > ACK_TIMEOUT) {
+            // Timeout, retry data *before* erasing
+            retryPendingData(it->second);
+            it->second.timestamp = now; // Update timestamp for next check
+            ++it; // Move to the next item
+        } else {
+            ++it; // Move to the next item
         }
     }
 }
