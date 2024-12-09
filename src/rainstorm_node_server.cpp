@@ -250,6 +250,7 @@ void RainStormServer::SendDataChunksWriter(ServerReaderWriter<rainstorm::AckData
 
 Status RainStormServer::SendDataChunks(ServerContext* context,
                                        ServerReaderWriter<rainstorm::AckDataChunk, rainstorm::StreamDataChunk>* stream) {
+    cout << "Received initial message" << endl;
     rainstorm::StreamDataChunk initial_msg;
     if (!stream->Read(&initial_msg)) {
         return Status(grpc::StatusCode::INVALID_ARGUMENT, "Failed to read initial message");

@@ -109,6 +109,7 @@ bool RainStormClient::UpdateSrcTaskSend(int32_t port, int32_t index, const strin
 bool RainStormClient::SendDataChunks(int32_t port, shared_ptr<SafeQueue<vector<KVStruct>>> queue, unordered_set<int>& acked_ids, mutex& acked_ids_mutex, int task_index) {
     grpc::ClientContext context;
     auto stream = stub_->SendDataChunks(&context);
+    cout << "Sending data chunks to worker " << port << " with task index " << task_index << endl;
 
     // Writer thread
     thread writer_thread([&] {
@@ -133,7 +134,7 @@ bool RainStormClient::SendDataChunks(int32_t port, shared_ptr<SafeQueue<vector<K
                 }
 
                 if (!stream->Write(data_chunk_msg)) {
-                    cerr << "Failed to write data chunk" << endl;
+                    cerr << "Failed to write data chunk to worker" << endl;
                     break;
                 }
             } else {
@@ -198,7 +199,7 @@ bool RainStormClient::SendDataChunksLeader(shared_ptr<SafeQueue<vector<KVStruct>
                 }
 
                 if (!stream->Write(data_chunk_msg)) {
-                    cerr << "Failed to write data chunk" << endl;
+                    cerr << "Failed to write data chunk to leader" << endl;
                     break;
                 }
             } else {
