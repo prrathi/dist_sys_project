@@ -93,7 +93,6 @@ void RainstormNodeSrc::processData() {
         
         vector<KVStruct> batch;
         while (getline(file, line)) {
-            cout << "kline: " << line << endl;
             if (line.empty()) continue;
             
             KVStruct kv;
@@ -210,7 +209,7 @@ void RainstormNodeSrc::processData() {
             }
         }
 
-        this_thread::sleep_for(milliseconds(10));
+        this_thread::sleep_for(milliseconds(500));
     }
     
     send_thread_->join();
