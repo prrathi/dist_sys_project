@@ -66,10 +66,10 @@ grpc::Status RainstormFactory::CreateServer(grpc::ServerContext* context,
     std::unique_ptr<RainstormNodeBase> new_server;
     switch (request->node_type()) {
         case rainstorm_factory::NodeType::SRC_NODE:
-            new_server = std::make_unique<RainstormNodeSrc>(hydfs_);
+            new_server = std::make_unique<RainstormNodeSrc>(hydfs_, port); // huh
             break;
         case rainstorm_factory::NodeType::STAGE_NODE:
-            new_server = std::make_unique<RainstormNodeStage>(hydfs_);
+            new_server = std::make_unique<RainstormNodeStage>(hydfs_, port); // huh
             break;
         default:
             response->set_status(rainstorm_factory::StatusCode::INVALID);

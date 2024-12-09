@@ -152,7 +152,7 @@ void RainStormClient::writeToStream(grpc::ClientReaderWriter<rainstorm::StreamDa
         initial_msg.add_chunks()->CopyFrom(port_chunk);
         std::cout << "Writing port: " << port << std::endl;
         if (!stream->Write(initial_msg)) {
-            std::cerr << "Failed to write port message." << std::endl;
+            std::cerr << "Failed to write port message." << port << std::endl;
             return;
         }
         std::cout << "Port message written successfully." << std::endl;
@@ -166,7 +166,7 @@ void RainStormClient::writeToStream(grpc::ClientReaderWriter<rainstorm::StreamDa
         initial_msg.add_chunks()->CopyFrom(task_index_chunk);
         std::cout << "Writing task_index: " << task_index << std::endl;
         if (!stream->Write(initial_msg)) {
-            std::cerr << "Failed to write task_index message." << std::endl;
+            std::cerr << "Failed to write task_index message." << task_index << std::endl;
             return;
         }
         std::cout << "Task_index message written successfully." << std::endl;
@@ -216,6 +216,7 @@ void RainStormClient::writeToStream(grpc::ClientReaderWriter<rainstorm::StreamDa
                     return;
                 }
                 std::cout << "KV pair message(s) written successfully." << std::endl;
+                this_thread::sleep_for(std::chrono::milliseconds(100));
             } else {
                 // No more data to send; send final message
                 rainstorm::StreamDataChunk finished_msg;

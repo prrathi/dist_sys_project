@@ -603,7 +603,7 @@ void RainstormNodeStage::sendData(size_t downstream_node_index) {
 
     RainStormClient client(grpc::CreateChannel(
         downstream_addresses_[downstream_node_index] + ":" + 
-        to_string(8083), 
+        to_string(downstream_ports_[downstream_node_index]), 
         grpc::InsecureChannelCredentials()
     ));
 

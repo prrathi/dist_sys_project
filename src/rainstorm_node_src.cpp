@@ -107,7 +107,7 @@ void RainstormNodeSrc::processData() {
             int partition = partitionData(kv.key, task_count_);
             if (partition == task_index_) {
                 batch.push_back(kv);
-                if (batch.size() >= 15) { // trying 15 instead of 100
+                if (batch.size() >= 50) { // trying 50 instead of 100
                     PendingAck pending;
                     pending.timestamp = steady_clock::now();
                     pending.data = batch;
@@ -222,7 +222,7 @@ void RainstormNodeSrc::sendData() {
 
     while (!should_stop_) {
         RainStormClient client(grpc::CreateChannel(
-            downstream_address_ + ":" + to_string(8083),  // Use SERVER_PORT here
+            downstream_address_ + ":" + to_string(downstream_port_),  // Use SERVER_PORT here
             grpc::InsecureChannelCredentials()
         ));
 
