@@ -82,6 +82,11 @@ void RainstormNodeSrc::processData() {
         hydfs_.getFile(input_file_, temp_input, true);
         cout << "temp_input: " << temp_input << " " << input_file_ << endl;
         ifstream file(temp_input);
+        if (!file.is_open()) {
+            cout << "Failed to open file: " << temp_input << endl;
+            return;
+        }
+
         string line;
         int id = 0;
         
@@ -120,7 +125,7 @@ void RainstormNodeSrc::processData() {
                 }
             }
         }
-        
+        cout << "batch size: " << batch.size() << endl;
         if (!batch.empty()) {
             PendingAck pending;
             pending.timestamp = steady_clock::now();
