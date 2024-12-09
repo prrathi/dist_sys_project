@@ -60,7 +60,7 @@ private:
     bool RemoveServerFromNode(const std::string& node_address, int port);
 
 private:
-    const std::string leader_address = "fa24-cs425-5801.cs.illinois.edu"; 
+    const std::string leader_address = "fa24-cs425-5806.cs.illinois.edu"; 
     std::string listener_pipe_path = "/tmp/mp4-leader";
     std::unordered_map<std::string, JobInfo> jobs_;
     std::unordered_map<std::string, std::unordered_set<int>> used_ports_per_vm_;
