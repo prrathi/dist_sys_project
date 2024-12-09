@@ -227,7 +227,7 @@ void RainstormNodeStage::recoverDataState() {
     for (int task_index = 0; task_index < downstream_addresses_.size(); task_index++) {
         string next_stage_file = job_id_ + "_" + to_string(stage_index_ + 1) + "_" + to_string(task_index) + "_processed.log";
         string temp_file = "temp_" + next_stage_file;
-        hydfs_.getFile(next_stage_file, temp_file, true);
+        hydfs_.getFile(temp_file, next_stage_file, true);
         if (filesystem::exists(temp_file)) {
             loadIds(temp_file, next_stage_processed);
             filesystem::remove(temp_file);
@@ -530,7 +530,7 @@ void RainstormNodeStage::processData() {
                 string fin_file = job_id_ + "_" + to_string(stage_index_ - 1) + "_" + to_string(prev_task) + "_fin.log";
                 string temp_fin = "temp_" + fin_file;
                 
-                hydfs_.getFile(fin_file, temp_fin, true);
+                hydfs_.getFile(temp_fin, fin_file, true);
                 if (!filesystem::exists(temp_fin)) {
                     all_prev_complete = false;
                     break;
@@ -555,7 +555,7 @@ void RainstormNodeStage::processData() {
                     string next_processed_file = job_id_ + "_" + to_string(stage_index_ + 1) + "_" + to_string(next_task) + "_processed.log";
                     string temp_next = "temp_" + next_processed_file;
                     
-                    hydfs_.getFile(next_processed_file, temp_next, true);
+                    hydfs_.getFile(temp_next, next_processed_file, true);
                     if (filesystem::exists(temp_next)) {
                         unordered_set<int> next_ids;
                         loadIds(temp_next, next_ids);

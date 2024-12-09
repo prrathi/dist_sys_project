@@ -511,7 +511,7 @@ bool RainStormLeader::isJobCompleted(const std::string& job_id) {
     // for (int task_index = 0; task_index < job.num_tasks_per_stage; task_index++) {
     //     std::string fin_file = job_id + "_" + std::to_string(last_stage) + "_" + std::to_string(task_index) + "_fin.log";
     //     std::string temp_fin = "temp_" + fin_file;
-    //     hydfs.getFile(fin_file, temp_fin, true);
+    //     hydfs.getFile(temp_fin, fin_file, true);
     //     if (!std::filesystem::exists(temp_fin)) {
     //         return false; 
     //     }

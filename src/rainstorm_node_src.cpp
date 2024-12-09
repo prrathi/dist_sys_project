@@ -69,7 +69,7 @@ void RainstormNodeSrc::processData() {
     cout << "Processing data called at src: " << input_file_ << file_read_ << endl;
     unordered_set<int> next_ids;
     string temp_next = "temp_" + next_processed_file_;
-    hydfs_.getFile(next_processed_file_, temp_next, true);
+    hydfs_.getFile(temp_next, next_processed_file_, true);
     if (filesystem::exists(temp_next)) {
         cout << "Loading next ids" << endl;
         loadIds(temp_next, next_ids);
@@ -181,7 +181,7 @@ void RainstormNodeSrc::processData() {
             downstream_queue_->enqueue(to_retry);
         }
 
-        hydfs_.getFile(next_processed_file_, temp_next, true);
+        hydfs_.getFile(temp_next, next_processed_file_, true);
         next_ids.clear();
         if (filesystem::exists(temp_next)) {
             loadIds(temp_next, next_ids);
