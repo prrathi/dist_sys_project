@@ -153,24 +153,6 @@ void RainStormLeader::submitJob(const string &op1, const string &op2, const stri
             cerr << "Failed to create server for task " << task.task_index << endl;
             continue;
         }
-
-        // for debugging purposes
-        cout << "Creating gRPC channel to " << task.vm << ":" << task.port_num << endl;
-        auto channel = grpc::CreateChannel(
-            task.vm + ":" + to_string(task.port_num),
-            grpc::InsecureChannelCredentials()
-        );
-        
-        cout << "Waiting for channel connection..." << endl;
-        if (!channel->WaitForConnected(std::chrono::system_clock::now() + std::chrono::seconds(5))) {
-            cerr << "Failed to connect to task server at " << task.vm << ":" << task.port_num << endl;
-            return;
-        }
-        
-        cout << "Creating RainStorm client..." << endl;
-        RainStormClient client(channel);
-        cout << "Submitting task..." << endl;
-        submitSingleTask(client, task, job);
         
         thread([this, task, job]() {
             try {
