@@ -197,7 +197,7 @@ void RainStormLeader::submitSingleTask(RainStormClient& client, const LeaderTask
              << "  task_idx: " << task.task_index % job.num_tasks_per_stage << endl
              << "  task_count: " << job.num_tasks_per_stage << endl
              << "  src_file: " << job.src_file << endl
-             << "  assigned_vm: " << task.vm << endl
+             << "  assigned_vm: " << task.assigned_nodes[task.task_index] << endl
              << "  assigned_port: " << task.assigned_ports[task.task_index] << endl;
         
         bool success = client.NewSrcTask(

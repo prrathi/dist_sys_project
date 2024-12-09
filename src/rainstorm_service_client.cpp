@@ -134,7 +134,7 @@ bool RainStormClient::SendDataChunks(int32_t port, shared_ptr<SafeQueue<vector<K
                     pair->set_task_index(kv.task_index);
                     // cout << "ID: " << kv.id << "|key: " << kv.key << "|value: " << kv.value << "|task index: " << kv.task_index << "|" << endl;
                 }
-
+                cout << "debug: " << data_chunk_msg.DebugString() << endl;
                 if (!stream->Write(data_chunk_msg)) {
                     cerr << "Failed to write data chunk" << endl;
                     break;
