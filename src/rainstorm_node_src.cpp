@@ -109,6 +109,7 @@ void RainstormNodeSrc::processData() {
                     }
                     
                     persistNewOutput(batch);
+                    cout << "enqueuing batch 1" << batch.size() << endl;
                     downstream_queue_->enqueue(batch);
                     batch.clear();
                 }
@@ -127,6 +128,7 @@ void RainstormNodeSrc::processData() {
             }
             
             persistNewOutput(batch);
+            cout << "enqueuing batch 2" << batch.size() << endl;
             downstream_queue_->enqueue(batch);
         }
         
@@ -164,7 +166,7 @@ void RainstormNodeSrc::processData() {
                 lock_guard<mutex> lock(pending_ack_mtx_);
                 pending_acked_dict_[to_retry.front().id] = pending;
             }
-            
+            cout << "enqueuing batch 3" << to_retry.size() << endl;
             downstream_queue_->enqueue(to_retry);
         }
 
