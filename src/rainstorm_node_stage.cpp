@@ -359,35 +359,26 @@ void RainstormNodeStage::enqueueAcks(const vector<vector<int>>& acks) {
 }
 
 void RainstormNodeStage::processData() {
-    cout << "got here processData" << endl;
+    cout << "[Stage] Starting processData thread for stage " << stage_index_ 
+         << " task " << task_index_ << endl;
     loadIds(processed_file_, processed_ids_);
     recoverDataState();
-    vector<thread> sender_threads;
-    /* 
-    from above
-        for (int i = 0; i < request->snd_addresses_size(); i++) {
-        downstream_queues_[i] = make_shared<SafeQueue<vector<KVStruct>>>();
-        ack_queues_[i] = make_shared<SafeQueue<vector<int>>>();
-        downstream_addresses_[i] = request->snd_addresses(i);
-        downstream_ports_[i] = request->snd_ports(i);
-        send_threads_[i] = make_unique<thread>(&RainstormNodeStage::sendData, this, i);
-    }*/
-    // why  have both these make 50 send data thread idk which one u want
-    // for (int i = 0; i < task_count_; i++) {
-    //     sender_threads.emplace_back(&RainstormNodeStage::sendData, this, i);
-    // }
-
+    
     while (!should_stop_) {
         checkPendingAcks();
 
         vector<KVStruct> data;
         {
             lock_guard<mutex> lock(state_mtx_);
-            upstream_queue_->dequeue(data);
+            if (!upstream_queue_->dequeue(data)) {
+                // If dequeue returns false, it might mean the queue is empty or terminated
+                continue;
+            }
         }
 
         if (!data.empty()) {
-            cout << "Processing data for stage " << stage_index_ << " task " << task_index_ << endl;
+            cout << "[Stage] Processing " << data.size() << " KV pairs for stage " 
+                 << stage_index_ << " task " << task_index_ << endl;
             string input_data;
             vector<vector<int>> to_ack(prev_task_count_);
 
@@ -400,12 +391,15 @@ void RainstormNodeStage::processData() {
                     continue;
                 }
                 
+                // Escape quotes in value
                 string escaped_value = kv.value;
                 size_t pos = 0;
                 while ((pos = escaped_value.find("\"", pos)) != string::npos) {
                     escaped_value.replace(pos, 1, "\\\"");
                     pos += 2;
                 }
+
+                // Construct input_data with delimiter "]][" 
                 input_data += "]][" + to_string(kv.id) + 
                              "]][" + kv.key + 
                              "]][" + escaped_value + 
@@ -414,21 +408,24 @@ void RainstormNodeStage::processData() {
 
             if (input_data.empty()) {
                 enqueueAcks(to_ack); 
+                cout << "[Stage] No new data to process. Acknowledgments enqueued." << endl;
                 continue;
             }
+
+            // Construct command string
             string command;
             if (stage_index_ == 1) {
-                // cout << stage_index_ << " 1111 " << task_index_ << endl;
-                command = "echo \"" + input_data + "\" | " + operator_executable_ + " " + "\"" + PATTERN + "\"";
-                // cout << command << endl;
+                command = "echo \"" + input_data + "\" | " + operator_executable_ + " \"" + PATTERN + "\"";
             } else {
-                // cout << stage_index_ << " " << task_index_ << endl;
                 command = "echo \"" + input_data + "\" | " + operator_executable_;
             }
-            
+
+            cout << "[Stage] Executing command: " << command << endl;
+
+            // Execute the command and capture output
             FILE* pipe = popen(command.c_str(), "r");
             if (!pipe) {
-                cerr << "Error opening pipe for command: " << command << endl;
+                cerr << "[Stage] Error opening pipe for command: " << command << endl;
                 continue;
             }
 
@@ -437,9 +434,15 @@ void RainstormNodeStage::processData() {
             string all_output;
             while (fgets(buffer, buff_size, pipe) != nullptr) {
                 all_output += buffer;
-                cout << "output from pipe: " << buffer << endl;
+                cout << "[Stage] Output from executable: " << buffer;
             }
-            pclose(pipe);
+            int return_code = pclose(pipe);
+            if (return_code != 0) {
+                cerr << "[Stage] Executable exited with code: " << return_code << endl;
+                continue;
+            }
+
+            cout << "[Stage] Executable completed successfully. Parsing output..." << endl;
 
             istringstream output_stream(all_output);
             string line;
@@ -447,63 +450,75 @@ void RainstormNodeStage::processData() {
 
             while (getline(output_stream, line)) {
                 if (line.empty()) continue;
+
                 size_t current_pos = 0;
-                size_t line_length = line.length();
-                // Parsing logic: line contains multiple kv records separated by "]][" tokens
-                // Format: id]][key]][value]][task_index]][
+                size_t delimiter_length = 3; // Length of "]]["
 
-                while (true) {
-                    // find sequences
-                    size_t pos1 = line.find("]][", current_pos);
+                while (current_pos < line.length()) {
+                    // Find the positions of the next three delimiters
+                    size_t pos1 = line.find("]][" , current_pos);
                     if (pos1 == string::npos) break;
-                    size_t pos2 = line.find("]][", pos1 + 3);
+                    size_t pos2 = line.find("]][" , pos1 + delimiter_length);
                     if (pos2 == string::npos) break;
-                    size_t pos3 = line.find("]][", pos2 + 3);
+                    size_t pos3 = line.find("]][" , pos2 + delimiter_length);
                     if (pos3 == string::npos) break;
-                    size_t pos4 = line.find("]][", pos3 + 3);
 
-                    KVStruct kv;
+                    // Extract the fields
+                    string id_str = line.substr(current_pos, pos1 - current_pos);
+                    string key = line.substr(pos1 + delimiter_length, pos2 - pos1 - delimiter_length);
+                    string value = line.substr(pos2 + delimiter_length, pos3 - pos2 - delimiter_length);
+
+                    // Attempt to extract task_index
+                    size_t pos4 = line.find("]][" , pos3 + delimiter_length);
+                    string task_index_str;
+                    if (pos4 != string::npos) {
+                        task_index_str = line.substr(pos3 + delimiter_length, pos4 - pos3 - delimiter_length);
+                        current_pos = pos4 + delimiter_length;
+                    } else {
+                        task_index_str = line.substr(pos3 + delimiter_length);
+                        current_pos = line.length();
+                    }
+
+                    // Convert strings to appropriate types
                     try {
-                        int id_val = stoi(line.substr(current_pos, pos1 - current_pos));
-                        string key = line.substr(pos1 + 3, pos2 - pos1 - 3);
-                        string value = line.substr(pos2 + 3, pos3 - pos2 - 3);
-                        int prev_task_index;
-                        if (pos4 != string::npos) {
-                            prev_task_index = stoi(line.substr(pos3 + 3, pos4 - pos3 - 3));
-                            current_pos = pos4 + 2;
-                        } else {
-                            prev_task_index = stoi(line.substr(pos3 + 3));
-                            current_pos = line_length;
-                        }
+                        int id_val = stoi(id_str);
+                        int task_index_val = stoi(task_index_str);
 
+                        KVStruct kv;
                         kv.id = id_val;
                         kv.key = key;
                         kv.value = value;
-                        kv.task_index = task_index_;
-                        cout << "Processing data" << kv.id << ":" << kv.key << ":" << kv.value << ":" << kv.task_index << endl;
+                        kv.task_index = task_index_val;
 
+                        cout << "[Stage] Parsed KV: ID=" << kv.id << ", Key=" << kv.key 
+                             << ", Value=" << kv.value << ", Task_Index=" << kv.task_index << endl;
+
+                        // Stateful processing
                         if (stateful_) {
                             int val = stoi(kv.value);
                             key_to_aggregate_[kv.key] += val;
                             kv.value = to_string(key_to_aggregate_[kv.key]);
                         }
 
+                        // Handle filtering and acknowledgment
                         if (kv.value == "FILTERED_OUT") {
                             new_filtered_ids_.insert(kv.id);
                             to_ack[kv.task_index].push_back(kv.id);
                         } else {
                             new_processed_ids_.insert(kv.id);
                             int partition = partitionData(kv.key, task_count_);
-                            new_pending_acks[(size_t)partition].data.push_back(kv);
+                            if (partition >= 0 && partition < task_count_) {
+                                new_pending_acks[partition].data.push_back(kv);
+                            } else {
+                                cerr << "[Stage] Invalid partition index: " << partition 
+                                     << " for task_count_: " << task_count_ << endl;
+                            }
                         }
 
                     } catch (const std::exception &e) {
-                        cerr << "Error parsing KV data: " << e.what() << endl;
-                        break;
-                    }
-
-                    if (pos4 == string::npos) {
-                        break;
+                        cerr << "[Stage] Error parsing KV data: " << e.what() 
+                             << " in line: " << line << endl;
+                        break; // Exit parsing loop for this line
                     }
                 }
             }
@@ -600,11 +615,7 @@ void RainstormNodeStage::processData() {
                 }
             }
         }
-        this_thread::sleep_for(milliseconds(100));
-    }
-    
-    for (auto& thread : sender_threads) {
-        thread.join();
+        this_thread::sleep_for(milliseconds(50));
     }
 }
 
