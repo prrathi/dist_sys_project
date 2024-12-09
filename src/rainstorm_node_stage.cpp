@@ -58,14 +58,16 @@ void RainstormNodeStage::handleNewStageTask(const rainstorm::NewStageTaskRequest
     // hydfs_.getFile(filtered_file_, filtered_file_, true);
     // hydfs_.getFile(state_output_file_, state_output_file_, true);
     cout << "got here k2" << endl;
-    for (int i = 0; i < request->snd_addresses_size(); i++) {
-        downstream_addresses_.push_back(request->snd_addresses(i));
-        downstream_ports_.push_back(request->snd_ports(i));
-        downstream_queues_.push_back(make_shared<SafeQueue<vector<KVStruct>>>());
-    }
-    for (int i = 0; i < prev_task_count_; i++) {
-        ack_queues_.push_back(make_shared<SafeQueue<vector<int>>>());
-    }
+
+     // little sus?
+    // for (int i = 0; i < request->snd_addresses_size(); i++) {
+    //     downstream_addresses_.push_back(request->snd_addresses(i));
+    //     downstream_ports_.push_back(request->snd_ports(i));
+    //     downstream_queues_.push_back(make_shared<SafeQueue<vector<KVStruct>>>());
+    // }
+    // for (int i = 0; i < prev_task_count_; i++) {
+    //     ack_queues_.push_back(make_shared<SafeQueue<vector<int>>>());
+    // }
 
     downstream_queues_.resize(request->snd_addresses_size());
     downstream_addresses_.resize(request->snd_addresses_size());
