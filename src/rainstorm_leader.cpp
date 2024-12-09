@@ -19,16 +19,19 @@
 #include "rainstorm_leader.h"
 #include "rainstorm_service_client.h"
 
+static const int SERVER_PORT = 8083;
+static const int FACTORY_PORT = 8084;
+
 using namespace std;
 
-RainStormLeader::RainStormLeader() : rainstorm_node_server_(this) {
+RainStormLeader::RainStormLeader() : rainstorm_node_server_(this, SERVER_PORT) {
     if (string(getenv("USER")) == "prathi3" || string(getenv("USER")) == "praneet") {
         listener_pipe_path = "/tmp/mp4-leader-prathi3";
     }
     cout << "FIFO PATH: " << listener_pipe_path << "\n";
     vector<string> vms = getAllWorkerVMs();
     for (const auto& vm : vms) {
-        used_ports_per_vm[vm] = {};
+        used_ports_per_vm_[vm] = {};
     }
     std::thread(&RainStormLeader::jobCompletionChecker, this).detach();
 }
@@ -37,30 +40,6 @@ string RainStormLeader::generateJobId() {
     static mt19937 gen(random_device{}());
     static uniform_int_distribution<> dist(1000, 999999);
     return "job_" + to_string(dist(gen));
-}
-
-void RainStormLeader::jobCompletionChecker() {
-    while (true) {
-        std::vector<std::string> completed_jobs;
-        {
-            std::lock_guard<std::mutex> lock(mtx_);
-            for (const auto& job_pair : jobs_) {
-                if (isJobCompleted(job_pair.first)) {
-                    completed_jobs.push_back(job_pair.first);
-                }
-            }
-            for (const auto& job_id : completed_jobs) {
-                std::cout << "Job " << job_id << " completed and removed from tracking." << std::endl;
-                jobs_.erase(job_id);
-            }
-        }
-        std::this_thread::sleep_for(std::chrono::seconds(5));
-    }
-}
-
-bool RainStormLeader::isJobCompleted(const std::string& job_id) {
-    // TODO
-    return false;
 }
 
 void RainStormLeader::pipeListener() {
@@ -119,7 +98,7 @@ void RainStormLeader::pipeListener() {
 }
 
 void RainStormLeader::submitJob(const string &op1, const string &op2, const string &src_file, const string &dest_file, int num_tasks) {
-    lock_guard<mutex> lock(mtx_);
+    lock_guard<mutex> lock(mtx);
     string job_id = generateJobId();
     JobInfo job;
     job.job_id = job_id;
@@ -173,27 +152,20 @@ void RainStormLeader::submitJob(const string &op1, const string &op2, const stri
 
 void RainStormLeader::submitSingleTask(RainStormClient& client, const LeaderTaskInfo& task, const JobInfo& job) {
     if (task.stage_index == 0) {
-        client.NewSrcTask(job.job_id, task.task_index, job.num_tasks_per_stage, 
-                         job.src_file, task.vm, task.assigned_ports[task.task_index]);
+        client.NewSrcTask(task.port_num, job.job_id, task.task_index % job.num_tasks_per_stage, job.num_tasks_per_stage, job.src_file, task.vm, task.assigned_ports[task.task_index]);
     } else if (task.stage_index == 1) {
-        bool is_agg = is_exec_agg.find(task.operator_executable) != is_exec_agg.end() ? 
-                     is_exec_agg.at(task.operator_executable) : false;
-        client.NewStageTask(job.job_id, task.stage_index, task.task_index, 
-                           job.num_tasks_per_stage, task.operator_executable, 
-                           is_agg, false, task.assigned_nodes, task.assigned_ports);
+        bool is_agg = is_exec_agg_.find(task.operator_executable) != is_exec_agg_.end() ? is_exec_agg_.at(task.operator_executable) : false;
+        client.NewStageTask(task.port_num, job.job_id, task.stage_index, task.task_index % job.num_tasks_per_stage, job.num_tasks_per_stage, task.operator_executable, is_agg, false, task.assigned_nodes, task.assigned_ports);
     } else if (task.stage_index == 2) {
-        bool is_agg = is_exec_agg.find(task.operator_executable) != is_exec_agg.end() ? 
-                     is_exec_agg.at(task.operator_executable) : false;
-        client.NewStageTask(job.job_id, task.stage_index, task.task_index, 
-                           job.num_tasks_per_stage, task.operator_executable, 
-                           is_agg, true, task.assigned_nodes, task.assigned_ports);
+        bool is_agg = is_exec_agg_.find(task.operator_executable) != is_exec_agg_.end() ? is_exec_agg_.at(task.operator_executable) : false;
+        client.NewStageTask(task.port_num, job.job_id, task.stage_index, task.task_index % job.num_tasks_per_stage, job.num_tasks_per_stage, task.operator_executable, is_agg, true, task.assigned_nodes, task.assigned_ports);
     }
 }
 
 void RainStormLeader::handleNodeFailure(const string& failed_node_id) {
-    lock_guard<mutex> lock(mtx_);
+    lock_guard<mutex> lock(mtx);
     cout << "Handling failure for node: " << failed_node_id << endl;
-    used_ports_per_vm.erase(failed_node_id);
+    used_ports_per_vm_.erase(failed_node_id);
 
     for (auto &kv : jobs_) {
         JobInfo &job = kv.second;
@@ -218,11 +190,11 @@ void RainStormLeader::handleNodeFailure(const string& failed_node_id) {
                 RainStormClient client(grpc::CreateChannel(target_Address, grpc::InsecureChannelCredentials()));
 
                 if (task.stage_index == 0) {
-                    client.NewSrcTask(job.job_id, task.task_index, job.num_tasks_per_stage, job.src_file, task.vm, task.assigned_ports[task.task_index]);
+                    client.NewSrcTask(task.port_num, job.job_id, task.task_index % job.num_tasks_per_stage, job.num_tasks_per_stage, job.src_file, task.vm, task.assigned_ports[task.task_index]);
                 } else if (task.stage_index == 1) {
-                    client.NewStageTask(job.job_id, task.stage_index, task.task_index, job.num_tasks_per_stage, task.operator_executable, false, false, task.assigned_nodes, task.assigned_ports);
+                    client.NewStageTask(task.port_num, job.job_id, task.stage_index, task.task_index % job.num_tasks_per_stage, job.num_tasks_per_stage, task.operator_executable, false, false, task.assigned_nodes, task.assigned_ports);
                 } else if (task.stage_index == 2) {
-                    client.NewStageTask(job.job_id, task.stage_index, task.task_index, job.num_tasks_per_stage, task.operator_executable, true, true, task.assigned_nodes, task.assigned_ports);
+                    client.NewStageTask(task.port_num, job.job_id, task.stage_index, task.task_index % job.num_tasks_per_stage, job.num_tasks_per_stage, task.operator_executable, true, true, task.assigned_nodes, task.assigned_ports);
                 } else {
                     cout << "Error: Invalid stage index." << endl;
                 }
@@ -236,7 +208,7 @@ void RainStormLeader::handleNodeFailure(const string& failed_node_id) {
                 RainStormClient client(grpc::CreateChannel(target_Address, grpc::InsecureChannelCredentials()));
                 int diff_index = (int)distance(task.assigned_nodes.begin(), it_target);
                 int new_task_index = (task.stage_index + 1) * job.num_tasks_per_stage + diff_index;
-                bool update_success = client.UpdateSrcTaskSend(diff_index, job.tasks[new_task_index].vm, job.tasks[new_task_index].port_num);
+                bool update_success = client.UpdateSrcTaskSend(task.port_num, diff_index, job.tasks[new_task_index].vm, job.tasks[new_task_index].port_num);
                 if (update_success) {
                     cout << "Successfully updated sending stream for Task ID: " << task.task_index << " at index: " << new_task_index << endl;
                 } else {
@@ -252,20 +224,20 @@ vector<string> RainStormLeader::getAllWorkerVMs() {
 }
 
 int RainStormLeader::getUnusedPortNumberForVM(const string& vm) {
-    if (used_ports_per_vm.find(vm) == used_ports_per_vm.end()) {
-        used_ports_per_vm[vm] = {};
+    if (used_ports_per_vm_.find(vm) == used_ports_per_vm_.end()) {
+        used_ports_per_vm_[vm] = {};
     }
 
-    for (int i = node_factory_port + 1; i < 65000; ++i) {
-        if (used_ports_per_vm[vm].find(i) == used_ports_per_vm[vm].end()) {
-            used_ports_per_vm[vm].insert(i);
+    for (int i = FACTORY_PORT + 1; i < 65000; ++i) {
+        if (used_ports_per_vm_[vm].find(i) == used_ports_per_vm_[vm].end()) {
+            used_ports_per_vm_[vm].insert(i);
             return i;
         }
     }
 
     cout << "Ran out of ports?" << endl; 
-    used_ports_per_vm[vm].insert(node_factory_port + 1);
-    return node_factory_port + 1;
+    used_ports_per_vm_[vm].insert(FACTORY_PORT + 1);
+    return FACTORY_PORT + 1;
 }
 
 bool RainStormLeader::CreateServerOnNode(const string& node_address, int port) {
@@ -274,7 +246,7 @@ bool RainStormLeader::CreateServerOnNode(const string& node_address, int port) {
     args.SetInt(GRPC_ARG_KEEPALIVE_TIMEOUT_MS, 5000);
     args.SetInt(GRPC_ARG_KEEPALIVE_PERMIT_WITHOUT_CALLS, 1);
     
-    string target_address = node_address + ":" + to_string(node_factory_port);
+    string target_address = node_address + ":" + to_string(FACTORY_PORT);
     auto channel = grpc::CreateCustomChannel(
         target_address, 
         grpc::InsecureChannelCredentials(),
@@ -310,7 +282,7 @@ bool RainStormLeader::RemoveServerFromNode(const string& node_address, int port)
     args.SetInt(GRPC_ARG_KEEPALIVE_TIMEOUT_MS, 5000);
     args.SetInt(GRPC_ARG_KEEPALIVE_PERMIT_WITHOUT_CALLS, 1);
     
-    string target_address = node_address + ":" + to_string(node_factory_port);
+    string target_address = node_address + ":" + to_string(FACTORY_PORT);
     auto channel = grpc::CreateCustomChannel(
         target_address, 
         grpc::InsecureChannelCredentials(),
@@ -354,8 +326,8 @@ void RainStormLeader::runHydfs() {
 
 string RainStormLeader::getNextVM() {
     vector<string> vms = getAllWorkerVMs();
-    string vm = vms[total_tasks_running_counter % vms.size()];
-    total_tasks_running_counter++;
+    string vm = vms[total_tasks_running_counter_ % vms.size()];
+    total_tasks_running_counter_++;
     return vm;
 }
 
@@ -373,4 +345,47 @@ pair<vector<string>, vector<int>> RainStormLeader::getTargetNodes(int stage_num,
         }
     }
     return {target_nodes, target_ports};
+}
+
+void RainStormLeader::jobCompletionChecker() {
+    while (true) {
+        std::vector<std::string> completed_jobs;
+        {
+            std::lock_guard<std::mutex> lock(mtx);
+            for (const auto& job_pair : jobs_) {
+                if (isJobCompleted(job_pair.first)) {
+                    completed_jobs.push_back(job_pair.first);
+                }
+            }
+            for (const auto& job_id : completed_jobs) {
+                std::cout << "Job " << job_id << " completed and removed from tracking." << std::endl;
+                jobs_.erase(job_id);
+            }
+        }
+        std::this_thread::sleep_for(std::chrono::seconds(5));
+    }
+}
+
+bool RainStormLeader::isJobCompleted(const std::string& job_id) {
+    const auto& job = jobs_[job_id];
+    int last_stage = job.num_stages;
+
+    for (int task_index = 0; task_index < job.num_tasks_per_stage; task_index++) {
+        std::string fin_file = job_id + "_" + std::to_string(last_stage) + "_" + std::to_string(task_index) + "_fin.log";
+        std::string temp_fin = "temp_" + fin_file;
+        hydfs.getFile(fin_file, temp_fin);
+        if (!std::filesystem::exists(temp_fin)) {
+            return false; 
+        }
+        
+        std::ifstream fin(temp_fin);
+        std::string content;
+        std::getline(fin, content);
+        fin.close();
+        std::filesystem::remove(temp_fin);
+        if (content != "1") {
+            return false;
+        }
+    }
+    return true;
 }

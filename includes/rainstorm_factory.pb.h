@@ -99,6 +99,39 @@ inline bool StatusCode_Parse(absl::string_view name, StatusCode* value) {
   return ::google::protobuf::internal::ParseNamedEnum<StatusCode>(
       StatusCode_descriptor(), name, value);
 }
+enum NodeType : int {
+  SRC_NODE = 0,
+  STAGE_NODE = 1,
+  NodeType_INT_MIN_SENTINEL_DO_NOT_USE_ =
+      std::numeric_limits<::int32_t>::min(),
+  NodeType_INT_MAX_SENTINEL_DO_NOT_USE_ =
+      std::numeric_limits<::int32_t>::max(),
+};
+
+bool NodeType_IsValid(int value);
+extern const uint32_t NodeType_internal_data_[];
+constexpr NodeType NodeType_MIN = static_cast<NodeType>(0);
+constexpr NodeType NodeType_MAX = static_cast<NodeType>(1);
+constexpr int NodeType_ARRAYSIZE = 1 + 1;
+const ::google::protobuf::EnumDescriptor*
+NodeType_descriptor();
+template <typename T>
+const std::string& NodeType_Name(T value) {
+  static_assert(std::is_same<T, NodeType>::value ||
+                    std::is_integral<T>::value,
+                "Incorrect type passed to NodeType_Name().");
+  return NodeType_Name(static_cast<NodeType>(value));
+}
+template <>
+inline const std::string& NodeType_Name(NodeType value) {
+  return ::google::protobuf::internal::NameOfDenseEnum<NodeType_descriptor,
+                                                 0, 1>(
+      static_cast<int>(value));
+}
+inline bool NodeType_Parse(absl::string_view name, NodeType* value) {
+  return ::google::protobuf::internal::ParseNamedEnum<NodeType>(
+      NodeType_descriptor(), name, value);
+}
 
 // ===================================================================
 
@@ -230,6 +263,7 @@ class ServerRequest final : public ::google::protobuf::Message
   // accessors -------------------------------------------------------
   enum : int {
     kPortFieldNumber = 1,
+    kNodeTypeFieldNumber = 2,
   };
   // int32 port = 1;
   void clear_port() ;
@@ -241,12 +275,22 @@ class ServerRequest final : public ::google::protobuf::Message
   void _internal_set_port(::int32_t value);
 
   public:
+  // .rainstorm_factory.NodeType node_type = 2;
+  void clear_node_type() ;
+  ::rainstorm_factory::NodeType node_type() const;
+  void set_node_type(::rainstorm_factory::NodeType value);
+
+  private:
+  ::rainstorm_factory::NodeType _internal_node_type() const;
+  void _internal_set_node_type(::rainstorm_factory::NodeType value);
+
+  public:
   // @@protoc_insertion_point(class_scope:rainstorm_factory.ServerRequest)
  private:
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
   static const ::google::protobuf::internal::TcParseTable<
-      0, 1, 0,
+      1, 2, 0,
       0, 2>
       _table_;
 
@@ -268,6 +312,7 @@ class ServerRequest final : public ::google::protobuf::Message
                           ::google::protobuf::Arena* arena, const Impl_& from,
                           const ServerRequest& from_msg);
     ::int32_t port_;
+    int node_type_;
     mutable ::google::protobuf::internal::CachedSize _cached_size_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
@@ -578,6 +623,28 @@ inline void ServerRequest::_internal_set_port(::int32_t value) {
   _impl_.port_ = value;
 }
 
+// .rainstorm_factory.NodeType node_type = 2;
+inline void ServerRequest::clear_node_type() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.node_type_ = 0;
+}
+inline ::rainstorm_factory::NodeType ServerRequest::node_type() const {
+  // @@protoc_insertion_point(field_get:rainstorm_factory.ServerRequest.node_type)
+  return _internal_node_type();
+}
+inline void ServerRequest::set_node_type(::rainstorm_factory::NodeType value) {
+  _internal_set_node_type(value);
+  // @@protoc_insertion_point(field_set:rainstorm_factory.ServerRequest.node_type)
+}
+inline ::rainstorm_factory::NodeType ServerRequest::_internal_node_type() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return static_cast<::rainstorm_factory::NodeType>(_impl_.node_type_);
+}
+inline void ServerRequest::_internal_set_node_type(::rainstorm_factory::NodeType value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.node_type_ = value;
+}
+
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
 #endif  // __GNUC__
@@ -594,6 +661,12 @@ struct is_proto_enum<::rainstorm_factory::StatusCode> : std::true_type {};
 template <>
 inline const EnumDescriptor* GetEnumDescriptor<::rainstorm_factory::StatusCode>() {
   return ::rainstorm_factory::StatusCode_descriptor();
+}
+template <>
+struct is_proto_enum<::rainstorm_factory::NodeType> : std::true_type {};
+template <>
+inline const EnumDescriptor* GetEnumDescriptor<::rainstorm_factory::NodeType>() {
+  return ::rainstorm_factory::NodeType_descriptor();
 }
 
 }  // namespace protobuf

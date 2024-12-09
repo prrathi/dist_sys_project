@@ -27,8 +27,6 @@
 
 namespace rainstorm_factory {
 
-// Factory to spin up rainstorm servers, kept outside rainstorm for cleanness
-//
 class RainstormFactoryService final {
  public:
   static constexpr char const* service_full_name() {

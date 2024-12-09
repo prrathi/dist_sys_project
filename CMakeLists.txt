@@ -18,10 +18,12 @@ set(SOURCES
   src/hydfs_server.cpp
   src/file_transfer_client.cpp
   src/helper.cpp
-  src/rainstorm_node.cpp
   src/rainstorm_node_server.cpp
   src/rainstorm_service_client.cpp
   src/rainstorm_leader.cpp
+  src/rainstorm_node_src.cpp
+  src/rainstorm_node_stage.cpp
+  src/rainstorm_factory_server.cpp
   src/hydfs.grpc.pb.cc
   src/hydfs.pb.cc
   src/rainstorm.grpc.pb.cc
@@ -43,10 +45,13 @@ set(HEADERS
   includes/hydfs_server.h
   includes/file_transfer_client.h
   includes/helper.h
-  includes/rainstorm_node.h
+  includes/safequeue.hpp
+  includes/rainstorm_common.h
   includes/rainstorm_node_server.h
   includes/rainstorm_service_client.h
   includes/rainstorm_leader.h
+  includes/rainstorm_node.h
+  includes/rainstorm_factory_server.h
   includes/rainstorm.grpc.pb.h
   includes/rainstorm.pb.h
   includes/rainstorm_factory.grpc.pb.h

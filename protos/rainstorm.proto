@@ -29,30 +29,33 @@ service RainstormService {
 }
 
 message NewSrcTaskRequest {
-    string job_id = 1;
-    int32 task_index = 2;
-    int32 task_count = 3;
-    string src_filename = 4;
-    string snd_address = 5;  
-    int32 snd_port = 6;
+    int32 port = 1;
+    string job_id = 2;
+    int32 task_index = 3;
+    int32 task_count = 4;
+    string src_filename = 5;
+    string snd_address = 6;  
+    int32 snd_port = 7;
 }
 
 message NewStageTaskRequest {
-    string job_id = 1;
-    int32 stage_index = 2;
-    int32 task_index = 3;
-    int32 task_count = 4;
-    string executable = 5;
-    bool stateful = 6;
-    bool last = 7;
-    repeated string snd_addresses = 8;
-    repeated int32 snd_ports = 9;
+    int32 port = 1;
+    string job_id = 2;
+    int32 stage_index = 3;
+    int32 task_index = 4;
+    int32 task_count = 5;
+    string executable = 6;
+    bool stateful = 7;
+    bool last = 8;
+    repeated string snd_addresses = 9;
+    repeated int32 snd_ports = 10;
 }
 
 message UpdateTaskSndRequest {
-    int32 index = 1; // among the snd_addresses
-    string snd_address = 2;
-    int32 snd_port = 3;
+    int32 port = 1;
+    int32 index = 2; // among the snd_addresses
+    string snd_address = 3;
+    int32 snd_port = 4;
 }
 
 // id is the identification for the key, value pair cuz the key and value could be pretty large
@@ -65,9 +68,10 @@ message KV {
 
 message DataChunk {
     oneof request {
-        int32 task_index = 1;
-        KV pair = 2;
-        bool finished = 3;
+        int32 port = 1;
+        int32 task_index = 2;
+        KV pair = 3;
+        bool finished = 4;
     }
 }
 

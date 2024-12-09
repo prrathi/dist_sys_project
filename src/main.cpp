@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 #include <unistd.h>
-#include "rainstorm_node.h"
+#include "rainstorm_factory_server.h"
 #include "rainstorm_leader.h"
 
 int main(int argc, char* argv[]) {
@@ -11,16 +11,17 @@ int main(int argc, char* argv[]) {
     }
 
     std::string mode = argv[1];
-    if (mode != "leader" && mode != "node") {
+    if (mode != "leader" && mode != "factory") {
         std::cerr << "Invalid mode. Use 'leader' or 'node'" << std::endl;
         return 1;
     } else if (mode == "leader") {
         RainStormLeader leader;
         leader.runHydfs();
         leader.runServer();
-    } else if (mode == "node") {
-        RainStormNode node;
-        node.runHydfs();
+    } else if (mode == "factory") {
+        RainstormFactory factory;
+        factory.runHydfs();
+        factory.runServer();
     }
     return 0;
 }
