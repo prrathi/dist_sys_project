@@ -223,6 +223,8 @@ bool RainStormClient::SendDataChunksLeader(shared_ptr<SafeQueue<vector<KVStruct>
         }
     });
 
+    cout << "called early" << endl;
+
     writer_thread.join();
     reader_thread.join();
 
