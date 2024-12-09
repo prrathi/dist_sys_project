@@ -439,7 +439,8 @@ void Hydfs::swim() {
                     currNode.removeSendId(state.nodeId);
                     if (checkIfMinVM(currNode.getId(), currNode.getAllIds(), MODULUS)) {
                         handleNodeFailureDetected(state.nodeId, currNode.getAllIds());  
-                                                 handleNodeFailureDetected(state.nodeId, currNode.getAllIds());  
+                        //bruh wtf
+                        //handleNodeFailureDetected(state.nodeId, currNode.getAllIds());  
 
                         string hostname = state.nodeId.substr(0, state.nodeId.rfind("-")); 
                         string default_fifo_path = DEFAULT_FIFO_PATH;
@@ -449,6 +450,7 @@ void Hydfs::swim() {
                         }
 
                         std::string message = "failure " + hostname;
+                        cout << "Sent Failure Message" << endl;
                         std::ofstream pipe_stream(leader_pipe);
                         if (!pipe_stream.is_open()) {
                             std::cout << "Failed to open named pipe when failure detected" << std::endl;
