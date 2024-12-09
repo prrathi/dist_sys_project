@@ -106,73 +106,158 @@ bool RainStormClient::UpdateSrcTaskSend(int32_t port, int32_t index, const strin
     return status.ok() && response.status() == rainstorm::SUCCESS;
 }
 
-bool RainStormClient::SendDataChunks(int32_t port, shared_ptr<SafeQueue<vector<KVStruct>>> queue, unordered_set<int>& acked_ids, mutex& acked_ids_mutex, int task_index) {
+bool RainStormClient::SendDataChunks(int32_t port, 
+                                     std::shared_ptr<SafeQueue<std::vector<KVStruct>>> queue, 
+                                     std::unordered_set<int>& acked_ids, 
+                                     std::mutex& acked_ids_mutex, 
+                                     int task_index) {
     grpc::ClientContext context;
     auto stream = stub_->SendDataChunks(&context);
-    cout << "Attempting to send data chunks to port " << endl;
-    // Writer thread
-    thread writer_thread([&] {
-        // Initial empty write if needed
-        // not strictly required since we start reading anyway
-        cout << "in writer thread" << endl;
+    
+    if (!stream) {
+        std::cerr << "Failed to create stream." << std::endl;
+        return false;
+    }
+    
+    // Create writer and reader threads
+    std::thread writer_thread(&RainStormClient::writeToStream, this, stream.get(), port, task_index, queue);
+    std::thread reader_thread(&RainStormClient::readFromStream, this, stream.get(), std::ref(acked_ids), std::ref(acked_ids_mutex));
+    
+    // Wait for both threads to finish
+    writer_thread.join();
+    reader_thread.join();
+    
+    // Finish the stream and check for errors
+    grpc::Status status = stream->Finish();
+    if (status.ok()) {
+        std::cout << "SendDataChunks RPC completed successfully." << std::endl;
+        return true;
+    } else {
+        std::cerr << "SendDataChunks RPC failed: " << status.error_message() << std::endl;
+        return false;
+    }
+}
+
+// Writer function
+void RainStormClient::writeToStream(grpc::ClientReaderWriter<rainstorm::StreamDataChunk, rainstorm::AckDataChunk>* stream,
+                                    int32_t port, int task_index, 
+                                    std::shared_ptr<SafeQueue<std::vector<KVStruct>>> queue) {
+    try {
+        // Create StreamDataChunk message
         rainstorm::StreamDataChunk initial_msg;
-        auto* chunk = initial_msg.add_chunks();
-        chunk->set_port(port);
-        chunk->set_task_index(task_index);
+        
+        // Send port
+        rainstorm::DataChunk port_chunk;
+        port_chunk.set_port(port);
+        initial_msg.add_chunks()->CopyFrom(port_chunk);
+        std::cout << "Writing port: " << port << std::endl;
         if (!stream->Write(initial_msg)) {
-            cerr << "Failed to write initial message" << endl;
-            std::this_thread::sleep_for(std::chrono::milliseconds(50000));
+            std::cerr << "Failed to write port message." << std::endl;
+            return;
         }
-        cout << "after initial write" << endl;
+        std::cout << "Port message written successfully." << std::endl;
+        
+        // Clear initial_msg for next use
+        initial_msg.Clear();
+        
+        // Send task_index
+        rainstorm::DataChunk task_index_chunk;
+        task_index_chunk.set_task_index(task_index);
+        initial_msg.add_chunks()->CopyFrom(task_index_chunk);
+        std::cout << "Writing task_index: " << task_index << std::endl;
+        if (!stream->Write(initial_msg)) {
+            std::cerr << "Failed to write task_index message." << std::endl;
+            return;
+        }
+        std::cout << "Task_index message written successfully." << std::endl;
+        
+        // Clear initial_msg for next use
+        initial_msg.Clear();
+        
+        // Continuously send KV pairs
         while (true) {
-            vector<KVStruct> kv_pairs;
-            if (queue->dequeue(kv_pairs)) { 
+            std::vector<KVStruct> kv_pairs;
+            if (queue->dequeue(kv_pairs)) { // Assume dequeue blocks until data is available
+                if (kv_pairs.empty()) {
+                    // No data to send; skip
+                    continue;
+                }
+                
                 rainstorm::StreamDataChunk data_chunk_msg;
                 for (const auto& kv : kv_pairs) {
-                    auto* chunk = data_chunk_msg.add_chunks();
-                    auto* pair = chunk->mutable_pair();
-                    pair->set_id(kv.id);
-                    pair->set_key(kv.key);
-                    pair->set_value(kv.value);
-                    pair->set_task_index(kv.task_index);
-                    // cout << "ID: " << kv.id << "|key: " << kv.key << "|value: " << kv.value << "|task index: " << kv.task_index << "|" << endl;
+                    // Validate KVStruct fields
+                    if (kv.key.empty()) {
+                        std::cerr << "Warning: KVStruct with empty key detected. ID: " << kv.id << std::endl;
+                        continue; // Skip or handle accordingly
+                    }
+                    if (kv.value.empty()) {
+                        std::cerr << "Warning: KVStruct with empty value detected. ID: " << kv.id << std::endl;
+                        continue; // Skip or handle accordingly
+                    }
+                    
+                    rainstorm::DataChunk pair_chunk;
+                    rainstorm::KV* kv_ptr = pair_chunk.mutable_pair();
+                    kv_ptr->set_id(kv.id);
+                    kv_ptr->set_key(kv.key);
+                    kv_ptr->set_value(kv.value);
+                    kv_ptr->set_task_index(kv.task_index);
+                    
+                    data_chunk_msg.add_chunks()->CopyFrom(pair_chunk);
                 }
-                std::this_thread::sleep_for(std::chrono::milliseconds(100));
-                cout << "debug: " << data_chunk_msg.DebugString() << endl;
+                
+                if (data_chunk_msg.chunks_size() == 0) {
+                    // No valid data to send
+                    continue;
+                }
+                
+                std::cout << "Writing " << data_chunk_msg.chunks_size() << " KV pair(s)." << std::endl;
                 if (!stream->Write(data_chunk_msg)) {
-                    cerr << "Failed to write data chunk" << endl;
-                    break;
+                    std::cerr << "Failed to write KV pair message(s)." << std::endl;
+                    return;
                 }
-                cout << "successful write" << endl;
+                std::cout << "KV pair message(s) written successfully." << std::endl;
             } else {
-                // finished
-                rainstorm::StreamDataChunk final_msg;
-                auto* finished_chunk = final_msg.add_chunks();
-                finished_chunk->set_finished(true);
-                stream->Write(final_msg);
+                // No more data to send; send final message
+                rainstorm::StreamDataChunk finished_msg;
+                rainstorm::DataChunk finished_chunk;
+                finished_chunk.set_finished(true);
+                finished_msg.add_chunks()->CopyFrom(finished_chunk);
+                
+                std::cout << "Writing finished message." << std::endl;
+                if (!stream->Write(finished_msg)) {
+                    std::cerr << "Failed to write finished message." << std::endl;
+                } else {
+                    std::cout << "Finished message written successfully." << std::endl;
+                }
                 break;
             }
         }
-
+        
+        // Indicate that no more writes will be sent
+        std::cout << "Calling WritesDone() on stream." << std::endl;
         stream->WritesDone();
-    });
+    } catch (const std::exception& e) {
+        std::cerr << "Exception in writeToStream: " << e.what() << std::endl;
+    }
+}
 
-    // Reader thread
-    thread reader_thread([&] {
-        rainstorm::AckDataChunk server_chunk;
-        while (stream->Read(&server_chunk)) {
-            lock_guard<mutex> lock(acked_ids_mutex);
-            for (auto id : server_chunk.id()) {
+// Reader function
+void RainStormClient::readFromStream(grpc::ClientReaderWriter<rainstorm::StreamDataChunk, rainstorm::AckDataChunk>* stream,
+                                  std::unordered_set<int>& acked_ids, 
+                                  std::mutex& acked_ids_mutex) {
+    try {
+        rainstorm::AckDataChunk ack_chunk;
+        while (stream->Read(&ack_chunk)) {
+            std::lock_guard<std::mutex> lock(acked_ids_mutex);
+            for (auto id : ack_chunk.id()) {
                 acked_ids.insert(id);
+                std::cout << "Received acknowledgment for ID: " << id << std::endl;
             }
         }
-    });
-
-    writer_thread.join();
-    reader_thread.join();
-
-    grpc::Status status = stream->Finish();
-    return status.ok();
+        std::cout << "No more acknowledgments to read." << std::endl;
+    } catch (const std::exception& e) {
+        std::cerr << "Exception in readFromStream: " << e.what() << std::endl;
+    }
 }
 
 bool RainStormClient::SendDataChunksLeader(shared_ptr<SafeQueue<vector<KVStruct>>> queue, unordered_set<int>& acked_ids, mutex& acked_ids_mutex, string job_id) {

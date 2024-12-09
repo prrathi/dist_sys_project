@@ -36,5 +36,12 @@ public:
     bool SendDataChunksLeader(std::shared_ptr<SafeQueue<std::vector<KVStruct>>> queue, std::unordered_set<int>& acked_ids, std::mutex& acked_ids_mutex, std::string job_id);
 
 private:
+    void writeToStream(grpc::ClientReaderWriter<rainstorm::StreamDataChunk, rainstorm::AckDataChunk>* stream,
+                      int32_t port, int task_index, 
+                      std::shared_ptr<SafeQueue<std::vector<KVStruct>>> queue);
+    
+    void readFromStream(grpc::ClientReaderWriter<rainstorm::StreamDataChunk, rainstorm::AckDataChunk>* stream,
+                       std::unordered_set<int>& acked_ids, 
+                       std::mutex& acked_ids_mutex);
     std::unique_ptr<rainstorm::RainstormService::Stub> stub_;
 };
