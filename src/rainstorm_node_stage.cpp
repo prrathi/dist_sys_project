@@ -329,6 +329,7 @@ void RainstormNodeStage::processData() {
     recoverDataState();
 
     while (!should_stop_) {
+        cout << "Processing data for stage " << stage_index_ << " task " << task_index_ << endl;
         checkPendingAcks();
 
         vector<KVStruct> data;
@@ -338,7 +339,7 @@ void RainstormNodeStage::processData() {
         }
 
         if (!data.empty()) {
-            cout << "Processing data for stage " << stage_index_ << " task " << task_index_ << endl;
+            cout << "Data not empty for stage " << stage_index_ << " task " << task_index_ << endl;
             string input_data;
             vector<vector<int>> to_ack(prev_task_count_);
 
@@ -383,11 +384,13 @@ void RainstormNodeStage::processData() {
             }
             pclose(pipe);
 
+            cout << "Ran executable for stage " << stage_index_ << " task " << task_index_ << endl;
             istringstream output_stream(all_output);
             string line;
             vector<PendingAck> new_pending_acks((size_t)task_count_);
 
             while (getline(output_stream, line)) {
+                cout << "Parsing exec output for stage " << stage_index_ << " task " << task_index_ << endl;
                 if (line.empty()) continue;
                 size_t current_pos = 0;
                 size_t line_length = line.length();
@@ -453,6 +456,7 @@ void RainstormNodeStage::processData() {
             persistNewIds();
             persistNewOutput(new_pending_acks);
             {
+                cout << "Adding " << new_pending_acks.size() << " pending acks for stage " << stage_index_ << " task " << task_index_ << endl;
                 std::lock_guard<std::mutex> lock(pending_ack_mtx_);
                 for (auto &pa : new_pending_acks) {
                     if (!pa.data.empty()) {

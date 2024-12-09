@@ -118,6 +118,7 @@ void RainstormNodeSrc::processData() {
         }
         
         if (!batch.empty()) {
+            cout << "Sending batch from source task " << task_index_ << " with size " << batch.size() << endl;
             PendingAck pending;
             pending.timestamp = steady_clock::now();
             pending.data = batch;
@@ -166,7 +167,7 @@ void RainstormNodeSrc::processData() {
                 lock_guard<mutex> lock(pending_ack_mtx_);
                 pending_acked_dict_[to_retry.front().id] = pending;
             }
-            
+            cout << "Resending batch from source task " << task_index_ << " with size " << to_retry.size() << endl;
             downstream_queue_->enqueue(to_retry);
         }
 

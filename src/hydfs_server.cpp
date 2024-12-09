@@ -292,7 +292,7 @@ Status HydfsServer::GetFile(ServerContext* context, const FileRequest* request, 
         this_thread::sleep_for(chrono::milliseconds(RETRY_DELAY_MS));
     }
 
-    cout << "Completed read request for " << filename << " at " << server_address_ << endl;
+    // cout << "Completed read request for " << filename << " at " << server_address_ << endl;
 
     return Status::OK;
 }

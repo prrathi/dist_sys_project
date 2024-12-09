@@ -154,6 +154,7 @@ bool RainStormClient::SendDataChunks(int32_t port, shared_ptr<SafeQueue<vector<K
         rainstorm::AckDataChunk server_chunk;
         while (stream->Read(&server_chunk)) {
             lock_guard<mutex> lock(acked_ids_mutex);
+            cout << "Received ack for " << server_chunk.id().size() << " ids on index " << task_index << endl;
             for (auto id : server_chunk.id()) {
                 acked_ids.insert(id);
             }

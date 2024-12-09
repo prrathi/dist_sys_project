@@ -188,7 +188,7 @@ void RainStormLeader::submitSingleTask(RainStormClient& client, const LeaderTask
              << "  task_idx: " << task.task_index % job.num_tasks_per_stage << endl
              << "  task_count: " << job.num_tasks_per_stage << endl
              << "  src_file: " << job.src_file << endl
-             << "  assigned_vm: " << task.vm << endl
+             << "  assigned_vm: " << task.assigned_nodes[task.task_index] << endl
              << "  assigned_port: " << task.assigned_ports[task.task_index] << endl;
         
         bool success = client.NewSrcTask(
@@ -197,7 +197,7 @@ void RainStormLeader::submitSingleTask(RainStormClient& client, const LeaderTask
             task.task_index % job.num_tasks_per_stage, 
             job.num_tasks_per_stage, 
             job.src_file, 
-            task.vm, 
+            task.assigned_nodes[task.task_index], 
             task.assigned_ports[task.task_index]
         );
         if (!success) {
@@ -428,10 +428,10 @@ void RainStormLeader::runHydfs() {
     thread leader_listener_thread([this](){ this->pipeListener(); });
     thread swim_thread([this](){ this->hydfs.swim(); });
     thread server_thread([this](){ this->hydfs.runServer(); });
-    listener_thread.join();
-    leader_listener_thread.join();
-    swim_thread.join();
-    server_thread.join();
+    listener_thread.detach();
+    leader_listener_thread.detach();
+    swim_thread.detach();
+    server_thread.detach();
 }
 
 string RainStormLeader::getNextVM() {
