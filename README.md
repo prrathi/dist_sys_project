@@ -43,7 +43,7 @@ Follow these steps to set up and deploy RainStorm on your cluster of VMs.
 Begin by cloning the RainStorm repository from GitLab and navigating to the project directory.
 
 ```bash
-git clone https://gitlab.engr.illinois.edu/prathi3/g58_mp4
+git clone https://gitlab.engr.illinois.edu/prathi3/g58_mp4.git
 cd g58_mp4
 ```
 
@@ -77,10 +77,10 @@ Compile the RainStorm project using CMake and Make.
 Start the RainStorm executable on **each VM** in your cluster.
 
 ```bash
-./Rainstorm
+./Rainstorm {type}
 ```
 
-Ensure that RainStorm is running on all intended VMs before proceeding to the next steps.
+Ensure that RainStorm is running on all intended VMs before proceeding to the next steps. `type` should be `leader` for the lead node or `factory` for non-lead node
 
 ### 4. Join All RainStorm Nodes to the Cluster
 
