@@ -418,8 +418,10 @@ void RainstormNodeStage::processData() {
             }
             string command;
             if (stage_index_ == 1) {
+                cout << stage_index_ << " " << task_index_ << endl;
                 command = "echo \"" + input_data + "\" | " + operator_executable_ + " " + PATTERN;
             } else {
+                cout << stage_index_ << " " << task_index_ << endl;
                 command = "echo \"" + input_data + "\" | " + operator_executable_;
             }
             
