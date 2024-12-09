@@ -183,7 +183,7 @@ void RainStormLeader::handleNodeFailure(const string& failed_node_id) {
 
                 cout << "Assigned Task ID: " << task.task_index << " to VM: " << new_vm << endl;
 
-                if (!CreateServerOnNode(task.vm, task.port_num)) {
+                if (!CreateServerOnNode(task.vm, task.port_num, task.stage_index)) {
                     cerr << "Failed to create server for replacement task " << task.task_index << endl;
                     continue;
                 }
