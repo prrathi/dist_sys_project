@@ -122,7 +122,7 @@ void RainstormNodeStage::checkPendingAcks() {
     vector<int> to_retry;
 
     for (auto it = pending_acked_dict_.begin(); it != pending_acked_dict_.end();) {
-        cout << "inner:" << it->first << " " << it->second.data.size() << endl;
+        cout << "inner:" << it->first << endl;
         int pending_id = (it->second.data.empty()) ? -1 : it->second.data.front().id;
         if (new_acked_ids_.count(pending_id)) {
             it = pending_acked_dict_.erase(it);
