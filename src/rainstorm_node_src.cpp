@@ -222,7 +222,7 @@ void RainstormNodeSrc::sendData() {
 
     while (!should_stop_) {
         RainStormClient client(grpc::CreateChannel(
-            downstream_address_ + ":" + to_string(downstream_port_),  // Use SERVER_PORT here
+            downstream_address_ + ":" + to_string(8083),  // Use SERVER_PORT here
             grpc::InsecureChannelCredentials()
         ));
 

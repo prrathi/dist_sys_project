@@ -165,7 +165,7 @@ void RainStormLeader::submitJob(const string &op1, const string &op2, const stri
         try {
             cout << "Creating gRPC channel to " << task.vm << ":" << task.port_num << endl;
             auto channel = grpc::CreateChannel(
-                task.vm + ":" + to_string(task.port_num),
+                task.vm + ":" + to_string(SERVER_PORT),
                 grpc::InsecureChannelCredentials()
             );
             
@@ -294,7 +294,7 @@ void RainStormLeader::handleNodeFailure(const string& failed_node_id) {
                     cerr << "Failed to create server for replacement task " << task.task_index << endl;
                     continue;
                 }
-                string target_Address = task.vm + ":" + to_string(task.port_num);
+                string target_Address = task.vm + ":" + to_string(SERVER_PORT);
                 RainStormClient client(grpc::CreateChannel(target_Address, grpc::InsecureChannelCredentials()));
 
                 if (task.stage_index == 0) {
@@ -312,7 +312,7 @@ void RainStormLeader::handleNodeFailure(const string& failed_node_id) {
         for (auto &task : job.tasks) {
             auto it_target = find(task.assigned_nodes.begin(), task.assigned_nodes.end(), failed_node_id);
             if (it_target != task.assigned_nodes.end()) {
-                string target_Address = task.vm + ":" + to_string(task.port_num);
+                string target_Address = task.vm + ":" + to_string(SERVER_PORT);
                 RainStormClient client(grpc::CreateChannel(target_Address, grpc::InsecureChannelCredentials()));
                 int diff_index = (int)distance(task.assigned_nodes.begin(), it_target);
                 int new_task_index = (task.stage_index + 1) * job.num_tasks_per_stage + diff_index;
