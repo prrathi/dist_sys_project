@@ -135,8 +135,8 @@ void RainStormLeader::submitJob(const string &op1, const string &op2, const stri
             task.vm = getNextVM();
             task.port_num = getUnusedPortNumberForVM(task.vm);
             cout << "  Task " << task.task_index << ": VM=" << task.vm << " Port=" << task.port_num << endl;
-            //job.tasks.push_back(task);
-            job.tasks.insert(job.tasks.begin(), task); 
+            job.tasks.push_back(task);
+            //job.tasks.insert(job.tasks.begin(), task); 
         }
     }
 
@@ -161,7 +161,7 @@ void RainStormLeader::submitJob(const string &op1, const string &op2, const stri
             cerr << "Failed to create server for task " << task.task_index << endl;
             continue;
         }
-        //thread([this, task, job]() {
+        thread([this, task, job]() {
         try {
             cout << "Creating gRPC channel to " << task.vm << ":" << task.port_num << endl;
             auto channel = grpc::CreateChannel(
@@ -183,7 +183,7 @@ void RainStormLeader::submitJob(const string &op1, const string &op2, const stri
         } catch (const exception& e) {
             cerr << "Exception in task " << task.task_index << ": " << e.what() << endl;
         }
-        //}).detach();
+        }).detach();
     }
     cout << "=== Job submission complete ===\n" << endl;
 }
