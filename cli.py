@@ -178,9 +178,6 @@ if __name__ == "__main__":
     if args.rainstorm != None:
         if args.command == "rainstorm":
             submitJob("localhost", " ".join(args.rainstorm))
-        elif args.command == "failure":
-            # TODO
-            pass
         exit(0)
 
     machine_input = args.machines if args.machines and len(args.machines) > 0 else ["localhost"]

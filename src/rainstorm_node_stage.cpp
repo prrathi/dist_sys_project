@@ -18,6 +18,8 @@
 using namespace std;
 using namespace chrono;
 
+#define PATTERN "PUNCHED TELESPAR"
+
 void RainstormNodeStage::handleNewStageTask(const rainstorm::NewStageTaskRequest* request) {
     lock_guard<mutex> lock(state_mtx_);
     cout << "got here k1" << endl;
@@ -414,7 +416,12 @@ void RainstormNodeStage::processData() {
                 enqueueAcks(to_ack); 
                 continue;
             }
-            string command = "echo \"" + input_data + "\" | " + operator_executable_;
+            string command;
+            if (stage_index_ == 1) {
+                command = "echo \"" + input_data + "\" | " + operator_executable_ + PATTERN;
+            } else {
+                command = "echo \"" + input_data + "\" | " + operator_executable_;
+            }
             
             FILE* pipe = popen(command.c_str(), "r");
             if (!pipe) {
