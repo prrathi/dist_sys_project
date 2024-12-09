@@ -441,7 +441,7 @@ void Hydfs::swim() {
                         handleNodeFailureDetected(state.nodeId, currNode.getAllIds());  
                         //bruh wtf
                         //handleNodeFailureDetected(state.nodeId, currNode.getAllIds());  
-
+                        cout << "GOT HERE" << endl;
                         string hostname = state.nodeId.substr(0, state.nodeId.rfind("-")); 
                         string default_fifo_path = DEFAULT_FIFO_PATH;
                         string leader_pipe = "/tmp/mp4-leader";
