@@ -109,7 +109,7 @@ bool RainStormClient::UpdateSrcTaskSend(int32_t port, int32_t index, const strin
 bool RainStormClient::SendDataChunks(int32_t port, shared_ptr<SafeQueue<vector<KVStruct>>> queue, unordered_set<int>& acked_ids, mutex& acked_ids_mutex, int task_index) {
     grpc::ClientContext context;
     auto stream = stub_->SendDataChunks(&context);
-
+    cout << "Attempting to send data chunks to port " << endl;
     // Writer thread
     thread writer_thread([&] {
         // Initial empty write if needed

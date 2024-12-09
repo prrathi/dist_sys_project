@@ -217,7 +217,7 @@ void RainStormServer::SendDataChunksReader(ServerReaderWriter<rainstorm::AckData
             }
 
             rainstorm::AckDataChunk ack;
-            stream->Write(ack);
+            stream->Write(ack); // ??????????????
         }
     }
 }
@@ -268,10 +268,68 @@ Status RainStormServer::SendDataChunks(ServerContext* context,
         }
     }
     
-    std::thread reader_thread(&RainStormServer::SendDataChunksReader, this, stream, port);
-    std::thread writer_thread(&RainStormServer::SendDataChunksWriter, this, stream, task_index, port);
+    std::atomic<bool> is_done(false);
+    std::mutex write_mutex;
 
-    reader_thread.join();
+    // Single Writer Thread
+    std::thread writer_thread([&] {
+        while (!is_done.load()) {
+            std::vector<int> acks;
+            bool got_acks = false;
+            if (factory_) {
+                if (auto node = dynamic_cast<RainstormNodeStage*>(factory_->getNode(port))) {
+                    if (node->dequeueAcks(acks, task_index)) {
+                        got_acks = true;
+                    }
+                }
+            }
+
+            if (got_acks) {
+                rainstorm::AckDataChunk response_chunk;
+                for (auto acked_id : acks) {
+                    response_chunk.add_id(acked_id);
+                }
+                std::lock_guard<std::mutex> lock(write_mutex);
+                if (!stream->Write(response_chunk)) {
+                    // Handle write failure if necessary
+                    break;
+                }
+            }
+
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        }
+    });
+
+    // Reader Logic within the same thread
+    rainstorm::StreamDataChunk chunk;
+    while (stream->Read(&chunk)) {
+        std::vector<KVStruct> batch;
+        bool finished = false;
+        for (const auto& data_chunk : chunk.chunks()) {
+            if (data_chunk.has_pair()) {
+                KVStruct kv = protoToKVStruct(data_chunk.pair());
+                batch.push_back(kv);
+            }
+            if (data_chunk.has_finished() && data_chunk.finished()) {
+                finished = true;
+            }
+        }
+        if (!batch.empty()) {
+            if (factory_) {
+                if (auto node = dynamic_cast<RainstormNodeStage*>(factory_->getNode(port))) {
+                    node->enqueueIncomingData(batch);
+                }
+            } else if (leader_) {
+                cerr << "Leader not used here" << endl; 
+            }
+        }
+        if (finished) {
+            break;
+        }
+    }
+
+    // Signal writer thread to terminate
+    is_done.store(true);
     writer_thread.join();
 
     return Status::OK;
