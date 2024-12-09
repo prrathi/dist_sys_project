@@ -158,7 +158,7 @@ void RainStormLeader::submitJob(const string &op1, const string &op2, const stri
             try {
                 cout << "Creating gRPC channel to " << task.vm << ":" << task.port_num << endl;
                 auto channel = grpc::CreateChannel(
-                    task.vm + ":" + to_string(task.port_num),
+                    task.vm + ":" + to_string(SERVER_PORT),
                     grpc::InsecureChannelCredentials()
                 );
                 

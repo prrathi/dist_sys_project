@@ -58,34 +58,28 @@ grpc::Status RainstormFactory::CreateServer(grpc::ServerContext* context,
     int port = request->port();
 
     if (active_servers_.find(port) != active_servers_.end()) {
-        cout << "Server already exists on port " << port << endl;
         response->set_status(rainstorm_factory::StatusCode::ALREADY_EXISTS);
         response->set_message("Server already exists on port " + std::to_string(port));
         return grpc::Status::OK;
     }
 
-    cout << "Creating new server..." << endl;
     std::unique_ptr<RainstormNodeBase> new_server;
     switch (request->node_type()) {
         case rainstorm_factory::NodeType::SRC_NODE:
-            cout << "Creating SRC_NODE" << endl;
             new_server = std::make_unique<RainstormNodeSrc>(hydfs_);
             break;
         case rainstorm_factory::NodeType::STAGE_NODE:
-            cout << "Creating STAGE_NODE" << endl;
             new_server = std::make_unique<RainstormNodeStage>(hydfs_);
             break;
         default:
-            cout << "Invalid node type" << endl;
             response->set_status(rainstorm_factory::StatusCode::INVALID);
             response->set_message("Invalid node type");
             return grpc::Status::OK;
     }
 
-    cout << "Adding server to active_servers_" << endl;
     active_servers_[port] = std::move(new_server);
     response->set_status(rainstorm_factory::StatusCode::SUCCESS);
-    response->set_message("Server created successfully on port " + std::to_string(port));
+    response->set_message("");
     cout << "Server creation successful" << endl;
     cout << "=== End CreateServer Request ===\n" << endl;
     return grpc::Status::OK;
