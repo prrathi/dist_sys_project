@@ -66,6 +66,7 @@ void RainstormNodeSrc::persistNewOutput(const vector<KVStruct>& batch) {
 }
 
 void RainstormNodeSrc::processData() {
+    cout << "Processing data called at src: " << input_file_ << endl;
     unordered_set<int> next_ids;
     string temp_next = "temp_" + next_processed_file_;
     hydfs_.getFile(next_processed_file_, temp_next, true);
@@ -83,6 +84,7 @@ void RainstormNodeSrc::processData() {
         
         vector<KVStruct> batch;
         while (getline(file, line)) {
+            cout << "kline: " << line << endl;
             if (line.empty()) continue;
             
             KVStruct kv;
