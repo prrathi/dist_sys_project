@@ -114,14 +114,18 @@ bool RainStormClient::SendDataChunks(int32_t port, shared_ptr<SafeQueue<vector<K
     thread writer_thread([&] {
         // Initial empty write if needed
         // not strictly required since we start reading anyway
+        cout << "in writer thread" << endl;
         rainstorm::StreamDataChunk initial_msg;
         auto* chunk = initial_msg.add_chunks();
         chunk->set_port(port);
         chunk->set_task_index(task_index);
         stream->Write(initial_msg);
+        cout << "after initial write" << endl;
         while (true) {
             vector<KVStruct> kv_pairs;
-            if (queue->dequeue(kv_pairs)) {
+            cout << "before dequeue" << endl;
+            if (queue->dequeue(kv_pairs)) { 
+                cout << "after dequeue" << endl;
                 rainstorm::StreamDataChunk data_chunk_msg;
                 for (const auto& kv : kv_pairs) {
                     auto* chunk = data_chunk_msg.add_chunks();
