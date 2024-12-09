@@ -39,7 +39,7 @@ bool RainStormClient::NewSrcTask(int port,
         std::cout << "NewSrcTask succeeded." << std::endl;
         return true;
     } else {
-        std::cerr << "NewSrcTask failed." << std::endl;
+        std::cerr << "NewSrcTask failed: " << response.message() << std::endl;
         return false;
     }
 }

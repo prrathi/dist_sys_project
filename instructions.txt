@@ -5,7 +5,8 @@ cd datasets; make; cd ..
 ./build/Rainstorm
 
 *** join ***
-python3 cli.py -c join -m prathi3@fa24-cs425-5801.cs.illinois.edu prathi3@fa24-cs425-5802.cs.illinois.edu prathi3@fa24-cs425-5803.cs.illinois.edu prathi3@fa24-cs425-5804.cs.illinois.edu prathi3@fa24-cs425-5805.cs.illinois.edu prathi3@fa24-cs425-5806.cs.illinois.edu prathi3@fa24-cs425-5807.cs.illinois.edu prathi3@fa24-cs425-5808.cs.illinois.edu prathi3@fa24-cs425-5809.cs.illinois.edu prathi3@fa24-cs425-5810.cs.illinois.edu
+python3 cli.py -c join -m prathi3@fa24-cs425-5801.cs.illinois.edu prathi3@fa24-cs425-5802.cs.illinois.edu prathi3@fa24-cs425-5803.cs.illinois.edu prathi3@fa24-cs425-5804.cs.illinois.edu prathi3@fa24-cs425-5805.cs.illinois.edu 
+for later - prathi3@fa24-cs425-5806.cs.illinois.edu prathi3@fa24-cs425-5807.cs.illinois.edu prathi3@fa24-cs425-5808.cs.illinois.edu prathi3@fa24-cs425-5809.cs.illinois.edu prathi3@fa24-cs425-5810.cs.illinois.edu
 
 *** job 1 ***
 python3 cli.py -c create datasets/TrafficSigns_1000.csv TrafficSigns_1000

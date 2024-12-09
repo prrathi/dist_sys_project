@@ -486,7 +486,6 @@ FullNode Hydfs::initNode() {
 
 void Hydfs::getFile(const string& filename, const string& hydfs_filename) {
     string targetHost = getTarget(hydfs_filename) + ":" + to_string(GRPC_PORT_SERVER);
-    cout << "Get" << filename << " hydfs: " << hydfs_filename << " targetHost: " << targetHost << "\n";
     handleGet(filename, hydfs_filename, targetHost, false);
 }
 

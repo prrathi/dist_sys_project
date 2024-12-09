@@ -73,6 +73,7 @@ Status RainStormServer::NewSrcTask(ServerContext* context,
                                    rainstorm::OperationStatus* response) {
     std::lock_guard<std::mutex> lock(global_mtx_);
     if (factory_) {
+        cout << "NewSrcTask: inside factory for port: " << request->port() << "on node: " << server_address_ << endl;
         if (auto node = dynamic_cast<RainstormNodeSrc*>(factory_->getNode(request->port()))) {
             node->handleNewSrcTask(request);
             response->set_status(rainstorm::SUCCESS);
