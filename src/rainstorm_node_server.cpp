@@ -8,26 +8,27 @@
 #include <thread>
 #include <grpcpp/grpcpp.h>
 #include "rainstorm_node_server.h"
+#include "rainstorm_factory_server.h"
 #include "rainstorm_leader.h"
-#include "rainstorm_node.h"
 
 using grpc::ServerBuilder;
 using grpc::Status;
 using grpc::ServerContext;
 using grpc::ServerReaderWriter;
+using rainstorm::NewSrcTaskRequest;
+using rainstorm::NewStageTaskRequest;
+using rainstorm::OperationStatus;
+using rainstorm::StreamDataChunk;
+using rainstorm::AckDataChunk;
 
-RainStormServer::RainStormServer(RainStormNode* node)
-    : node_(node),
-      leader_node_(nullptr)
+RainStormServer::RainStormServer(RainstormFactory* factory) 
+    : factory_(factory), leader_(nullptr)
 {
-    // node-based constructor
 }
 
 RainStormServer::RainStormServer(RainStormLeader* leader)
-    : node_(nullptr),
-      leader_node_(leader)
+    : factory_(nullptr), leader_(leader)
 {
-    // leader-based constructor
 }
 
 RainStormServer::~RainStormServer() {
@@ -46,34 +47,66 @@ Status RainStormServer::NewSrcTask(ServerContext* context,
                                    const rainstorm::NewSrcTaskRequest* request,
                                    rainstorm::OperationStatus* response) {
     std::lock_guard<std::mutex> lock(global_mtx_);
-    std::cout << "NewSrcTask: " << request->job_id() << " " << request->src_filename() << std::endl;
-    response->set_status(rainstorm::SUCCESS);
-    return grpc::Status::OK;
+    if (factory_) {
+        if (auto node = dynamic_cast<RainstormNodeSrc*>(factory_->getNode(request->port()))) {
+            node->handleNewSrcTask(request);
+            response->set_status(rainstorm::SUCCESS);
+        } else {
+            response->set_status(rainstorm::INVALID);
+            response->set_message("Node not found or not a source node");
+        }
+    } else if (leader_) {
+        response->set_status(rainstorm::INVALID);
+        response->set_message("Leader not used here");
+    } else {
+        response->set_status(rainstorm::INVALID);
+        response->set_message("Server not properly initialized");
+    }
+    return Status::OK;
 }
 
 Status RainStormServer::NewStageTask(ServerContext* context,
                                      const rainstorm::NewStageTaskRequest* request,
                                      rainstorm::OperationStatus* response) {
-    (void)context; // unused
     std::lock_guard<std::mutex> lock(global_mtx_);
-    if (node_) {
-        node_->handleNewStageTask(request);
-        response->set_status(rainstorm::SUCCESS);
+    if (factory_) {
+        if (auto node = dynamic_cast<RainstormNodeStage*>(factory_->getNode(request->port()))) {
+            node->handleNewStageTask(request);
+            response->set_status(rainstorm::SUCCESS);
+        } else {
+            response->set_status(rainstorm::INVALID);
+            response->set_message("Node not found or not a stage node");
+        }
+    } else if (leader_) {
+        response->set_status(rainstorm::INVALID);
+        response->set_message("Leader not used here");
     } else {
         response->set_status(rainstorm::INVALID);
-        response->set_message("Node not initialized");
+        response->set_message("Server not properly initialized");
     }
-    return grpc::Status::OK;
+    return Status::OK;
 }
 
 Status RainStormServer::UpdateTaskSnd(ServerContext* context,
                                       const rainstorm::UpdateTaskSndRequest* request,
                                       rainstorm::OperationStatus* response) {
-    (void)context; // unused
     std::lock_guard<std::mutex> lock(global_mtx_);
-    std::cout << "UpdateTaskSnd: index=" << request->index() << " addr=" << request->snd_address() << ":" << request->snd_port() << std::endl;
-    response->set_status(rainstorm::SUCCESS);
-    return grpc::Status::OK;
+    if (factory_) {
+        if (auto node = factory_->getNode(request->port())) {
+            node->handleUpdateTask(request);
+            response->set_status(rainstorm::SUCCESS);
+        } else {
+            response->set_status(rainstorm::INVALID);
+            response->set_message("Node not found");
+        }
+    } else if (leader_) {
+        response->set_status(rainstorm::INVALID);
+        response->set_message("Leader not used here");
+    } else {
+        response->set_status(rainstorm::INVALID);
+        response->set_message("Server not properly initialized");
+    }
+    return Status::OK;
 }
 
 KVStruct RainStormServer::protoToKVStruct(const rainstorm::KV& proto_kv) {
@@ -94,26 +127,43 @@ rainstorm::KV RainStormServer::kvStructToProto(const KVStruct& kv) {
     return proto_kv;
 }
 
-void RainStormServer::SendDataChunksReader(ServerReaderWriter<rainstorm::AckDataChunk, rainstorm::StreamDataChunk>* stream) {
+void RainStormServer::SendDataChunksReader(ServerReaderWriter<rainstorm::AckDataChunk, rainstorm::StreamDataChunk>* stream, int port) {
     rainstorm::StreamDataChunk chunk;
     while (stream->Read(&chunk)) {
+        std::vector<KVStruct> batch;
         for (const auto& data_chunk : chunk.chunks()) {
             if (data_chunk.has_pair()) {
                 KVStruct kv = protoToKVStruct(data_chunk.pair());
-                if (node_) {
-                    node_->enqueueIncomingData({kv});
-                }
+                batch.push_back(kv);
             }
+        }
+        if (!batch.empty()) {
+            bool success = false;
+            if (factory_) {
+                if (auto node = dynamic_cast<RainstormNodeStage*>(factory_->getNode(port))) {
+                    node->enqueueIncomingData(batch);
+                    success = true;
+                }
+            } else if (leader_) {
+                cerr << "Leader not used here" << endl; 
+            }
+
+            rainstorm::AckDataChunk ack;
+            stream->Write(ack);
         }
     }
 }
 
-void RainStormServer::SendDataChunksWriter(ServerReaderWriter<rainstorm::AckDataChunk, rainstorm::StreamDataChunk>* stream, int task_index) {
+void RainStormServer::SendDataChunksWriter(ServerReaderWriter<rainstorm::AckDataChunk, rainstorm::StreamDataChunk>* stream, int task_index, int port) {
     while (true) {
         std::vector<int> acks;
         bool got_acks = false;
-        if (node_ && node_->dequeueAcks(acks, task_index)) {
-            got_acks = true;
+        if (factory_) {
+            if (auto node = dynamic_cast<RainstormNodeStage*>(factory_->getNode(port))) {
+                if (node->dequeueAcks(acks, task_index)) {
+                    got_acks = true;
+                }
+            }
         }
 
         if (got_acks) {
@@ -134,15 +184,24 @@ Status RainStormServer::SendDataChunks(ServerContext* context,
                                        ServerReaderWriter<rainstorm::AckDataChunk, rainstorm::StreamDataChunk>* stream) {
     rainstorm::StreamDataChunk initial_msg;
     if (!stream->Read(&initial_msg)) {
-        return Status(grpc::StatusCode::INVALID_ARGUMENT, "Failed to read initial message with task_index");
+        return Status(grpc::StatusCode::INVALID_ARGUMENT, "Failed to read initial message");
     }
-    if (initial_msg.chunks_size() == 0 || !initial_msg.chunks(0).has_task_index()) {
-        return Status(grpc::StatusCode::INVALID_ARGUMENT, "Initial message missing task_index");
+
+    if (initial_msg.chunks_size() == 0 || 
+        !initial_msg.chunks(0).has_port() || 
+        !initial_msg.chunks(0).has_task_index()) {
+        return Status(grpc::StatusCode::INVALID_ARGUMENT, "Initial message missing port or task_index");
     }
+    int port = initial_msg.chunks(0).port();
     int task_index = initial_msg.chunks(0).task_index();
+    if (factory_) {
+        if (!factory_->getNode(port)) {
+            return Status(grpc::StatusCode::NOT_FOUND, "Node not found for port: " + std::to_string(port));
+        }
+    }
     
-    std::thread reader_thread(&RainStormServer::SendDataChunksReader, this, stream);
-    std::thread writer_thread(&RainStormServer::SendDataChunksWriter, this, stream, task_index);
+    std::thread reader_thread(&RainStormServer::SendDataChunksReader, this, stream, port);
+    std::thread writer_thread(&RainStormServer::SendDataChunksWriter, this, stream, task_index, port);
 
     reader_thread.join();
     writer_thread.join();
@@ -161,18 +220,18 @@ void RainStormServer::SendDataChunksLeaderReader(
         std::vector<int> ack_ids;
         std::vector<std::pair<std::string, std::string>> uniq_kvs;
         {
-            std::lock_guard<std::mutex> lock(leader_node_->mtx_);
+            std::lock_guard<std::mutex> lock(leader_->getMutex());
             for (const auto& data_chunk : stream_chunk.chunks()) {
                 if (data_chunk.has_pair()) {
                     const rainstorm::KV& kv = data_chunk.pair();
-                    if (leader_node_->getJobInfo(job_id).seen_kv_ids.find(kv.id()) != leader_node_->getJobInfo(job_id).seen_kv_ids.end()) {
+                    if (leader_->getJobInfo(job_id).seen_kv_ids.find(kv.id()) != leader_->getJobInfo(job_id).seen_kv_ids.end()) {
                         ack_ids.push_back(kv.id());
                         continue;
                     }
                     std::cout << kv.key() << ":" << kv.value() << "\n";
                     uniq_kvs.push_back({kv.key(), kv.value()});
                     ack_ids.push_back(kv.id());
-                    leader_node_->getJobInfo(job_id).seen_kv_ids.insert(kv.id());
+                    leader_->getJobInfo(job_id).seen_kv_ids.insert(kv.id());
                 }
 
                 if (data_chunk.has_finished()) {
@@ -182,7 +241,7 @@ void RainStormServer::SendDataChunksLeaderReader(
 
             if (!uniq_kvs.empty()) {
                 std::ofstream ofs;
-                ofs.open(leader_node_->getJobInfo(job_id).dest_file, std::ios::out | std::ios::app); 
+                ofs.open(leader_->getJobInfo(job_id).dest_file, std::ios::out | std::ios::app); 
                 for (const auto& kvp : uniq_kvs) {
                     ofs << kvp.first << ":" << kvp.second << "\n";
                 }
@@ -212,17 +271,20 @@ void RainStormServer::SendDataChunksLeaderWriter(
     
     while (ack_queue.dequeue(acks)) {
         rainstorm::AckDataChunk ack_chunk;
-        for (auto id : acks) {
-            ack_chunk.add_id(id);
-            processed_stream << "ID:" << id << std::endl;
-        }
-        processed_stream.flush();
-        leader_node_->getHydfs().appendFile(temp_file, processed_file);
-        std::ofstream(temp_file, std::ios::trunc).close();
+        {
+            std::lock_guard<std::mutex> lock(leader_->getMutex());
+            for (auto id : acks) {
+                ack_chunk.add_id(id);
+                processed_stream << id << "\n";
+            }
+            processed_stream.flush();
+            leader_->getHydfs().appendFile(temp_file, processed_file);
+            std::ofstream(temp_file, std::ios::trunc).close();
 
-        if (!stream->Write(ack_chunk)) {
-            std::cout << "Failed to write AckDataChunk to the stream." << std::endl;
-            continue;
+            if (!stream->Write(ack_chunk)) {
+                std::cout << "Failed to write AckDataChunk to the stream." << std::endl;
+                continue;
+            }
         }
 
         if (done_reading) {
@@ -262,12 +324,12 @@ Status RainStormServer::SendDataChunksToLeader(ServerContext* context,
     writer_thread.join();
 
     {
-        std::lock_guard<std::mutex> lock(leader_node_->mtx_);
-        if (leader_node_->getJobInfo(job_id).num_completed_final_task == 
-            leader_node_->getJobInfo(job_id).num_tasks_per_stage) {
-            leader_node_->getHydfs().createFile(leader_node_->getJobInfo(job_id).dest_file, leader_node_->getJobInfo(job_id).dest_file);
+        std::lock_guard<std::mutex> lock(leader_->getMutex());
+        if (leader_->getJobInfo(job_id).num_completed_final_task == 
+            leader_->getJobInfo(job_id).num_tasks_per_stage) {
+            leader_->getHydfs().createFile(leader_->getJobInfo(job_id).dest_file, leader_->getJobInfo(job_id).dest_file);
         } else {
-            leader_node_->getJobInfo(job_id).num_completed_final_task++;
+            leader_->getJobInfo(job_id).num_completed_final_task++;
         }
     }
 

@@ -6,17 +6,19 @@
 #include <memory>
 #include <mutex>
 #include <grpcpp/grpcpp.h>
+
 #include "rainstorm.grpc.pb.h"
 #include "rainstorm_common.h"
-#include "safequeue.hpp"
+#include "rainstorm_node.h"
 
+class RainstormFactory;
 class RainStormLeader;
-class RainStormNode;
+class RainStormNodeBase;
 
 class RainStormServer final : public rainstorm::RainstormService::Service {
 public:
-    RainStormServer(RainStormNode* node);
-    RainStormServer(RainStormLeader* leader);
+    explicit RainStormServer(RainstormFactory* factory);
+    explicit RainStormServer(RainStormLeader* leader);
     ~RainStormServer();
 
     void wait();
@@ -43,11 +45,12 @@ public:
                                         rainstorm::StreamDataChunkLeader>* stream) override;
 
 private:
-    void SendDataChunksReader(grpc::ServerReaderWriter<rainstorm::AckDataChunk,
-                                                       rainstorm::StreamDataChunk>* stream);
+    void SendDataChunksReader(grpc::ServerReaderWriter<rainstorm::AckDataChunk, rainstorm::StreamDataChunk>* stream,
+                              int port);
     void SendDataChunksWriter(grpc::ServerReaderWriter<rainstorm::AckDataChunk,
-                                                       rainstorm::StreamDataChunk>* stream,
-                                                       int task_index);
+                              rainstorm::StreamDataChunk>* stream,
+                              int task_index,
+                              int port);
 
     void SendDataChunksLeaderReader(
         grpc::ServerReaderWriter<rainstorm::AckDataChunk, rainstorm::StreamDataChunkLeader>* stream,
@@ -68,6 +71,6 @@ private:
     std::unique_ptr<grpc::Server> server_;
     std::mutex global_mtx_;
 
-    RainStormNode* node_ = nullptr;
-    RainStormLeader* leader_node_ = nullptr;
+    RainstormFactory* factory_ = nullptr; 
+    RainStormLeader* leader_ = nullptr; 
 };

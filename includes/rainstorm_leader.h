@@ -12,7 +12,6 @@
 
 #define DEFAULT_NUM_STAGES 3
 
-// Renamed to LeaderTaskInfo to avoid conflict with TaskInfo in rainstorm_common.h
 struct LeaderTaskInfo {
     int task_index;
     int stage_index;
@@ -46,8 +45,7 @@ public:
 
     JobInfo& getJobInfo(const std::string& job_id) { return jobs_[job_id]; }
     Hydfs& getHydfs() { return hydfs; }
-
-    std::mutex mtx_;
+    std::mutex& getMutex() { return mtx; }
 
 private:
     std::vector<std::string> getAllWorkerVMs();
@@ -58,24 +56,23 @@ private:
     std::pair<std::vector<std::string>, std::vector<int>> getTargetNodes(int stage_num, std::vector<LeaderTaskInfo>& tasks, int num_stages);
     void jobCompletionChecker();
     bool isJobCompleted(const std::string& job_id);
+    bool CreateServerOnNode(const std::string& node_address, int port);
+    bool RemoveServerFromNode(const std::string& node_address, int port);
 
 private:
     const std::string leader_address = "fa24-cs425-5801.cs.illinois.edu"; 
     std::string listener_pipe_path = "/tmp/mp4-leader";
-    const int leader_port = 8083;
     const int node_factory_port = 8083;
     std::unordered_map<std::string, JobInfo> jobs_;
-    std::unordered_map<std::string, std::unordered_set<int>> used_ports_per_vm;
-    int total_tasks_running_counter = 0;
+    std::unordered_map<std::string, std::unordered_set<int>> used_ports_per_vm_;
+    int total_tasks_running_counter_ = 0;
     RainStormServer rainstorm_node_server_;
     Hydfs hydfs;
-    const unordered_map<std::string, bool> is_exec_agg = {
+    const unordered_map<std::string, bool> is_exec_agg_ = {
         {"test1_1", false},
         {"test1_2", false},
         {"test2_1", false},
         {"test2_2", true},
     };
-
-    bool CreateServerOnNode(const std::string& node_address, int port);
-    bool RemoveServerFromNode(const std::string& node_address, int port);
+    std::mutex mtx;  
 };

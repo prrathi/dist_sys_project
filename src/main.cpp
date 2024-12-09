@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 #include <unistd.h>
-#include "rainstorm_node.h"
+#include "rainstorm_factory_server.h"
 #include "rainstorm_leader.h"
 
 int main(int argc, char* argv[]) {
@@ -19,8 +19,8 @@ int main(int argc, char* argv[]) {
         leader.runHydfs();
         leader.runServer();
     } else if (mode == "node") {
-        RainStormNode node;
-        node.runHydfs();
+        RainstormFactory factory;
+        factory.runHydfs();
     }
     return 0;
 }

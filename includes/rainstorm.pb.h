@@ -253,11 +253,12 @@ class UpdateTaskSndRequest final : public ::google::protobuf::Message
 
   // accessors -------------------------------------------------------
   enum : int {
-    kSndAddressFieldNumber = 2,
-    kIndexFieldNumber = 1,
-    kSndPortFieldNumber = 3,
+    kSndAddressFieldNumber = 3,
+    kPortFieldNumber = 1,
+    kIndexFieldNumber = 2,
+    kSndPortFieldNumber = 4,
   };
-  // string snd_address = 2;
+  // string snd_address = 3;
   void clear_snd_address() ;
   const std::string& snd_address() const;
   template <typename Arg_ = const std::string&, typename... Args_>
@@ -273,7 +274,17 @@ class UpdateTaskSndRequest final : public ::google::protobuf::Message
   std::string* _internal_mutable_snd_address();
 
   public:
-  // int32 index = 1;
+  // int32 port = 1;
+  void clear_port() ;
+  ::int32_t port() const;
+  void set_port(::int32_t value);
+
+  private:
+  ::int32_t _internal_port() const;
+  void _internal_set_port(::int32_t value);
+
+  public:
+  // int32 index = 2;
   void clear_index() ;
   ::int32_t index() const;
   void set_index(::int32_t value);
@@ -283,7 +294,7 @@ class UpdateTaskSndRequest final : public ::google::protobuf::Message
   void _internal_set_index(::int32_t value);
 
   public:
-  // int32 snd_port = 3;
+  // int32 snd_port = 4;
   void clear_snd_port() ;
   ::int32_t snd_port() const;
   void set_snd_port(::int32_t value);
@@ -298,7 +309,7 @@ class UpdateTaskSndRequest final : public ::google::protobuf::Message
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
   static const ::google::protobuf::internal::TcParseTable<
-      2, 3, 0,
+      2, 4, 0,
       50, 2>
       _table_;
 
@@ -320,6 +331,7 @@ class UpdateTaskSndRequest final : public ::google::protobuf::Message
                           ::google::protobuf::Arena* arena, const Impl_& from,
                           const UpdateTaskSndRequest& from_msg);
     ::google::protobuf::internal::ArenaStringPtr snd_address_;
+    ::int32_t port_;
     ::int32_t index_;
     ::int32_t snd_port_;
     mutable ::google::protobuf::internal::CachedSize _cached_size_;
@@ -643,17 +655,18 @@ class NewStageTaskRequest final : public ::google::protobuf::Message
 
   // accessors -------------------------------------------------------
   enum : int {
-    kSndAddressesFieldNumber = 8,
-    kSndPortsFieldNumber = 9,
-    kJobIdFieldNumber = 1,
-    kExecutableFieldNumber = 5,
-    kStageIndexFieldNumber = 2,
-    kTaskIndexFieldNumber = 3,
-    kTaskCountFieldNumber = 4,
-    kStatefulFieldNumber = 6,
-    kLastFieldNumber = 7,
+    kSndAddressesFieldNumber = 9,
+    kSndPortsFieldNumber = 10,
+    kJobIdFieldNumber = 2,
+    kExecutableFieldNumber = 6,
+    kPortFieldNumber = 1,
+    kStageIndexFieldNumber = 3,
+    kTaskIndexFieldNumber = 4,
+    kTaskCountFieldNumber = 5,
+    kStatefulFieldNumber = 7,
+    kLastFieldNumber = 8,
   };
-  // repeated string snd_addresses = 8;
+  // repeated string snd_addresses = 9;
   int snd_addresses_size() const;
   private:
   int _internal_snd_addresses_size() const;
@@ -681,7 +694,7 @@ class NewStageTaskRequest final : public ::google::protobuf::Message
   ::google::protobuf::RepeatedPtrField<std::string>* _internal_mutable_snd_addresses();
 
   public:
-  // repeated int32 snd_ports = 9;
+  // repeated int32 snd_ports = 10;
   int snd_ports_size() const;
   private:
   int _internal_snd_ports_size() const;
@@ -699,7 +712,7 @@ class NewStageTaskRequest final : public ::google::protobuf::Message
   ::google::protobuf::RepeatedField<::int32_t>* _internal_mutable_snd_ports();
 
   public:
-  // string job_id = 1;
+  // string job_id = 2;
   void clear_job_id() ;
   const std::string& job_id() const;
   template <typename Arg_ = const std::string&, typename... Args_>
@@ -715,7 +728,7 @@ class NewStageTaskRequest final : public ::google::protobuf::Message
   std::string* _internal_mutable_job_id();
 
   public:
-  // string executable = 5;
+  // string executable = 6;
   void clear_executable() ;
   const std::string& executable() const;
   template <typename Arg_ = const std::string&, typename... Args_>
@@ -731,7 +744,17 @@ class NewStageTaskRequest final : public ::google::protobuf::Message
   std::string* _internal_mutable_executable();
 
   public:
-  // int32 stage_index = 2;
+  // int32 port = 1;
+  void clear_port() ;
+  ::int32_t port() const;
+  void set_port(::int32_t value);
+
+  private:
+  ::int32_t _internal_port() const;
+  void _internal_set_port(::int32_t value);
+
+  public:
+  // int32 stage_index = 3;
   void clear_stage_index() ;
   ::int32_t stage_index() const;
   void set_stage_index(::int32_t value);
@@ -741,7 +764,7 @@ class NewStageTaskRequest final : public ::google::protobuf::Message
   void _internal_set_stage_index(::int32_t value);
 
   public:
-  // int32 task_index = 3;
+  // int32 task_index = 4;
   void clear_task_index() ;
   ::int32_t task_index() const;
   void set_task_index(::int32_t value);
@@ -751,7 +774,7 @@ class NewStageTaskRequest final : public ::google::protobuf::Message
   void _internal_set_task_index(::int32_t value);
 
   public:
-  // int32 task_count = 4;
+  // int32 task_count = 5;
   void clear_task_count() ;
   ::int32_t task_count() const;
   void set_task_count(::int32_t value);
@@ -761,7 +784,7 @@ class NewStageTaskRequest final : public ::google::protobuf::Message
   void _internal_set_task_count(::int32_t value);
 
   public:
-  // bool stateful = 6;
+  // bool stateful = 7;
   void clear_stateful() ;
   bool stateful() const;
   void set_stateful(bool value);
@@ -771,7 +794,7 @@ class NewStageTaskRequest final : public ::google::protobuf::Message
   void _internal_set_stateful(bool value);
 
   public:
-  // bool last = 7;
+  // bool last = 8;
   void clear_last() ;
   bool last() const;
   void set_last(bool value);
@@ -786,7 +809,7 @@ class NewStageTaskRequest final : public ::google::protobuf::Message
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
   static const ::google::protobuf::internal::TcParseTable<
-      4, 9, 0,
+      4, 10, 0,
       75, 2>
       _table_;
 
@@ -812,6 +835,7 @@ class NewStageTaskRequest final : public ::google::protobuf::Message
     mutable ::google::protobuf::internal::CachedSize _snd_ports_cached_byte_size_;
     ::google::protobuf::internal::ArenaStringPtr job_id_;
     ::google::protobuf::internal::ArenaStringPtr executable_;
+    ::int32_t port_;
     ::int32_t stage_index_;
     ::int32_t task_index_;
     ::int32_t task_count_;
@@ -949,14 +973,15 @@ class NewSrcTaskRequest final : public ::google::protobuf::Message
 
   // accessors -------------------------------------------------------
   enum : int {
-    kJobIdFieldNumber = 1,
-    kSrcFilenameFieldNumber = 4,
-    kSndAddressFieldNumber = 5,
-    kTaskIndexFieldNumber = 2,
-    kTaskCountFieldNumber = 3,
-    kSndPortFieldNumber = 6,
+    kJobIdFieldNumber = 2,
+    kSrcFilenameFieldNumber = 5,
+    kSndAddressFieldNumber = 6,
+    kPortFieldNumber = 1,
+    kTaskIndexFieldNumber = 3,
+    kTaskCountFieldNumber = 4,
+    kSndPortFieldNumber = 7,
   };
-  // string job_id = 1;
+  // string job_id = 2;
   void clear_job_id() ;
   const std::string& job_id() const;
   template <typename Arg_ = const std::string&, typename... Args_>
@@ -972,7 +997,7 @@ class NewSrcTaskRequest final : public ::google::protobuf::Message
   std::string* _internal_mutable_job_id();
 
   public:
-  // string src_filename = 4;
+  // string src_filename = 5;
   void clear_src_filename() ;
   const std::string& src_filename() const;
   template <typename Arg_ = const std::string&, typename... Args_>
@@ -988,7 +1013,7 @@ class NewSrcTaskRequest final : public ::google::protobuf::Message
   std::string* _internal_mutable_src_filename();
 
   public:
-  // string snd_address = 5;
+  // string snd_address = 6;
   void clear_snd_address() ;
   const std::string& snd_address() const;
   template <typename Arg_ = const std::string&, typename... Args_>
@@ -1004,7 +1029,17 @@ class NewSrcTaskRequest final : public ::google::protobuf::Message
   std::string* _internal_mutable_snd_address();
 
   public:
-  // int32 task_index = 2;
+  // int32 port = 1;
+  void clear_port() ;
+  ::int32_t port() const;
+  void set_port(::int32_t value);
+
+  private:
+  ::int32_t _internal_port() const;
+  void _internal_set_port(::int32_t value);
+
+  public:
+  // int32 task_index = 3;
   void clear_task_index() ;
   ::int32_t task_index() const;
   void set_task_index(::int32_t value);
@@ -1014,7 +1049,7 @@ class NewSrcTaskRequest final : public ::google::protobuf::Message
   void _internal_set_task_index(::int32_t value);
 
   public:
-  // int32 task_count = 3;
+  // int32 task_count = 4;
   void clear_task_count() ;
   ::int32_t task_count() const;
   void set_task_count(::int32_t value);
@@ -1024,7 +1059,7 @@ class NewSrcTaskRequest final : public ::google::protobuf::Message
   void _internal_set_task_count(::int32_t value);
 
   public:
-  // int32 snd_port = 6;
+  // int32 snd_port = 7;
   void clear_snd_port() ;
   ::int32_t snd_port() const;
   void set_snd_port(::int32_t value);
@@ -1039,7 +1074,7 @@ class NewSrcTaskRequest final : public ::google::protobuf::Message
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
   static const ::google::protobuf::internal::TcParseTable<
-      3, 6, 0,
+      3, 7, 0,
       65, 2>
       _table_;
 
@@ -1063,6 +1098,7 @@ class NewSrcTaskRequest final : public ::google::protobuf::Message
     ::google::protobuf::internal::ArenaStringPtr job_id_;
     ::google::protobuf::internal::ArenaStringPtr src_filename_;
     ::google::protobuf::internal::ArenaStringPtr snd_address_;
+    ::int32_t port_;
     ::int32_t task_index_;
     ::int32_t task_count_;
     ::int32_t snd_port_;
@@ -1755,9 +1791,10 @@ class DataChunk final : public ::google::protobuf::Message
     return *internal_default_instance();
   }
   enum RequestCase {
-    kTaskIndex = 1,
-    kPair = 2,
-    kFinished = 3,
+    kPort = 1,
+    kTaskIndex = 2,
+    kPair = 3,
+    kFinished = 4,
     REQUEST_NOT_SET = 0,
   };
   static inline const DataChunk* internal_default_instance() {
@@ -1833,11 +1870,23 @@ class DataChunk final : public ::google::protobuf::Message
 
   // accessors -------------------------------------------------------
   enum : int {
-    kTaskIndexFieldNumber = 1,
-    kPairFieldNumber = 2,
-    kFinishedFieldNumber = 3,
+    kPortFieldNumber = 1,
+    kTaskIndexFieldNumber = 2,
+    kPairFieldNumber = 3,
+    kFinishedFieldNumber = 4,
   };
-  // int32 task_index = 1;
+  // int32 port = 1;
+  bool has_port() const;
+  void clear_port() ;
+  ::int32_t port() const;
+  void set_port(::int32_t value);
+
+  private:
+  ::int32_t _internal_port() const;
+  void _internal_set_port(::int32_t value);
+
+  public:
+  // int32 task_index = 2;
   bool has_task_index() const;
   void clear_task_index() ;
   ::int32_t task_index() const;
@@ -1848,7 +1897,7 @@ class DataChunk final : public ::google::protobuf::Message
   void _internal_set_task_index(::int32_t value);
 
   public:
-  // .rainstorm.KV pair = 2;
+  // .rainstorm.KV pair = 3;
   bool has_pair() const;
   private:
   bool _internal_has_pair() const;
@@ -1867,7 +1916,7 @@ class DataChunk final : public ::google::protobuf::Message
   ::rainstorm::KV* _internal_mutable_pair();
 
   public:
-  // bool finished = 3;
+  // bool finished = 4;
   bool has_finished() const;
   void clear_finished() ;
   bool finished() const;
@@ -1883,6 +1932,7 @@ class DataChunk final : public ::google::protobuf::Message
   // @@protoc_insertion_point(class_scope:rainstorm.DataChunk)
  private:
   class _Internal;
+  void set_has_port();
   void set_has_task_index();
   void set_has_pair();
   void set_has_finished();
@@ -1890,7 +1940,7 @@ class DataChunk final : public ::google::protobuf::Message
   inline void clear_has_request();
   friend class ::google::protobuf::internal::TcParser;
   static const ::google::protobuf::internal::TcParseTable<
-      0, 3, 1,
+      0, 4, 1,
       0, 2>
       _table_;
 
@@ -1914,6 +1964,7 @@ class DataChunk final : public ::google::protobuf::Message
     union RequestUnion {
       constexpr RequestUnion() : _constinit_{} {}
       ::google::protobuf::internal::ConstantInitialized _constinit_;
+      ::int32_t port_;
       ::int32_t task_index_;
       ::rainstorm::KV* pair_;
       bool finished_;
@@ -2374,7 +2425,29 @@ inline void OperationStatus::set_allocated_message(std::string* value) {
 
 // NewSrcTaskRequest
 
-// string job_id = 1;
+// int32 port = 1;
+inline void NewSrcTaskRequest::clear_port() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.port_ = 0;
+}
+inline ::int32_t NewSrcTaskRequest::port() const {
+  // @@protoc_insertion_point(field_get:rainstorm.NewSrcTaskRequest.port)
+  return _internal_port();
+}
+inline void NewSrcTaskRequest::set_port(::int32_t value) {
+  _internal_set_port(value);
+  // @@protoc_insertion_point(field_set:rainstorm.NewSrcTaskRequest.port)
+}
+inline ::int32_t NewSrcTaskRequest::_internal_port() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.port_;
+}
+inline void NewSrcTaskRequest::_internal_set_port(::int32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.port_ = value;
+}
+
+// string job_id = 2;
 inline void NewSrcTaskRequest::clear_job_id() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.job_id_.ClearToEmpty();
@@ -2424,7 +2497,7 @@ inline void NewSrcTaskRequest::set_allocated_job_id(std::string* value) {
   // @@protoc_insertion_point(field_set_allocated:rainstorm.NewSrcTaskRequest.job_id)
 }
 
-// int32 task_index = 2;
+// int32 task_index = 3;
 inline void NewSrcTaskRequest::clear_task_index() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.task_index_ = 0;
@@ -2446,7 +2519,7 @@ inline void NewSrcTaskRequest::_internal_set_task_index(::int32_t value) {
   _impl_.task_index_ = value;
 }
 
-// int32 task_count = 3;
+// int32 task_count = 4;
 inline void NewSrcTaskRequest::clear_task_count() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.task_count_ = 0;
@@ -2468,7 +2541,7 @@ inline void NewSrcTaskRequest::_internal_set_task_count(::int32_t value) {
   _impl_.task_count_ = value;
 }
 
-// string src_filename = 4;
+// string src_filename = 5;
 inline void NewSrcTaskRequest::clear_src_filename() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.src_filename_.ClearToEmpty();
@@ -2518,7 +2591,7 @@ inline void NewSrcTaskRequest::set_allocated_src_filename(std::string* value) {
   // @@protoc_insertion_point(field_set_allocated:rainstorm.NewSrcTaskRequest.src_filename)
 }
 
-// string snd_address = 5;
+// string snd_address = 6;
 inline void NewSrcTaskRequest::clear_snd_address() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.snd_address_.ClearToEmpty();
@@ -2568,7 +2641,7 @@ inline void NewSrcTaskRequest::set_allocated_snd_address(std::string* value) {
   // @@protoc_insertion_point(field_set_allocated:rainstorm.NewSrcTaskRequest.snd_address)
 }
 
-// int32 snd_port = 6;
+// int32 snd_port = 7;
 inline void NewSrcTaskRequest::clear_snd_port() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.snd_port_ = 0;
@@ -2594,7 +2667,29 @@ inline void NewSrcTaskRequest::_internal_set_snd_port(::int32_t value) {
 
 // NewStageTaskRequest
 
-// string job_id = 1;
+// int32 port = 1;
+inline void NewStageTaskRequest::clear_port() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.port_ = 0;
+}
+inline ::int32_t NewStageTaskRequest::port() const {
+  // @@protoc_insertion_point(field_get:rainstorm.NewStageTaskRequest.port)
+  return _internal_port();
+}
+inline void NewStageTaskRequest::set_port(::int32_t value) {
+  _internal_set_port(value);
+  // @@protoc_insertion_point(field_set:rainstorm.NewStageTaskRequest.port)
+}
+inline ::int32_t NewStageTaskRequest::_internal_port() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.port_;
+}
+inline void NewStageTaskRequest::_internal_set_port(::int32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.port_ = value;
+}
+
+// string job_id = 2;
 inline void NewStageTaskRequest::clear_job_id() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.job_id_.ClearToEmpty();
@@ -2644,7 +2739,7 @@ inline void NewStageTaskRequest::set_allocated_job_id(std::string* value) {
   // @@protoc_insertion_point(field_set_allocated:rainstorm.NewStageTaskRequest.job_id)
 }
 
-// int32 stage_index = 2;
+// int32 stage_index = 3;
 inline void NewStageTaskRequest::clear_stage_index() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.stage_index_ = 0;
@@ -2666,7 +2761,7 @@ inline void NewStageTaskRequest::_internal_set_stage_index(::int32_t value) {
   _impl_.stage_index_ = value;
 }
 
-// int32 task_index = 3;
+// int32 task_index = 4;
 inline void NewStageTaskRequest::clear_task_index() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.task_index_ = 0;
@@ -2688,7 +2783,7 @@ inline void NewStageTaskRequest::_internal_set_task_index(::int32_t value) {
   _impl_.task_index_ = value;
 }
 
-// int32 task_count = 4;
+// int32 task_count = 5;
 inline void NewStageTaskRequest::clear_task_count() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.task_count_ = 0;
@@ -2710,7 +2805,7 @@ inline void NewStageTaskRequest::_internal_set_task_count(::int32_t value) {
   _impl_.task_count_ = value;
 }
 
-// string executable = 5;
+// string executable = 6;
 inline void NewStageTaskRequest::clear_executable() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.executable_.ClearToEmpty();
@@ -2760,7 +2855,7 @@ inline void NewStageTaskRequest::set_allocated_executable(std::string* value) {
   // @@protoc_insertion_point(field_set_allocated:rainstorm.NewStageTaskRequest.executable)
 }
 
-// bool stateful = 6;
+// bool stateful = 7;
 inline void NewStageTaskRequest::clear_stateful() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.stateful_ = false;
@@ -2782,7 +2877,7 @@ inline void NewStageTaskRequest::_internal_set_stateful(bool value) {
   _impl_.stateful_ = value;
 }
 
-// bool last = 7;
+// bool last = 8;
 inline void NewStageTaskRequest::clear_last() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.last_ = false;
@@ -2804,7 +2899,7 @@ inline void NewStageTaskRequest::_internal_set_last(bool value) {
   _impl_.last_ = value;
 }
 
-// repeated string snd_addresses = 8;
+// repeated string snd_addresses = 9;
 inline int NewStageTaskRequest::_internal_snd_addresses_size() const {
   return _internal_snd_addresses().size();
 }
@@ -2906,7 +3001,7 @@ NewStageTaskRequest::_internal_mutable_snd_addresses() {
   return &_impl_.snd_addresses_;
 }
 
-// repeated int32 snd_ports = 9;
+// repeated int32 snd_ports = 10;
 inline int NewStageTaskRequest::_internal_snd_ports_size() const {
   return _internal_snd_ports().size();
 }
@@ -2955,7 +3050,29 @@ inline ::google::protobuf::RepeatedField<::int32_t>* NewStageTaskRequest::_inter
 
 // UpdateTaskSndRequest
 
-// int32 index = 1;
+// int32 port = 1;
+inline void UpdateTaskSndRequest::clear_port() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.port_ = 0;
+}
+inline ::int32_t UpdateTaskSndRequest::port() const {
+  // @@protoc_insertion_point(field_get:rainstorm.UpdateTaskSndRequest.port)
+  return _internal_port();
+}
+inline void UpdateTaskSndRequest::set_port(::int32_t value) {
+  _internal_set_port(value);
+  // @@protoc_insertion_point(field_set:rainstorm.UpdateTaskSndRequest.port)
+}
+inline ::int32_t UpdateTaskSndRequest::_internal_port() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.port_;
+}
+inline void UpdateTaskSndRequest::_internal_set_port(::int32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.port_ = value;
+}
+
+// int32 index = 2;
 inline void UpdateTaskSndRequest::clear_index() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.index_ = 0;
@@ -2977,7 +3094,7 @@ inline void UpdateTaskSndRequest::_internal_set_index(::int32_t value) {
   _impl_.index_ = value;
 }
 
-// string snd_address = 2;
+// string snd_address = 3;
 inline void UpdateTaskSndRequest::clear_snd_address() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.snd_address_.ClearToEmpty();
@@ -3027,7 +3144,7 @@ inline void UpdateTaskSndRequest::set_allocated_snd_address(std::string* value) 
   // @@protoc_insertion_point(field_set_allocated:rainstorm.UpdateTaskSndRequest.snd_address)
 }
 
-// int32 snd_port = 3;
+// int32 snd_port = 4;
 inline void UpdateTaskSndRequest::clear_snd_port() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.snd_port_ = 0;
@@ -3201,7 +3318,40 @@ inline void KV::_internal_set_task_index(::int32_t value) {
 
 // DataChunk
 
-// int32 task_index = 1;
+// int32 port = 1;
+inline bool DataChunk::has_port() const {
+  return request_case() == kPort;
+}
+inline void DataChunk::set_has_port() {
+  _impl_._oneof_case_[0] = kPort;
+}
+inline void DataChunk::clear_port() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (request_case() == kPort) {
+    _impl_.request_.port_ = 0;
+    clear_has_request();
+  }
+}
+inline ::int32_t DataChunk::port() const {
+  // @@protoc_insertion_point(field_get:rainstorm.DataChunk.port)
+  return _internal_port();
+}
+inline void DataChunk::set_port(::int32_t value) {
+  if (request_case() != kPort) {
+    clear_request();
+    set_has_port();
+  }
+  _impl_.request_.port_ = value;
+  // @@protoc_insertion_point(field_set:rainstorm.DataChunk.port)
+}
+inline ::int32_t DataChunk::_internal_port() const {
+  if (request_case() == kPort) {
+    return _impl_.request_.port_;
+  }
+  return 0;
+}
+
+// int32 task_index = 2;
 inline bool DataChunk::has_task_index() const {
   return request_case() == kTaskIndex;
 }
@@ -3234,7 +3384,7 @@ inline ::int32_t DataChunk::_internal_task_index() const {
   return 0;
 }
 
-// .rainstorm.KV pair = 2;
+// .rainstorm.KV pair = 3;
 inline bool DataChunk::has_pair() const {
   return request_case() == kPair;
 }
@@ -3313,7 +3463,7 @@ inline ::rainstorm::KV* DataChunk::mutable_pair() ABSL_ATTRIBUTE_LIFETIME_BOUND 
   return _msg;
 }
 
-// bool finished = 3;
+// bool finished = 4;
 inline bool DataChunk::has_finished() const {
   return request_case() == kFinished;
 }

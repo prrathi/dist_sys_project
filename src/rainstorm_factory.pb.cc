@@ -28,6 +28,7 @@ namespace rainstorm_factory {
 inline constexpr ServerRequest::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
       : port_{0},
+        node_type_{static_cast< ::rainstorm_factory::NodeType >(0)},
         _cached_size_{0} {}
 
 template <typename>
@@ -66,7 +67,7 @@ struct OperationStatusDefaultTypeInternal {
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 OperationStatusDefaultTypeInternal _OperationStatus_default_instance_;
 }  // namespace rainstorm_factory
-static const ::_pb::EnumDescriptor* file_level_enum_descriptors_rainstorm_5ffactory_2eproto[1];
+static const ::_pb::EnumDescriptor* file_level_enum_descriptors_rainstorm_5ffactory_2eproto[2];
 static constexpr const ::_pb::ServiceDescriptor**
     file_level_service_descriptors_rainstorm_5ffactory_2eproto = nullptr;
 const ::uint32_t
@@ -91,6 +92,7 @@ const ::uint32_t
         ~0u,  // no _split_
         ~0u,  // no sizeof(Split)
         PROTOBUF_FIELD_OFFSET(::rainstorm_factory::ServerRequest, _impl_.port_),
+        PROTOBUF_FIELD_OFFSET(::rainstorm_factory::ServerRequest, _impl_.node_type_),
 };
 
 static const ::_pbi::MigrationSchema
@@ -107,21 +109,23 @@ const char descriptor_table_protodef_rainstorm_5ffactory_2eproto[] ABSL_ATTRIBUT
     "\n\027rainstorm_factory.proto\022\021rainstorm_fac"
     "tory\"Q\n\017OperationStatus\022-\n\006status\030\001 \001(\0162"
     "\035.rainstorm_factory.StatusCode\022\017\n\007messag"
-    "e\030\002 \001(\t\"\035\n\rServerRequest\022\014\n\004port\030\001 \001(\005*I"
-    "\n\nStatusCode\022\013\n\007SUCCESS\020\000\022\013\n\007INVALID\020\001\022\r"
-    "\n\tNOT_FOUND\020\002\022\022\n\016ALREADY_EXISTS\020\0032\305\001\n\027Ra"
-    "instormFactoryService\022T\n\014CreateServer\022 ."
-    "rainstorm_factory.ServerRequest\032\".rainst"
-    "orm_factory.OperationStatus\022T\n\014RemoveSer"
-    "ver\022 .rainstorm_factory.ServerRequest\032\"."
-    "rainstorm_factory.OperationStatusb\006proto"
-    "3"
+    "e\030\002 \001(\t\"M\n\rServerRequest\022\014\n\004port\030\001 \001(\005\022."
+    "\n\tnode_type\030\002 \001(\0162\033.rainstorm_factory.No"
+    "deType*I\n\nStatusCode\022\013\n\007SUCCESS\020\000\022\013\n\007INV"
+    "ALID\020\001\022\r\n\tNOT_FOUND\020\002\022\022\n\016ALREADY_EXISTS\020"
+    "\003*(\n\010NodeType\022\014\n\010SRC_NODE\020\000\022\016\n\nSTAGE_NOD"
+    "E\020\0012\305\001\n\027RainstormFactoryService\022T\n\014Creat"
+    "eServer\022 .rainstorm_factory.ServerReques"
+    "t\032\".rainstorm_factory.OperationStatus\022T\n"
+    "\014RemoveServer\022 .rainstorm_factory.Server"
+    "Request\032\".rainstorm_factory.OperationSta"
+    "tusb\006proto3"
 };
 static ::absl::once_flag descriptor_table_rainstorm_5ffactory_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_rainstorm_5ffactory_2eproto = {
     false,
     false,
-    441,
+    531,
     descriptor_table_protodef_rainstorm_5ffactory_2eproto,
     "rainstorm_factory.proto",
     &descriptor_table_rainstorm_5ffactory_2eproto_once,
@@ -143,6 +147,15 @@ PROTOBUF_CONSTINIT const uint32_t StatusCode_internal_data_[] = {
     262144u, 0u, };
 bool StatusCode_IsValid(int value) {
   return 0 <= value && value <= 3;
+}
+const ::google::protobuf::EnumDescriptor* NodeType_descriptor() {
+  ::google::protobuf::internal::AssignDescriptors(&descriptor_table_rainstorm_5ffactory_2eproto);
+  return file_level_enum_descriptors_rainstorm_5ffactory_2eproto[1];
+}
+PROTOBUF_CONSTINIT const uint32_t NodeType_internal_data_[] = {
+    131072u, 0u, };
+bool NodeType_IsValid(int value) {
+  return 0 <= value && value <= 1;
 }
 // ===================================================================
 
@@ -386,7 +399,12 @@ inline PROTOBUF_NDEBUG_INLINE ServerRequest::Impl_::Impl_(
 
 inline void ServerRequest::SharedCtor(::_pb::Arena* arena) {
   new (&_impl_) Impl_(internal_visibility(), arena);
-  _impl_.port_ = {};
+  ::memset(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, port_),
+           0,
+           offsetof(Impl_, node_type_) -
+               offsetof(Impl_, port_) +
+               sizeof(Impl_::node_type_));
 }
 ServerRequest::~ServerRequest() {
   // @@protoc_insertion_point(destructor:rainstorm_factory.ServerRequest)
@@ -419,15 +437,15 @@ ServerRequest::GetClassData() const {
   return _data_.base();
 }
 PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
-const ::_pbi::TcParseTable<0, 1, 0, 0, 2> ServerRequest::_table_ = {
+const ::_pbi::TcParseTable<1, 2, 0, 0, 2> ServerRequest::_table_ = {
   {
     0,  // no _has_bits_
     0, // no _extensions_
-    1, 0,  // max_field_number, fast_idx_mask
+    2, 8,  // max_field_number, fast_idx_mask
     offsetof(decltype(_table_), field_lookup_table),
-    4294967294,  // skipmap
+    4294967292,  // skipmap
     offsetof(decltype(_table_), field_entries),
-    1,  // num_field_entries
+    2,  // num_field_entries
     0,  // num_aux_entries
     offsetof(decltype(_table_), field_names),  // no aux_entries
     &_ServerRequest_default_instance_._instance,
@@ -437,6 +455,9 @@ const ::_pbi::TcParseTable<0, 1, 0, 0, 2> ServerRequest::_table_ = {
     ::_pbi::TcParser::GetTable<::rainstorm_factory::ServerRequest>(),  // to_prefetch
     #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
   }, {{
+    // .rainstorm_factory.NodeType node_type = 2;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(ServerRequest, _impl_.node_type_), 63>(),
+     {16, 63, 0, PROTOBUF_FIELD_OFFSET(ServerRequest, _impl_.node_type_)}},
     // int32 port = 1;
     {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(ServerRequest, _impl_.port_), 63>(),
      {8, 63, 0, PROTOBUF_FIELD_OFFSET(ServerRequest, _impl_.port_)}},
@@ -446,6 +467,9 @@ const ::_pbi::TcParseTable<0, 1, 0, 0, 2> ServerRequest::_table_ = {
     // int32 port = 1;
     {PROTOBUF_FIELD_OFFSET(ServerRequest, _impl_.port_), 0, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kInt32)},
+    // .rainstorm_factory.NodeType node_type = 2;
+    {PROTOBUF_FIELD_OFFSET(ServerRequest, _impl_.node_type_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kOpenEnum)},
   }},
   // no aux_entries
   {{
@@ -459,7 +483,9 @@ PROTOBUF_NOINLINE void ServerRequest::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  _impl_.port_ = 0;
+  ::memset(&_impl_.port_, 0, static_cast<::size_t>(
+      reinterpret_cast<char*>(&_impl_.node_type_) -
+      reinterpret_cast<char*>(&_impl_.port_)) + sizeof(_impl_.node_type_));
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
 
@@ -475,6 +501,13 @@ PROTOBUF_NOINLINE void ServerRequest::Clear() {
     target = ::google::protobuf::internal::WireFormatLite::
         WriteInt32ToArrayWithField<1>(
             stream, this->_internal_port(), target);
+  }
+
+  // .rainstorm_factory.NodeType node_type = 2;
+  if (this->_internal_node_type() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteEnumToArray(
+        2, this->_internal_node_type(), target);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -494,10 +527,17 @@ PROTOBUF_NOINLINE void ServerRequest::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
+  ::_pbi::Prefetch5LinesFrom7Lines(reinterpret_cast<const void*>(this));
   // int32 port = 1;
   if (this->_internal_port() != 0) {
     total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
         this->_internal_port());
+  }
+
+  // .rainstorm_factory.NodeType node_type = 2;
+  if (this->_internal_node_type() != 0) {
+    total_size += 1 +
+                  ::_pbi::WireFormatLite::EnumSize(this->_internal_node_type());
   }
 
   return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
@@ -515,6 +555,9 @@ void ServerRequest::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::g
   if (from._internal_port() != 0) {
     _this->_impl_.port_ = from._impl_.port_;
   }
+  if (from._internal_node_type() != 0) {
+    _this->_impl_.node_type_ = from._impl_.node_type_;
+  }
   _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
 }
 
@@ -529,7 +572,12 @@ void ServerRequest::CopyFrom(const ServerRequest& from) {
 void ServerRequest::InternalSwap(ServerRequest* PROTOBUF_RESTRICT other) {
   using std::swap;
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
-        swap(_impl_.port_, other->_impl_.port_);
+  ::google::protobuf::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(ServerRequest, _impl_.node_type_)
+      + sizeof(ServerRequest::_impl_.node_type_)
+      - PROTOBUF_FIELD_OFFSET(ServerRequest, _impl_.port_)>(
+          reinterpret_cast<char*>(&_impl_.port_),
+          reinterpret_cast<char*>(&other->_impl_.port_));
 }
 
 ::google::protobuf::Metadata ServerRequest::GetMetadata() const {

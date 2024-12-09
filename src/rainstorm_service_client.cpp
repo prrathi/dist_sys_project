@@ -14,7 +14,8 @@ using namespace std;
 RainStormClient::RainStormClient(shared_ptr<grpc::Channel> channel)
     : stub_(rainstorm::RainstormService::NewStub(channel)) {}
 
-bool RainStormClient::NewSrcTask(const std::string &job_id, 
+bool RainStormClient::NewSrcTask(int port, 
+                                 const std::string &job_id, 
                                  int32_t task_index, 
                                  int32_t task_count, 
                                  const std::string &src_filename, 
@@ -24,6 +25,7 @@ bool RainStormClient::NewSrcTask(const std::string &job_id,
     rainstorm::NewSrcTaskRequest request;
     rainstorm::OperationStatus response;
 
+    request.set_port(port);
     request.set_job_id(job_id);
     request.set_task_index(task_index);
     request.set_task_count(task_count);
@@ -42,7 +44,8 @@ bool RainStormClient::NewSrcTask(const std::string &job_id,
     }
 }
 
-bool RainStormClient::NewStageTask(const std::string &job_id, 
+bool RainStormClient::NewStageTask(int port, 
+                                   const std::string &job_id, 
                                    int32_t stage_index, 
                                    int32_t task_index, 
                                    int32_t task_count, 
@@ -55,6 +58,7 @@ bool RainStormClient::NewStageTask(const std::string &job_id,
     rainstorm::NewStageTaskRequest request;
     rainstorm::OperationStatus response;
 
+    request.set_port(port);
     request.set_job_id(job_id);
     request.set_stage_index(stage_index);
     request.set_task_index(task_index);
@@ -87,11 +91,12 @@ bool RainStormClient::NewStageTask(const std::string &job_id,
     }
 }
 
-bool RainStormClient::UpdateSrcTaskSend(int32_t index, const string& snd_address, int32_t snd_port) {
+bool RainStormClient::UpdateSrcTaskSend(int32_t port, int32_t index, const string& snd_address, int32_t snd_port) {
     grpc::ClientContext context;
     rainstorm::UpdateTaskSndRequest request;
     rainstorm::OperationStatus response;
 
+    request.set_port(port);
     request.set_index(index);
     request.set_snd_address(snd_address);
     request.set_snd_port(snd_port);
@@ -100,7 +105,7 @@ bool RainStormClient::UpdateSrcTaskSend(int32_t index, const string& snd_address
     return status.ok() && response.status() == rainstorm::SUCCESS;
 }
 
-bool RainStormClient::SendDataChunks(shared_ptr<SafeQueue<vector<KVStruct>>> queue, unordered_set<int>& acked_ids, mutex& acked_ids_mutex, int task_index) {
+bool RainStormClient::SendDataChunks(int32_t port, shared_ptr<SafeQueue<vector<KVStruct>>> queue, unordered_set<int>& acked_ids, mutex& acked_ids_mutex, int task_index) {
     grpc::ClientContext context;
     auto stream = stub_->SendDataChunks(&context);
 
@@ -110,6 +115,7 @@ bool RainStormClient::SendDataChunks(shared_ptr<SafeQueue<vector<KVStruct>>> que
         // not strictly required since we start reading anyway
         rainstorm::StreamDataChunk initial_msg;
         auto* chunk = initial_msg.add_chunks();
+        chunk->set_port(port);
         chunk->set_task_index(task_index);
         stream->Write(initial_msg);
         while (true) {
