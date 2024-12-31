@@ -1,7 +1,6 @@
-```markdown
 # RainStorm: A Stream Processing Framework
 
-RainStorm is a high-performance stream processing framework designed to handle real-time analytics on continuous data streams. This README provides comprehensive instructions for setting up, building, and running RainStorm on your cluster of virtual machines (VMs).
+RainStorm is a high-performance stream processing framework designed to handle real-time analytics on continuous data streams. This README provides comprehensive instructions for setting up, building, and running RainStorm for a cluster of VMs.
 
 ## Table of Contents
 
@@ -130,11 +129,3 @@ python3 cli.py -c rainstorm -r ./datasets/test1_1 ./datasets/test1_2 TrafficSign
 - `TrafficSigns_1000`: The source file in HyDFS.
 - `TrafficSigns_1000_Rainstorm`: The destination file in HyDFS for output.
 - `3`: Number of tasks per stage.
-
-Ensure that the executables `./datasets/test1_1` and `./datasets/test1_2` exist and have the necessary perms.
----
-
-
----
-
-```
